@@ -32,7 +32,7 @@ def setup_package():
             about = {}
             exec(f.read(), about)
 
-        with io.open('README.md', 'r', encoding='utf8') as f:
+        with io.open('README.rst', 'r', encoding='utf8') as f:
             readme = f.read()
 
     setup(
