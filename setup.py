@@ -17,7 +17,6 @@ REQUIRES = [
 
 # Dependencies to run the tests for this Python library.
 TEST_REQUIREMENTS = [
-    'coverage',
     'hypothesis[faker]',
 ]
 
