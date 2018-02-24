@@ -17,12 +17,15 @@ stages:
 
 jobs:
   include:
+    - stage: test
+      after_success:
+        - codecov
     - stage: lint
       python: '3.6'
       env: TOXENV=lint
       services: []
 
-install: pip install --upgrade tox tox-travis
+install: pip install --upgrade tox tox-travis codecov
 script: tox --recreate
 
 
