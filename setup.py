@@ -42,6 +42,7 @@ def setup_package():
         long_description=readme,
         author=about['__author__'],
         author_email=about['__author_email__'],
+        license='MIT',
         url=about['__uri__'],
         packages=packages,
         install_requires=REQUIRES,
@@ -51,6 +52,7 @@ def setup_package():
         zip_safe=True,
         classifiers=(
             'Development Status :: 2 - Pre-Alpha',
+            'License :: OSI Approved :: MIT License',
             'Framework :: Pytest',
             'Intended Audience :: Developers',
             'Operating System :: Unix',
