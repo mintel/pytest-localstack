@@ -1,0 +1,3 @@
+[run]
+omit =
+	pytest_localstack/_version.py
