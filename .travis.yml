@@ -1,0 +1,31 @@
+language: python
+services:
+  - docker
+
+python:
+  - '2.7'
+  - '3.4'
+  - '3.5'
+  - '3.6'
+  - '3.7-dev'
+  - 'pypy'
+  - 'pypy3'
+
+stages:
+  - test
+  - lint
+
+jobs:
+  include:
+    - stage: lint
+      python: '3.6'
+      env: TOXENV=lint
+
+install: pip install --upgrade tox tox-travis
+script: tox --recreate
+
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - python: "3.7-dev"
