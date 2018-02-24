@@ -20,6 +20,7 @@ jobs:
     - stage: lint
       python: '3.6'
       env: TOXENV=lint
+      services: []
 
 install: pip install --upgrade tox tox-travis
 script: tox --recreate
