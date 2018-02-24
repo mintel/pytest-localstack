@@ -4,6 +4,9 @@ pytest-localstack
 .. image:: https://travis-ci.org/mintel/pytest-localstack.svg?branch=master
     :target: https://travis-ci.org/mintel/pytest-localstack
 
+.. image:: https://img.shields.io/codecov/c/github/mintel/pytest-localstack.svg
+    :target: https://codecov.io/gh/mintel/pytest-localstack
+
 .. image:: https://img.shields.io/github/license/mintel/pytest-localstack.svg
     :target: https://github.com/mintel/pytest-localstack/blob/master/LICENSE
 
