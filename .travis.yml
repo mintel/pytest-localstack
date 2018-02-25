@@ -17,8 +17,8 @@ matrix:
     - python: "3.7-dev"
 
 stages:
-  - test
   - lint
+  - test
 
 install:
   - pip install --upgrade pipenv codecov
