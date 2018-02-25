@@ -28,14 +28,6 @@ after_success: codecov
 
 jobs:
   include:
-    - stage: test
-      python: pypy
-      script: pytest -ra
-
-    - stage: test
-      python: pypy3
-      script: pytest -ra
-
     - stage: lint
       python: 3.6
       services: []
