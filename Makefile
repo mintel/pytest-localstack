@@ -24,11 +24,7 @@ $(VIRTUALENV)/bin/activate: Pipfile.lock
 Pipfile.lock: Pipfile setup.py
 	$(PIPENV) lock
 
-test: $(VIRTUALENV)  ## run all tests with Tox
-	$(WITH_PIPENV) tox --recreate
-.PHONY: test
-
-ftest: $(VIRTUALENV)  ## run tests in a single Python environment
+test: $(VIRTUALENV)  ## run tests
 	$(WITH_PIPENV) pytest
 .PHONY: ftest
 

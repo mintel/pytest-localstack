@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3668d346815aedf912674d1e8a5459eb56b03e5c1d6dc0fbcf3b9044145b5cb2"
+            "sha256": "34273130f692e06da945c43925b95624a8a6237809aa556151cc2c20dcc18bcb"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -93,9 +93,9 @@
         },
         "hypothesis": {
             "hashes": [
-                "sha256:cc3d9fdcd48440911fdbe2236df8d2ae8f1024ec0c671af23161d4ff1a5e74cf"
+                "sha256:20d5857845d6f60503343d418b25408408ebe47c0fb119f86065c4400198510f"
             ],
-            "version": "==3.45.3"
+            "version": "==3.45.4"
         },
         "pluggy": {
             "hashes": [
@@ -217,10 +217,10 @@
         },
         "flake8-isort": {
             "hashes": [
-                "sha256:5faacab560fe1a6b0b2a35d1ef97064a2c227cf34fa46d189a59a1b1c799296d",
-                "sha256:6a5716ddf5575b5623f3e124f5662982d33fc9f4f5abda97d490cbcc8936ce33"
+                "sha256:5763763ea171eaaf6f4d48387df0e2f2d5ad9d4aa3e83b4867b9a16f2039e627",
+                "sha256:822964db6aaf5828939d1c3779f8af67f060216b5daf97d3b379e208e26d04a6"
             ],
-            "version": "==2.3"
+            "version": "==2.4"
         },
         "flake8-polyfill": {
             "hashes": [
@@ -313,21 +313,6 @@
                 "sha256:338aed9695c432b7c9b8a271dabb521e3e7e2c96b11f7b4e60552f1c8408a8f0"
             ],
             "version": "==5.4.0"
-        },
-        "tox": {
-            "hashes": [
-                "sha256:8af30fd835a11f3ff8e95176ccba5a4e60779df4d96a9dfefa1a1704af263225",
-                "sha256:752f5ec561c6c08c5ecb167d3b20f4f4ffc158c0ab78855701a75f5cef05f4b8"
-            ],
-            "version": "==2.9.1"
-        },
-        "virtualenv": {
-            "hashes": [
-                "sha256:39d88b533b422825d644087a21e78c45cf5af0ef7a99a1fc9fbb7b481e5c85b0",
-                "sha256:02f8102c2436bb03b3ee6dede1919d1dac8a427541652e5ec95171ec8adbc93a"
-            ],
-            "markers": "python_version != '3.2'",
-            "version": "==15.1.0"
         }
     }
 }
