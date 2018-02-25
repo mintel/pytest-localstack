@@ -33,6 +33,10 @@ lint: $(VIRTUALENV)  ## check code style
 	$(WITH_PIPENV) flake8
 .PHONY: lint
 
+isort: $(VIRTUALENV)  ## sort import statements
+	$(WITH_PIPENV) isort
+.PHONY: isort
+
 check-rst: $(VIRTUALENV)  ## check the syntax of .rst files
 	@if $(WITH_PIPENV) python setup.py check --restructuredtext --strict; then\
 		echo "OK"; \
