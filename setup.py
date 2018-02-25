@@ -18,6 +18,7 @@ REQUIRES = [
 # Dependencies to run the tests for this Python library.
 TEST_REQUIREMENTS = [
     'hypothesis[faker]',
+    'pytest-cov',
 ]
 
 HERE = os.path.dirname(os.path.abspath(__file__))
