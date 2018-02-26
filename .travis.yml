@@ -19,6 +19,7 @@ stages:
   - test
 
 install:
+  - pip install --upgrade pip setuptools
   - pip install --upgrade -e '.[test]'
   - pip install --upgrade codecov
 
