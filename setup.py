@@ -12,6 +12,7 @@ from setuptools.command.test import test as TestCommand
 
 # Dependencies for this Python library.
 REQUIRES = [
+    'docker',
     'pytest>=3.0.0',
 ]
 
