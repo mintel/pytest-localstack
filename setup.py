@@ -12,12 +12,15 @@ from setuptools.command.test import test as TestCommand
 
 # Dependencies for this Python library.
 REQUIRES = [
+    'botocore>=1.4.31,!=1.4.45',
     'docker',
+    'pluggy>=0.6.0,<0.7.0',
     'pytest>=3.0.0',
 ]
 
 # Dependencies to run the tests for this Python library.
 TEST_REQUIREMENTS = [
+    'boto3',
     'hypothesis[faker]',
     'pytest-cov',
 ]
@@ -65,7 +68,7 @@ def setup_package():
         ),
         entry_points={
             'pytest11': [
-                'localstack = pytest_localstack',
+                'pytest-localstack = pytest_localstack',
             ]
         },
     )
