@@ -17,36 +17,45 @@ def _get_env_var(name):
     return os.environ.get(name) or os.environ.get(name.upper(), '')
 
 
+def _set_env_var(name, value):
+    if value is None:
+        os.environ.pop(name, None)
+    else:
+        os.environ[name] = value
+
+
 @given(
-    test_environ=st.fixed_dictionaries({
-        'http_proxy': st.sampled_from(['', 'http://proxy:3128']),
-        'https_proxy': st.sampled_from(['', 'http://proxy:3128']),
-        'HTTP_PROXY': st.sampled_from(['', 'http://proxy:3128']),
-        'HTTPS_PROXY': st.sampled_from(['', 'http://proxy:3128']),
-        'no_proxy': st.sampled_from(['', 'localhost,127.0.0.1', 'localhost', 'foobar']),
-        'NO_PROXY': st.sampled_from(['', 'localhost,127.0.0.1', 'localhost', 'foobar']),
-    })
+    http_proxy=st.sampled_from([None, 'http://proxy:3128']),
+    https_proxy=st.sampled_from([None, 'http://proxy:3128']),
+    HTTP_PROXY=st.sampled_from([None, 'http://proxy:3128']),
+    HTTPS_PROXY=st.sampled_from([None, 'http://proxy:3128']),
+    no_proxy=st.sampled_from([None, 'localhost,127.0.0.1', 'localhost', 'foobar']),
+    NO_PROXY=st.sampled_from([None, 'localhost,127.0.0.1', 'localhost', 'foobar']),
 )
-def test_check_no_proxy(test_environ):
-    """Test pytest_localstack.utils.check_no_proxy."""
+def test_check_proxy_env_vars(http_proxy, https_proxy, HTTP_PROXY, HTTPS_PROXY,
+                              no_proxy, NO_PROXY):
+    """Test pytest_localstack.utils.check_proxy_env_vars."""
     with compat.mock.patch.dict(os.environ):
         # mock.patch.dict can't delete keys.
         # Patch os.environ manually.
-        for key, value in test_environ.items():
-            if value:
-                os.environ[key] = value
-            else:
-                os.environ.pop(key, None)
+        _set_env_var('http_proxy', http_proxy)
+        _set_env_var('https_proxy', https_proxy)
+        _set_env_var('HTTP_PROXY', HTTP_PROXY)
+        _set_env_var('HTTPS_PROXY', HTTPS_PROXY)
+        _set_env_var('no_proxy', no_proxy)
+        _set_env_var('NO_PROXY', NO_PROXY)
 
+        settings_match = (
+            ((http_proxy or HTTP_PROXY) == (HTTP_PROXY or http_proxy)) and
+            ((https_proxy or HTTPS_PROXY) == (HTTPS_PROXY or https_proxy)) and
+            ((no_proxy or NO_PROXY) == (NO_PROXY or no_proxy))
+        )
         has_http_proxy = bool(_get_env_var('http_proxy'))
         has_https_proxy = bool(_get_env_var('https_proxy'))
         good_no_proxy = '127.0.0.1' in _get_env_var('no_proxy')
 
-        if has_http_proxy or has_https_proxy:
-            if good_no_proxy:
-                utils.check_no_proxy()
-            else:
-                with pytest.raises(UserWarning):
-                    utils.check_no_proxy()
+        if (has_http_proxy or has_https_proxy) and not (settings_match and good_no_proxy):
+            with pytest.raises(UserWarning):
+                utils.check_proxy_env_vars()
         else:
-            utils.check_no_proxy()
+            utils.check_proxy_env_vars()

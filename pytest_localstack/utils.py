@@ -1,12 +1,26 @@
 """Misc utilities."""
+import os
+
 import six
 
 
-def check_no_proxy():
-    """Raise warnings about improperly set no_proxy env var."""
+def check_proxy_env_vars():
+    """Raise warnings about improperly-set proxy environment variables."""
     proxy_settings = six.moves.urllib.request.getproxies()
     if 'http' not in proxy_settings and 'https' not in proxy_settings:
         return
+    for var in ['http_proxy', 'https_proxy', 'no_proxy']:
+        try:
+            if os.environ[var.lower()] != os.environ[var.upper()]:
+                raise UserWarning(
+                    "Your {0} and {1} environment "
+                    "variables are set to different values.".format(
+                        var.lower(),
+                        var.upper(),
+                    )
+                )
+        except KeyError:
+            pass
     if 'no' not in proxy_settings:
         raise UserWarning(
             "You have proxy settings, but no_proxy isn't set. "
