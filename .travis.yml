@@ -36,4 +36,5 @@ jobs:
       script:
         - pipenv check
         - flake8
+        - flake8 --config tests/.flake8 tests/
       after_success: skip

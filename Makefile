@@ -31,6 +31,7 @@ test: $(VIRTUALENV)  ## run tests
 lint: $(VIRTUALENV)  ## check code style
 	$(PIPENV) check
 	$(WITH_PIPENV) flake8
+	$(WITH_PIPENV) flake8 --config tests/.flake8 tests/
 .PHONY: lint
 
 isort: $(VIRTUALENV)  ## sort import statements
