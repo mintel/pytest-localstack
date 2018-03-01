@@ -37,4 +37,6 @@ plugin.register_plugin_module('pytest_localstack.contrib.boto3', False)
 plugin.manager.load_setuptools_entrypoints("pytest-localstack")
 
 # Trigger pytest_localstack_contribute_to_module hook
-plugin.manager.hook.contribute_to_module.call_historic(pytest_localstack=sys.modules[__name__])
+plugin.manager.hook.contribute_to_module.call_historic(
+    kwargs={'pytest_localstack': sys.modules[__name__]},
+)

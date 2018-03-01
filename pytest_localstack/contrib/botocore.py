@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest_localstack_hookimpl
-def pytest_localstack_contribute_to_session(session):
+def contribute_to_session(session):
     """Add :class:`BotocoreTestResourceFactory` to :class:`LocalstackSession`."""
     logger.debug('patching session {!r}'.format(session))
     session.botocore = BotocoreTestResourceFactory(session)
@@ -21,7 +21,7 @@ def pytest_localstack_contribute_to_session(session):
 
 
 @pytest_localstack_hookimpl
-def pytest_localstack_contribute_to_module(pytest_localstack):
+def contribute_to_module(pytest_localstack):
     """Add :func:`patch_fixture` to :mod:`pytest_localstack`."""
     logger.debug('patching module {!r}'.format(pytest_localstack))
     pytest_localstack.patch_fixture = patch_fixture

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest_localstack_hookimpl
-def pytest_localstack_contribute_to_session(session):
+def contribute_to_session(session):
     """Add :class:`Boto3TestResourceFactory` to :class:`LocalstackSession`."""
     logger.debug('patching session {!r}'.format(session))
     session.boto3 = Boto3TestResourceFactory(session)
