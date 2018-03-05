@@ -34,11 +34,13 @@ Getting Started
 ---------------
 
 .. code-block:: bash
+
     pip install pytest-localstack
 
 Patch botocore/boto3 to use a Localstack container.
 
 .. code-block:: python
+
     # file: test_s3_bucket_creation.py
     import boto3
 
@@ -65,6 +67,7 @@ Patch botocore/boto3 to use a Localstack container.
 Use Localstack without patching botocore/boto3.
 
 .. code-block:: python
+
     # file: test_sync_buckets.py
     import boto3
 
