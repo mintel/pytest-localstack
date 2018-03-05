@@ -28,7 +28,7 @@ AWS_REGIONS = [
 def generate_fake_logs(n=10):
     """Generate some fake log lines."""
     for i in range(n):
-        yield b'foobar %i\n' % i
+        yield 'foobar {}\n'.format(i).encode('utf-8')
 
 
 def make_mock_container(image, command=None, stdout=True, stderr=False,
