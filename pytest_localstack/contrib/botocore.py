@@ -344,6 +344,8 @@ else:
 
 # Grab a reference here to avoid breaking things during patching.
 _original_create_client = botocore.session.Session.create_client
+if inspect.ismethod(_original_create_client):
+    _original_create_client = _original_create_client.im_func
 
 
 class Session(botocore.session.Session):
