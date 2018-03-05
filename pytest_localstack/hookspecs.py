@@ -37,10 +37,10 @@ def session_started(session):
 
 
 @pytest_localstack_hookspec
-def stopping(session):
+def session_stopping(session):
     """Hook fired when :class:`LocalstackSession` is stopping."""
 
 
 @pytest_localstack_hookspec
-def stopped(session):
+def session_stopped(session):
     """Hook fired when :class:`LocalstackSession` has stopped."""

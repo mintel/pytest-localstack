@@ -16,6 +16,7 @@ REQUIRES = [
     'docker',
     'pluggy>=0.6.0,<0.7.0',
     'pytest>=3.0.0',
+    'six',
 ]
 
 # Dependencies to run the tests for this Python library.
