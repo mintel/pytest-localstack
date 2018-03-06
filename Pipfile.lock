@@ -56,6 +56,14 @@
             ],
             "version": "==3.0.4"
         },
+        "colorama": {
+            "hashes": [
+                "sha256:463f8483208e921368c9f306094eb6f725c6ca42b0f97e313cb5d5512459feda",
+                "sha256:48eb22f4f8461b1df5734a074b57042430fb06e1d61bd1e11b078c0fe6d7a1f1"
+            ],
+            "markers": "sys_platform == 'win32'",
+            "version": "==0.3.9"
+        },
         "coverage": {
             "hashes": [
                 "sha256:03481e81d558d30d230bc12999e3edffe392d244349a90f4ef9b88425fac74ba",
@@ -99,10 +107,10 @@
         },
         "docker": {
             "hashes": [
-                "sha256:53ee5532d59f63287d0da5f0fd8b34af5704382152114cc1e1f3eb79167bd567",
-                "sha256:830823845cc32273896124d42e672eaeb2f509ea37eb7dca1101a5fbc1c451e2"
+                "sha256:462165ca6367f802280684ab44e581cd2efba8995d78d07ea994e42194927c3b",
+                "sha256:651c6feea03f5f12c823d3adc1db34ecf21e05965908e580d1b651b8c2269e9e"
             ],
-            "version": "==3.1.0"
+            "version": "==3.1.1"
         },
         "docker-pycreds": {
             "hashes": [
@@ -126,11 +134,19 @@
             ],
             "version": "==0.8.11"
         },
+        "funcsigs": {
+            "hashes": [
+                "sha256:330cc27ccbf7f1e992e69fef78261dc7c6569012cf397db8d3de0234e6c937ca",
+                "sha256:a7bb0f2cf3a3fd1ab2732cb49eba4252c2af4240442415b4abce3b87022a8f50"
+            ],
+            "markers": "python_version < '3.0'",
+            "version": "==1.0.2"
+        },
         "hypothesis": {
             "hashes": [
-                "sha256:b3c1e6fb2f2e88b3957687e5e05c2385c4c509173539d72cfb4c808a5dff3dcd"
+                "sha256:b26943fa3e0dc7127671cf37822bf061b83cc31d4ac23ceb0ebc12f93b1933ce"
             ],
-            "version": "==3.48.0"
+            "version": "==3.48.1"
         },
         "idna": {
             "hashes": [
@@ -161,10 +177,10 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:8970e25181e15ab14ae895599a0a0e0ade7d1f1c4c8ca1072ce16f25526a184d",
-                "sha256:9ddcb879c8cc859d2540204b5399011f842e5e8823674bf429f70ada281b3cc6"
+                "sha256:062027955bccbc04d2fcd5d79690947e018ba31abe4c90b2c6721abec734261b",
+                "sha256:117bad36c1a787e1a8a659df35de53ba05f9f3398fb9e4ac17e80ad5903eb8c5"
             ],
-            "version": "==3.4.1"
+            "version": "==3.4.2"
         },
         "pytest-cov": {
             "hashes": [

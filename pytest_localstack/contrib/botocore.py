@@ -1,12 +1,12 @@
 """Test resource factory for the botocore library."""
 from __future__ import absolute_import
 
-import contextlib
 import functools
 import inspect
 import logging
 import types
 import weakref
+import sys
 
 import botocore
 import botocore.client
@@ -25,6 +25,11 @@ from pytest_localstack import (
     hookspecs,
 )
 from pytest_localstack.compat import mock
+
+if sys.version_info >= (3, 3):
+    import contextlib
+else:
+    import contextlib2 as contextlib
 
 logger = logging.getLogger(__name__)
 
@@ -312,34 +317,33 @@ def patch_fixture(scope='function',
         A :class:`pytest_localstack.session.LocalstackSession`
 
     """
+
     @pytest.fixture(scope=scope, autouse=autouse)
     def _fixture():
-        with _make_session(docker_client=docker_client,
-                           services=services,
-                           region_name=region_name,
-                           kinesis_error_probability=kinesis_error_probability,
-                           dynamodb_error_probability=dynamodb_error_probability,
-                           container_log_level=container_log_level,
-                           localstack_verison=localstack_verison,
-                           auto_remove=auto_remove,
-                           pull_image=pull_image,
-                           container_name=container_name,
-                           **kwargs) as session:
+        with _make_session(
+                docker_client=docker_client,
+                services=services,
+                region_name=region_name,
+                kinesis_error_probability=kinesis_error_probability,
+                dynamodb_error_probability=dynamodb_error_probability,
+                container_log_level=container_log_level,
+                localstack_verison=localstack_verison,
+                auto_remove=auto_remove,
+                pull_image=pull_image,
+                container_name=container_name,
+                **kwargs) as session:
             with session.botocore.patch_botocore():
                 yield session
 
     return _fixture
 
 
-if six.PY3:
-    @contextlib.contextmanager
-    def nested(*mgrs):
-        """Combine multiple context managers."""
-        with contextlib.ExitStack() as stack:
-            outputs = [stack.enter_context(cm) for cm in mgrs]
-            yield outputs
-else:
-    from contextlib import nested  # noqa
+@contextlib.contextmanager
+def nested(*mgrs):
+    """Combine multiple context managers."""
+    with contextlib.ExitStack() as stack:
+        outputs = [stack.enter_context(cm) for cm in mgrs]
+        yield outputs
 
 
 def _unbind(func):
@@ -347,6 +351,7 @@ def _unbind(func):
     if isinstance(func, types.MethodType):
         func = six.get_method_function(func)
     return func
+
 
 # Grab a reference here to avoid breaking things during patching.
 _original_create_client = _unbind(botocore.session.Session.create_client)
