@@ -12,6 +12,7 @@ name = "pypi"
 
 [dev-packages]
 
+docutils = "*"
 bumpversion = "*"
 "flake8" = "*"
 "flake8-debugger" = "*"
