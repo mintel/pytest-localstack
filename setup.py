@@ -40,11 +40,14 @@ def setup_package():
         with io.open('README.rst', 'r', encoding='utf8') as f:
             readme = f.read()
 
+        with io.open('CHANGELOG.rst', 'r', encoding='utf8') as f:
+            changes = f.read()
+
     setup(
         name=about['__title__'],
         version=about['__version__'],
         description=about['__summary__'],
-        long_description=readme,
+        long_description=readme + u'\n\n' + changes,
         author=about['__author__'],
         author_email=about['__author_email__'],
         license='MIT',
