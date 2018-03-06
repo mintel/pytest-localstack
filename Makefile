@@ -32,18 +32,17 @@ lint: $(VIRTUALENV)  ## check code style
 	$(PIPENV) check
 	$(WITH_PIPENV) flake8
 	$(WITH_PIPENV) flake8 --config tests/.flake8 tests/
+	@if $(WITH_PIPENV) python setup.py check --restructuredtext --strict; then\
+		echo ".rst files OK"; \
+	else \
+		echo ".rst files ERROR"; \
+	fi
 .PHONY: lint
 
 isort: $(VIRTUALENV)  ## sort import statements
 	$(WITH_PIPENV) isort
 .PHONY: isort
 
-check-rst: $(VIRTUALENV)  ## check the syntax of .rst files
-	@if $(WITH_PIPENV) python setup.py check --restructuredtext --strict; then\
-		echo "OK"; \
-	else \
-		echo "ERROR"; \
-	fi
 
 lock: $(VIRTUALENV)  ## regenerate Pipfile.lock file
 	$(PIPENV) lock
