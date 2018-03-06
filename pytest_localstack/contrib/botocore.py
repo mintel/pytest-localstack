@@ -205,7 +205,6 @@ class BotocoreTestResourceFactory(object):
             ))
 
             def new_getattribute(self, key):
-                # import pdb; pdb.set_trace()
                 if key.startswith('__'):
                     return object.__getattribute__(self, key)
                 proxied_keys = [
