@@ -24,7 +24,7 @@ from pytest_localstack import (
     exceptions,
     hookspecs,
 )
-from pytest_localstack.compat import mock
+from pytest_localstack.utils import mock
 
 if sys.version_info >= (3, 3):
     import contextlib

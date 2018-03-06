@@ -11,8 +11,8 @@ from pytest_localstack import (
     exceptions,
     plugin,
 )
-from pytest_localstack.compat import mock
 from pytest_localstack.contrib import boto3 as ptls_boto3
+from pytest_localstack.utils import mock
 
 
 def test_session_contribution():

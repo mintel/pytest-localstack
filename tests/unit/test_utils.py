@@ -7,10 +7,7 @@ from hypothesis import (
     strategies as st,
 )
 
-from pytest_localstack import (
-    compat,
-    utils,
-)
+from pytest_localstack import utils
 
 
 def _get_env_var(name):
@@ -35,7 +32,7 @@ def _set_env_var(name, value):
 def test_check_proxy_env_vars(http_proxy, https_proxy, HTTP_PROXY, HTTPS_PROXY,
                               no_proxy, NO_PROXY):
     """Test pytest_localstack.utils.check_proxy_env_vars."""
-    with compat.mock.patch.dict(os.environ):
+    with utils.mock.patch.dict(os.environ):
         # mock.patch.dict can't delete keys.
         # Patch os.environ manually.
         _set_env_var('http_proxy', http_proxy)

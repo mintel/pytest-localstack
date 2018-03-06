@@ -6,7 +6,7 @@ from pytest_localstack import (
     container as ptls_container,
     session,
 )
-from pytest_localstack.compat import mock
+from pytest_localstack.utils import mock
 
 
 def test_DockerLogTailer(caplog):

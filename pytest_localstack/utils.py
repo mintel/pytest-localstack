@@ -3,6 +3,11 @@ import os
 
 import six
 
+if six.PY3:
+    from unittest import mock
+else:
+    import mock  # noqa
+
 
 def check_proxy_env_vars():
     """Raise warnings about improperly-set proxy environment variables."""

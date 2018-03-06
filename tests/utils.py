@@ -4,7 +4,7 @@ import hashlib
 import docker
 
 from pytest_localstack import session
-from pytest_localstack.compat import mock
+from pytest_localstack.utils import mock
 
 AWS_REGIONS = [
     'us-east-1',
