@@ -17,6 +17,7 @@ matrix:
 stages:
   - lint
   - test
+  - docs
 
 install:
   - pip install --upgrade pip setuptools
@@ -40,4 +41,12 @@ jobs:
         - flake8
         - flake8 --config tests/.flake8 tests/
         - python setup.py check --restructuredtext --strict
+      after_success: skip
+    - stage: docs
+      python: 3.6
+      install:
+        - pip install --upgrade pip setuptools
+        - pip install --upgrade Sphinx recommonmark
+      script:
+        - cd docs && make html
       after_success: skip

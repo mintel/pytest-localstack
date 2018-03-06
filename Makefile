@@ -43,6 +43,9 @@ isort: $(VIRTUALENV)  ## sort import statements
 	$(WITH_PIPENV) isort
 .PHONY: isort
 
+docs: $(VIRTUALENV)
+	$(WITH_PIPENV) $(MAKE) -C docs html
+.PHONY: docs
 
 lock: $(VIRTUALENV)  ## regenerate Pipfile.lock file
 	$(PIPENV) lock
