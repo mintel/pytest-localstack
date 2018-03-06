@@ -34,7 +34,7 @@ jobs:
       services: []
       install:
         - pip install --upgrade pip setuptools
-        - pip install --upgrade pipenv docutils flake8 flake8-debugger flake8-docstrings flake8-isort
+        - pip install --upgrade pipenv docutils flake8 flake8-debugger flake8-docstrings flake8-isort Pygments
       script:
         - pipenv check
         - flake8
