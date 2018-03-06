@@ -21,10 +21,9 @@ stages:
 
 install:
   - pip install --upgrade pip setuptools
-  - pip install --upgrade '.[test]'
-  - pip install --upgrade codecov
+  - pip install --upgrade '.[test]' codecov pytest-cov
 
-script: pytest -ra --cov=pytest_localstack
+script: pytest -ra --cov=pytest_localstack/
 
 after_success: codecov
 

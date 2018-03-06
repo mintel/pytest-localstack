@@ -24,7 +24,6 @@ REQUIRES = [
 TEST_REQUIREMENTS = [
     'boto3',
     'hypothesis[faker]',
-    'pytest-cov',
 ]
 
 HERE = os.path.dirname(os.path.abspath(__file__))
