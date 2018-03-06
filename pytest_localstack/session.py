@@ -1,5 +1,4 @@
 """Run and interact with a Localstack container."""
-import contextlib
 import logging
 import os
 import string
@@ -8,7 +7,6 @@ import time
 import six
 
 from pytest_localstack import (
-    compat,
     constants,
     container,
     exceptions,
@@ -340,17 +338,6 @@ class LocalstackSession(object):
         url = ('https' if self.use_ssl else 'http') + '://'
         url += self.service_hostname(service_name)
         return url
-
-    @contextlib.contextmanager
-    def patch(self):
-        """Context manager to use 'patch' methods from test resource factories."""
-        patches = []
-        for factory_name in self.factories:
-            factory = getattr(self, factory_name)
-            if hasattr(factory, 'patch'):
-                patches.append(factory.patch())
-        with compat.nested(*patches) as results:
-            yield results
 
 
 def generate_container_name():
