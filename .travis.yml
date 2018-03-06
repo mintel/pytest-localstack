@@ -39,4 +39,5 @@ jobs:
         - pipenv check
         - flake8
         - flake8 --config tests/.flake8 tests/
+        - python setup.py check --restructuredtext --strict
       after_success: skip
