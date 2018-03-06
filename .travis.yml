@@ -32,7 +32,9 @@ jobs:
     - stage: lint
       python: 3.6
       services: []
-      install: pip install --upgrade pipenv flake8 flake8-debugger flake8-docstrings flake8-isort
+      install:
+        - pip install --upgrade pip setuptools
+        - pip install --upgrade pipenv flake8 flake8-debugger flake8-docstrings flake8-isort
       script:
         - pipenv check
         - flake8
