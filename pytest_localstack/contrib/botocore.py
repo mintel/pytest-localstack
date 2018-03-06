@@ -342,10 +342,14 @@ else:
     from contextlib import nested  # noqa
 
 
+def _unbind(func):
+    """Get Function from Method (if not already Function)."""
+    if isinstance(func, types.MethodType):
+        func = six.get_method_function(func)
+    return func
+
 # Grab a reference here to avoid breaking things during patching.
-_original_create_client = botocore.session.Session.create_client
-if inspect.ismethod(_original_create_client):
-    _original_create_client = _original_create_client.im_func
+_original_create_client = _unbind(botocore.session.Session.create_client)
 
 
 class Session(botocore.session.Session):
@@ -475,10 +479,3 @@ class LocalstackEndpointResolver(botocore.regions.EndpointResolver):
                     result.pop('sslCommonName', None)
                 result['dnsSuffix'] = self.localstack_session.hostname
                 return result
-
-
-def _unbind(func):
-    """Get Function from Method (if not already Function)."""
-    if isinstance(func, types.MethodType):
-        func = six.get_method_function(func)
-    return func
