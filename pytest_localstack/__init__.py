@@ -68,11 +68,11 @@ def session_fixture(scope='function',
     Args:
         scope (str, optional): The pytest scope which this fixture will use.
             Defaults to 'function'.
-        services (list|dict, optional): One of
+        services (list|dict, optional): One of:
 
-            - A list of AWS service names to start in the
+            - A :class:`list` of AWS service names to start in the
               Localstack container.
-            - A dict of service names to the port they should run on.
+            - A :class:`dict` of service names to the port they should run on.
 
             Defaults to all services. Setting this
             can reduce container startup time and therefore test time.

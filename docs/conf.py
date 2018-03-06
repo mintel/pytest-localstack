@@ -185,7 +185,10 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'https://docs.python.org/': None,
+    'python': ('https://docs.python.org/', None),
+    'docker-py': ('https://docker-py.readthedocs.io/en/stable/', None),
+    'botocore': ('https://botocore.readthedocs.io/en/latest/', None),
+    'boto3': ('https://boto3.readthedocs.io/en/latest/', None),
 }
 
 # Add parser for .md files

@@ -265,22 +265,25 @@ def patch_fixture(scope='function',
                   pull_image=True,
                   container_name=None,
                   **kwargs):
-    """Create a pytest fixture that redirects AWS to a Localstack container.
+    """Create a pytest fixture that temporarially redirects all botocore
+    sessions and clients to a Localstack container.
 
     This is not a fixture! It is a factory to create them.
 
     The fixtures that are created by this function will run a Localstack
-    container and patch botocore/boto3 to direct traffic there for the duration
+    container and patch botocore to direct traffic there for the duration
     of the tests.
+
+    Since boto3 uses botocore to send requests, boto3 will also be redirected.
 
     Args:
         scope (str, optional): The pytest scope which this fixture will use.
             Defaults to 'function'.
         services (list|dict, optional): One of
 
-            - A list of AWS service names to start in the
+            - A :class:`list` of AWS service names to start in the
               Localstack container.
-            - A dict of service names to the port they should run on.
+            - A :class:`dict` of service names to the port they should run on.
 
             Defaults to all services. Setting this
             can reduce container startup time and therefore test time.

@@ -3,13 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pytest-localstack's documentation!
-=============================================
+.. include:: ../README.rst
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Top-Level Imports
+=================
 
+The most important parts can be imported directly from :mod:`pytest_localstack`.
+
+.. code-block:: python
+
+    from pytest_localstack import *
+
+.. autofunction:: pytest_localstack.session_fixture
+
+.. autofunction:: pytest_localstack.patch_fixture
+
+.. include:: ../CHANGELOG.rst
 
 
 Indices and tables
