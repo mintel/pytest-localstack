@@ -23,7 +23,7 @@ REQUIRES = [
 # Dependencies to run the tests for this Python library.
 TEST_REQUIREMENTS = [
     'boto3',
-    'hypothesis[faker]',
+    'hypothesis',
 ]
 
 HERE = os.path.dirname(os.path.abspath(__file__))
