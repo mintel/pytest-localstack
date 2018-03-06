@@ -4,9 +4,9 @@ from __future__ import absolute_import
 import functools
 import inspect
 import logging
+import sys
 import types
 import weakref
-import sys
 
 import botocore
 import botocore.client
@@ -317,7 +317,6 @@ def patch_fixture(scope='function',
         A :class:`pytest_localstack.session.LocalstackSession`
 
     """
-
     @pytest.fixture(scope=scope, autouse=autouse)
     def _fixture():
         with _make_session(
