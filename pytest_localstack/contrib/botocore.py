@@ -1,11 +1,10 @@
 """Test resource factory for the botocore library."""
 from __future__ import absolute_import
 
+import contextlib
 import functools
 import inspect
 import logging
-import sys
-import types
 import weakref
 
 import botocore
@@ -14,7 +13,6 @@ import botocore.config
 import botocore.credentials
 import botocore.regions
 import botocore.session
-import six
 
 import pytest
 
@@ -23,13 +21,9 @@ from pytest_localstack import (
     constants,
     exceptions,
     hookspecs,
+    utils,
 )
 from pytest_localstack.utils import mock
-
-if sys.version_info >= (3, 3):
-    import contextlib
-else:
-    import contextlib2 as contextlib
 
 logger = logging.getLogger(__name__)
 
@@ -157,9 +151,9 @@ class BotocoreTestResourceFactory(object):
             ))
             patches.append(mock.patch.multiple(
                 botocore.session.Session,
-                _register_endpoint_resolver=_unbind(Session._register_endpoint_resolver),
-                _register_credential_provider=_unbind(Session._register_credential_provider),
-                create_client=_unbind(Session.create_client),
+                _register_endpoint_resolver=utils.unbind(Session._register_endpoint_resolver),
+                _register_credential_provider=utils.unbind(Session._register_credential_provider),
+                create_client=utils.unbind(Session.create_client),
             ))
 
             # Step 2: Safety checks
@@ -246,7 +240,7 @@ class BotocoreTestResourceFactory(object):
                 create=True,
             ))
 
-            with nested(*patches):
+            with utils.nested(*patches):
                 yield
         finally:
             logger.debug("exit patch")
@@ -339,23 +333,8 @@ def patch_fixture(scope='function',
     return _fixture
 
 
-@contextlib.contextmanager
-def nested(*mgrs):
-    """Combine multiple context managers."""
-    with contextlib.ExitStack() as stack:
-        outputs = [stack.enter_context(cm) for cm in mgrs]
-        yield outputs
-
-
-def _unbind(func):
-    """Get Function from Method (if not already Function)."""
-    if isinstance(func, types.MethodType):
-        func = six.get_method_function(func)
-    return func
-
-
 # Grab a reference here to avoid breaking things during patching.
-_original_create_client = _unbind(botocore.session.Session.create_client)
+_original_create_client = utils.unbind(botocore.session.Session.create_client)
 
 
 class Session(botocore.session.Session):

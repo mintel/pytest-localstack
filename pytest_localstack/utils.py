@@ -1,11 +1,15 @@
 """Misc utilities."""
 import os
+import sys
+import types
 
 import six
 
-if six.PY3:
+if sys.version_info >= (3, 3):
+    import contextlib
     from unittest import mock
 else:
+    import contextlib2 as contextlib
     import mock  # noqa
 
 
@@ -42,3 +46,18 @@ def check_proxy_env_vars():
             "Please set the no_proxy environment variable to something like "
             "'localhost,127.0.0.1' (and maybe add your local network as well? ;D )"
         )
+
+
+@contextlib.contextmanager
+def nested(*mgrs):
+    """Combine multiple context managers."""
+    with contextlib.ExitStack() as stack:
+        outputs = [stack.enter_context(cm) for cm in mgrs]
+        yield outputs
+
+
+def unbind(func):
+    """Get Function from Method (if not already Function)."""
+    if isinstance(func, types.MethodType):
+        func = six.get_method_function(func)
+    return func
