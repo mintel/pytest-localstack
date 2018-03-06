@@ -20,7 +20,9 @@ import io
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.abspath('..')))
+DOCS = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(DOCS)
+sys.path.insert(0, ROOT)
 
 
 # -- General configuration ------------------------------------------------
@@ -58,7 +60,7 @@ author = u'Jaye Doepke'
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-with io.open(os.path.join('..', 'pytest_localstack', '_version.py'), 'r', encoding='utf8') as f:
+with io.open(os.path.join(ROOT, 'pytest_localstack', '_version.py'), 'r', encoding='utf8') as f:
     about = {}
     exec(f.read(), about)
 # The short X.Y version.
