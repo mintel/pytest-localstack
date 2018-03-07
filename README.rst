@@ -36,7 +36,7 @@ Features
 --------
 * Create `pytest fixtures`_ that start and stop a Localstack container.
 * Temporarily patch botocore to redirect botocore/boto3 API calls to Localstack container.
-* Plugin system to easily extend supports to other AWS client libraries such as `aiobotocore <https://github.com/aio-libs/aiobotocore>`_.
+* Plugin system to easily extend supports to other AWS client libraries such as aiobotocore_.
 
 .. _pytest fixtures: https://docs.pytest.org/en/stable/fixture.html
 
@@ -77,4 +77,6 @@ TODO
 * Make botocore patching more comprehensible.
 * Add common test resource fixture factories i.e. S3 buckets, SQS queues, SNS topics, etc.
 * Test this works for non-localhost Docker containers.
-* Add other client libraries such as `aiobotocore <https://github.com/aio-libs/aiobotocore>`_.
+* Add other client libraries such as aiobotocore_.
+
+.. _aiobotocore: https://github.com/aio-libs/aiobotocore
