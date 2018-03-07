@@ -14,9 +14,9 @@ cache:
     - $HOME/.cache/pip
 
 env:
-  - TEST_SUTIE=unit
-  - TEST_SUTIE=integration
-  - TEST_SUTIE=functional
+  - TEST_SUITE=unit
+  - TEST_SUITE=integration
+  - TEST_SUITE=functional
 
 matrix:
   fast_finish: true
