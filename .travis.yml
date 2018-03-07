@@ -29,11 +29,11 @@ install:
 
 script:
   - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/unit
-  - codecov -c -e TRAVIS_EVENT_TYPE -F unit
+  - codecov -e TRAVIS_EVENT_TYPE -F unit
   - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/integration
-  - codecov -c -e TRAVIS_EVENT_TYPE -F integration
+  - codecov -e TRAVIS_EVENT_TYPE -F integration
   - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/functional
-  - codecov -c -e TRAVIS_EVENT_TYPE -F functional
+  - codecov -e TRAVIS_EVENT_TYPE -F functional
 
 jobs:
   include:
