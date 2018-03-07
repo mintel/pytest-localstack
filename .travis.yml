@@ -1,6 +1,4 @@
 language: python
-services:
-  - docker
 
 python:
   - 2.7
@@ -9,7 +7,14 @@ python:
   - 3.6
   - 3.7-dev
 
+services: docker
+
 cache: pip
+
+env:
+  - TEST_SUTIE=unit
+  - TEST_SUTIE=integration
+  - TEST_SUTIE=functional
 
 matrix:
   fast_finish: true
@@ -25,23 +30,19 @@ before_install: pip install --upgrade pip setuptools
 
 install:
   - pip install --upgrade -e '.[test]'
-  - pip install --upgrade codecov pytest-cov
+  - pip install codecov pytest-cov
 
 script:
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/unit
-  - codecov -e TRAVIS_EVENT_TYPE -F unit
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/integration
-  - codecov -e TRAVIS_EVENT_TYPE -F integration
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/functional
-  - codecov -e TRAVIS_EVENT_TYPE -F functional
+  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k "tests/$TEST_SUITE"
+  - codecov -e TRAVIS_EVENT_TYPE -F "$TEST_SUITE"
 
 jobs:
   include:
     - stage: lint
       python: 3.6
       services: []
-      install:
-        - pip install --upgrade pipenv docutils flake8 flake8-debugger flake8-docstrings flake8-isort Pygments
+      env: TEST_SUITE=lint
+      install: pip install --upgrade pipenv docutils flake8 flake8-debugger flake8-docstrings flake8-isort Pygments
       script:
         - pipenv check
         - flake8
@@ -50,7 +51,7 @@ jobs:
 
     - stage: docs
       python: 3.6
-      install:
-        - pip install --upgrade Sphinx recommonmark
-      script:
-        - cd docs && make html
+      services: []
+      env: TEST_SUITE=docs
+      install: pip install --upgrade Sphinx recommonmark
+      script: cd docs && make html
