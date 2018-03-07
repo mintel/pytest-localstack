@@ -47,6 +47,29 @@ docs: $(VIRTUALENV)
 	$(WITH_PIPENV) $(MAKE) -C docs html
 .PHONY: docs
 
+docs-live: $(VIRTUALENV)  ## build and view docs in real-time
+	$(WITH_PIPENV) sphinx-autobuild -b html \
+		-p 0 \
+		--open-browser \
+		--watch ./ \
+		--ignore ".*" \
+		--ignore "*.swp" \
+		--ignore "*.pdf" \
+		--ignore "*.log" \
+		--ignore "*.out" \
+		--ignore "*.toc" \
+		--ignore "*.aux" \
+		--ignore "*.idx" \
+		--ignore "*.ind" \
+		--ignore "*.ilg" \
+		--ignore "*.tex" \
+		--ignore "Makefile" \
+		--ignore "setup.py" \
+		--ignore "setup.cfg" \
+		--ignore "Pipfile*" \
+		docs docs/_build/html
+.PHONY: docs-live
+
 lock: $(VIRTUALENV)  ## regenerate Pipfile.lock file
 	$(PIPENV) lock
 .PHONY: lock
