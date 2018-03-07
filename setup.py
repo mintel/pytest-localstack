@@ -15,6 +15,7 @@ REQUIRES = [
     'botocore>=1.4.31,!=1.4.45',
     'contextlib2; python_version < "3.3"',
     'docker',
+    'mock; python_version < "3.3"',
     'pluggy>=0.6.0,<0.7.0',
     'pytest>=3.0.0',
     'six',
