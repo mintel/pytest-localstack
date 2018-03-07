@@ -1,10 +1,12 @@
 pytest-localstack
 =================
 
-.. image:: https://travis-ci.org/mintel/pytest-localstack.svg?branch=master
+.. image:: https://img.shields.io/travis/mintel/pytest-localstack/master.svg
+    :alt: Travis-CI
     :target: https://travis-ci.org/mintel/pytest-localstack
 
 .. image:: https://img.shields.io/codecov/c/github/mintel/pytest-localstack.svg
+    :alt: Codecov
     :target: https://codecov.io/gh/mintel/pytest-localstack
 
 .. image:: https://img.shields.io/github/license/mintel/pytest-localstack.svg

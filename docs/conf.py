@@ -103,8 +103,6 @@ html_theme_options = {
     'github_repo': 'pytest-localstack',
     'description': 'AWS integration tests via Localstack Docker container.',
     'github_banner': True,
-    'travis_button': True,
-    'codecov_button': True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
