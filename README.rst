@@ -21,10 +21,8 @@ pytest-localstack
 .. image:: https://img.shields.io/github/stars/mintel/pytest-localstack.svg
     :target: https://github.com/mintel/pytest-localstack/stargazers
 
-pytest-localstack is a plugin for pytest_ to AWS_ integration tests via a
-Localstack_ Docker container.
-
-.. note:: Requires Docker.
+pytest-localstack is a plugin for pytest_ to create AWS_ integration tests
+via a Localstack_ Docker container. Requires Docker.
 
 `Read The Docs`_
 
@@ -36,17 +34,17 @@ Localstack_ Docker container.
 
 Features
 --------
-* Create pytest fixtures that start and stop a Localstack container.
+* Create `pytest fixtures`_ that start and stop a Localstack container.
 * Temporarily patch botocore to redirect botocore/boto3 API calls to Localstack container.
 * Plugin system to easily extend supports to other AWS client libraries such as `aiobotocore <https://github.com/aio-libs/aiobotocore>`_.
 
+.. _pytest fixtures: https://docs.pytest.org/en/stable/fixture.html
 
 Example
 -------
 .. code-block:: python
 
     import boto3
-
     import pytest_localstack
 
     localstack = pytest_localstack.patch_fixture(
@@ -56,7 +54,7 @@ Example
     )
 
     def test_s3_bucket_creation():
-        s3 = boto3.resource('s3')  # Botocore, boto3, etc will be patched to use Localstack
+        s3 = boto3.resource('s3')  # Botocore/boto3 will be patched to use Localstack
         assert len(list(s3.buckets.all())) == 0
         bucket = s3.Bucket('foobar')
         bucket.create()
