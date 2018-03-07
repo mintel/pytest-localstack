@@ -21,12 +21,19 @@ stages:
   - test
   - docs
 
-before_install:
-  - pip install --upgrade pip setuptools
+before_install: pip install --upgrade pip setuptools
+
+install:
+  - pip install --upgrade -e '.[test]'
   - pip install --upgrade codecov pytest-cov
-install: pip install --upgrade -e '.[test]'
-script: pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc
-after_success: codecov
+
+script:
+  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/unit
+  - codecov -c -e TRAVIS_EVENT_TYPE -F unit
+  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/integration
+  - codecov -c -e TRAVIS_EVENT_TYPE -F integration
+  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k tests/functional
+  - codecov -c -e TRAVIS_EVENT_TYPE -F functional
 
 jobs:
   include:
@@ -40,7 +47,6 @@ jobs:
         - flake8
         - flake8 --config tests/.flake8 tests/
         - python setup.py check --restructuredtext --strict
-      after_success: skip
 
     - stage: docs
       python: 3.6
@@ -48,4 +54,3 @@ jobs:
         - pip install --upgrade Sphinx recommonmark
       script:
         - cd docs && make html
-      after_success: skip
