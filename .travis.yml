@@ -22,12 +22,8 @@ stages:
 before_install:
   - pip install --upgrade pip setuptools
   - pip install --upgrade codecov pytest-cov
-
-install:
-  - pip install --upgrade -e '.[test]'
-
-script: pytest -ra --cov=pytest_localstack/
-
+install: pip install --upgrade -e '.[test]'
+script: pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc
 after_success: codecov
 
 jobs:
@@ -36,7 +32,6 @@ jobs:
       python: 3.6
       services: []
       install:
-        - pip install --upgrade pip setuptools
         - pip install --upgrade pipenv docutils flake8 flake8-debugger flake8-docstrings flake8-isort Pygments
       script:
         - pipenv check
@@ -44,10 +39,10 @@ jobs:
         - flake8 --config tests/.flake8 tests/
         - python setup.py check --restructuredtext --strict
       after_success: skip
+
     - stage: docs
       python: 3.6
       install:
-        - pip install --upgrade pip setuptools
         - pip install --upgrade Sphinx recommonmark
       script:
         - cd docs && make html
