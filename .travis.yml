@@ -9,7 +9,9 @@ python:
 
 services: docker
 
-cache: pip
+cache:
+  directories:
+    - $HOME/.cache/pip
 
 env:
   - TEST_SUTIE=unit
