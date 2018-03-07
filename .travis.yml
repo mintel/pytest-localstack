@@ -35,7 +35,7 @@ install:
   - pip install codecov pytest-cov
 
 script:
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k "tests/$TEST_SUITE"
+  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc "tests/$TEST_SUITE"
   - codecov --required -e TRAVIS_EVENT_TYPE -F "$TEST_SUITE"
 
 jobs:
