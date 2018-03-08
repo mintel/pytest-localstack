@@ -9,10 +9,6 @@ python:
 
 services: docker
 
-cache:
-  directories:
-    - $HOME/.cache/pip
-
 env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
