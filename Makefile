@@ -55,8 +55,9 @@ docs-live: $(VIRTUALENV)  ## build and view docs in real-time
 	$(PIPENV_RUN) sphinx-autobuild -b html \
 		-p 0 \
 		--open-browser \
-		--watch docs/ \
-		--watch pytest_localstack/ \
+		--watch ./ \
+		--ignore ".git/*" \
+		--ignore ".venv/*" \
 		--ignore "*.swp" \
 		--ignore "*.pdf" \
 		--ignore "*.log" \
