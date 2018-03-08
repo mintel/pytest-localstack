@@ -22,9 +22,15 @@ pytest-localstack
     :target: https://github.com/mintel/pytest-localstack/stargazers
 
 pytest-localstack is a plugin for pytest_ to create AWS_ integration tests
-via a Localstack_ Docker container. Requires Docker.
+via a Localstack_ Docker container.
 
 `Read The Docs`_
+
+**Requires:**
+
+- pytest >= 3.3.0
+- Docker
+
 
 .. _pytest: http://docs.pytest.org/
 .. _AWS: https://aws.amazon.com/
