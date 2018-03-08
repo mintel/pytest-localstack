@@ -29,7 +29,7 @@ via a Localstack_ Docker container. Requires Docker.
 .. _pytest: http://docs.pytest.org/
 .. _AWS: https://aws.amazon.com/
 .. _Localstack: https://github.com/localstack/localstack
-.. _Read the Docs: https://python-localstack.readthedocs.io/
+.. _Read the Docs: https://pytest-localstack.readthedocs.io/
 
 
 Features
