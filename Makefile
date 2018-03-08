@@ -7,6 +7,11 @@ PIPENV_VARS := PIPENV_VENV_IN_PROJECT=1
 PIPENV := $(PIPENV_VARS) pipenv
 PIPENV_RUN := $(PIPENV) run
 
+T := $(shell tput sgr0)
+TBOLD := $(shell tput bold)
+TGREEN := $(shell tput setaf 2)
+TRED := $(shell tput setaf 1)
+
 
 
 help:  ## print this help
@@ -30,13 +35,27 @@ test: $(VIRTUALENV)  ## run tests
 
 
 lint: $(VIRTUALENV)  ## check code style
-	$(PIPENV) check
-	$(PIPENV_RUN) flake8
-	$(PIPENV_RUN) flake8 --config tests/.flake8 tests/
-	@if $(PIPENV_RUN) python setup.py check --restructuredtext --strict; then\
-		echo ".rst files OK"; \
+	@$(PIPENV) check
+
+	@echo "$(TBOLD)Checking code style…$(T)"
+	@if $(PIPENV_RUN) flake8; then \
+		echo "$(TGREEN)OK!$(T)"; \
 	else \
-		echo ".rst files ERROR"; \
+		echo "$(TRED)ERROR!$(T)"; \
+	fi
+
+	@echo "$(TBOLD)Checking test style…$(T)"
+	@if $(PIPENV_RUN) flake8 --config tests/.flake8 tests/; then \
+		echo "$(TGREEN)OK!$(T)"; \
+	else \
+		echo "$(TRED)ERROR!$(T)"; \
+	fi
+
+	@echo "$(TBOLD)Checking .rst file syntax…$(T)"
+	@if $(PIPENV_RUN) python setup.py check --restructuredtext --strict; then\
+		echo "$(TGREEN)OK!$(T)"; \
+	else \
+		echo "$(TRED)ERROR!$(T)"; \
 	fi
 .PHONY: lint
 
