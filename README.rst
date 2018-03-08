@@ -63,11 +63,13 @@ Example
 
 Installation
 ------------
-Install with pip:
+Install with pipenv:
 
 .. code-block:: bash
 
-    $ pip install pytest-localstack
+    $ pipenv install pytest-localstack
+
+(You have `pipenv <https://pipenv.readthedocs.io>`_, right?)
 
 
 TODO
