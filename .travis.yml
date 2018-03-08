@@ -9,6 +9,11 @@ python:
 
 services: docker
 
+branches:
+  only:
+    - master
+    - /v.*/
+
 env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
