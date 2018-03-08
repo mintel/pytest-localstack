@@ -1,6 +1,6 @@
 """Checks to see if Localstack service is running.
 
-Each check takes a :class:`pytest_localstack.session.LocalstackSession` and
+Each check takes a :class:`.LocalstackSession` and
 raises :class:`~pytest_localstack.exceptions.ServiceError`
 if the service is not available.
 """

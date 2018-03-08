@@ -24,8 +24,8 @@ class Boto3TestResourceFactory(object):
     """Create boto3 clients and resources to interact with a :class:`~.LocalstackSession`.
 
     Args:
-        localstack_session: The :class:`~.LocalstackSession` that this
-            factory should create test resources for.
+        localstack_session (:class:`.LocalstackSession`):
+            The session that this factory should create test resources for.
 
     """
 

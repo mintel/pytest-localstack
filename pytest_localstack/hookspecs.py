@@ -1,19 +1,25 @@
-"""pytest-localstack hook specs.
-
-.. seealso:: :mod:`~pytest_localstack.plugin`
+"""
+Much like `pytest <https://pytest.readthedocs.io/en/latest/writing_plugins.html>`_,
+itself, pytest-localstack uses `pluggy <https://github.com/pytest-dev/pluggy>`_
+to implement a plugin system. These plugins can be used to add additional
+functionality to pytest-localstack and to trigger callbacks when the
+Localstack container is started and stopped.
 
 """
 import pluggy
 
 pytest_localstack_hookspec = pluggy.HookspecMarker("pytest-localstack")
 pytest_localstack_hookimpl = pluggy.HookimplMarker("pytest-localstack")
+"""This is a test."""
 
 
 @pytest_localstack_hookspec(historic=True)
 def contribute_to_module(pytest_localstack):
-    """Hook to add additional functionality to :mod:`pytest_localstack`.
+    """
+    Hook to add additional functionality to the :mod:`pytest_localstack`
+    module.
 
-    Primarially used to add fixture factories at a top level.
+    Primarially used to add importable fixture factories at a top level.
     """
 
 

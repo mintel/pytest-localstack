@@ -5,18 +5,13 @@
 
 .. include:: ../README.rst
 
-Top-Level Imports
+Table of Contents
 =================
+.. toctree::
+    :maxdepth: 2
 
-The most important parts can be imported directly from :mod:`pytest_localstack`.
-
-.. code-block:: python
-
-    from pytest_localstack import *
-
-.. autofunction:: pytest_localstack.session_fixture
-
-.. autofunction:: pytest_localstack.patch_fixture
+    using
+    internals/index
 
 .. include:: ../CHANGELOG.rst
 

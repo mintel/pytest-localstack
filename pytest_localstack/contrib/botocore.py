@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 @hookspecs.pytest_localstack_hookimpl
 def contribute_to_session(session):
-    """Add :class:`BotocoreTestResourceFactory` to :class:`~.LocalstackSession`."""
+    """Add :class:`BotocoreTestResourceFactory` to :class:`.LocalstackSession`."""
     logger.debug('patching session %r', session)
     session.botocore = BotocoreTestResourceFactory(session)
 
@@ -43,12 +43,11 @@ def contribute_to_module(pytest_localstack):
 
 
 class BotocoreTestResourceFactory(object):
-    """Create botocore clients to interact with a :class:`~.LocalstackSession`.
+    """Create botocore clients to interact with a :class:`.LocalstackSession`.
 
     Args:
-    localstack_session: The
-        :class:`pytest_localstack.session.LocalstackSession` that this
-        factory should create test resources for.
+        localstack_session (:class:`.LocalstackSession`):
+            The session that this factory should create test resources for.
 
     """
 
@@ -272,8 +271,8 @@ def patch_fixture(scope='function',
 
     Args:
         scope (str, optional): The pytest scope which this fixture will use.
-            Defaults to 'function'.
-        services (list|dict, optional): One of
+            Defaults to :const:`"function"`.
+        services (list, dict, optional): One of
 
             - A :class:`list` of AWS service names to start in the
               Localstack container.
@@ -281,14 +280,14 @@ def patch_fixture(scope='function',
 
             Defaults to all services. Setting this
             can reduce container startup time and therefore test time.
-        autouse (bool, optional):
-        docker_client: A docker-py Client object that will be used
-            to talk to Docker. Defaults to `docker.from_env()`.
-            Pytest-localstack currently only supports connecting
-            to localhost anyway.
+        autouse (bool, optional): If :obj:`True`, automatically use this
+            fixture in applicable tests. Default: :obj:`False`
+        docker_client (:class:`~docker.client.DockerClient`, optional):
+            Docker client to run the Localstack container with.
+            Defaults to :func:`docker.client.from_env`.
         region_name (str, optional): Region name to assume.
             Each Localstack container acts like a single AWS region.
-            Defaults to 'us-east-1'.
+            Defaults to :const:`"us-east-1"`.
         kinesis_error_probability (float, optional): Decimal value between
             0.0 (default) and 1.0 to randomly inject
             ProvisionedThroughputExceededException errors
@@ -298,19 +297,20 @@ def patch_fixture(scope='function',
             ProvisionedThroughputExceededException errors into
             DynamoDB API responses.
         container_log_level (int, optional): The logging level to use
-            for Localstack container logs. Defaults to :attr:`logging.DEBUG`.
+            for Localstack container logs. Defaults to :data:`logging.DEBUG`.
         localstack_verison (str, optional): The version of the Localstack
-            image to use. Defaults to `latest`.
-        auto_remove (bool, optional): If True, delete the Localstack
-            container when it stops.
-        pull_image (bool, optional): If True, pull the Localstack image before
-            running it. Default: True
+            image to use. Defaults to :const:`"latest"`.
+        auto_remove (bool, optional): If :obj:`True`, delete the Localstack
+            container when it stops. Default: :obj:`True`
+        pull_image (bool, optional): If :obj:`True`, pull the Localstack
+            image before running it. Default: :obj:`True`
         container_name (str, optional): The name for the Localstack
             container. Defaults to a randomly generated id.
-        **kwargs: Additional kwargs will be passed to the LocalstackSession.
+        **kwargs: Additional kwargs will be passed to the
+            :class:`.LocalstackSession`.
 
-    Yields:
-        A :class:`pytest_localstack.session.LocalstackSession`
+    Returns:
+        A :func:`pytest fixture <_pytest.fixtures.fixture>`.
 
     """
     @pytest.fixture(scope=scope, autouse=autouse)
