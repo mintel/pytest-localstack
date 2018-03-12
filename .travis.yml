@@ -7,8 +7,6 @@ python:
   - 3.6
   - 3.7-dev
 
-services: docker
-
 branches:
   only:
     - master
@@ -17,7 +15,6 @@ branches:
 env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
-  - TEST_SUITE=functional
 
 matrix:
   fast_finish: true
@@ -52,6 +49,31 @@ jobs:
         - flake8
         - flake8 --config tests/.flake8 tests/
         - python setup.py check --restructuredtext --strict
+
+    - stage: test
+      python: 2.7
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.4
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.5
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.6
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.7-dev
+      services: docker
+      env: TEST_SUITE=functional
 
     - stage: docs
       python: 3.6
