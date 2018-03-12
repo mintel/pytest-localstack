@@ -22,7 +22,7 @@ def test_generate_container_name(random):
     assert re.match(r'^pytest-localstack-[\w]{6}$', result)
 
 
-@pytest.mark.parametrize('service_name', constants.SERVICE_PORTS.keys())
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
 def test_LocalstackSession_map_port(service_name):
     """Test pytest_localstack.session.LocalstackSession.map_port."""
     test_session = test_utils.make_test_LocalstackSession()
@@ -37,8 +37,8 @@ def test_LocalstackSession_map_port(service_name):
     assert result == port  # see tests.utils.make_mock_docker_client()
 
 
-@pytest.mark.parametrize('service_name', constants.SERVICE_PORTS.keys())
-@pytest.mark.parametrize('not_service_name', constants.SERVICE_PORTS.keys())
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
+@pytest.mark.parametrize('not_service_name', sorted(constants.SERVICE_PORTS.keys()))
 def test_LocalstackSession_service_hostname(service_name, not_service_name):
     """Test pytest_localstack.session.LocalstackSession.service_hostname."""
     if service_name == not_service_name:
@@ -63,8 +63,8 @@ def test_LocalstackSession_service_hostname(service_name, not_service_name):
 
 
 @pytest.mark.parametrize('use_ssl', [(True,), (False,)])
-@pytest.mark.parametrize('service_name', constants.SERVICE_PORTS.keys())
-@pytest.mark.parametrize('not_service_name', constants.SERVICE_PORTS.keys())
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
+@pytest.mark.parametrize('not_service_name', sorted(constants.SERVICE_PORTS.keys()))
 def test_LocalstackSession_endpoint_url(use_ssl, service_name, not_service_name):
     """Test pytest_localstack.session.LocalstackSession.endpoint_url."""
     if service_name == not_service_name:

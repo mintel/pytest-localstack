@@ -37,7 +37,7 @@ def test_default_session():
     assert session_1 is session_2
 
 
-@pytest.mark.parametrize('service_name', constants.SERVICE_PORTS.keys())
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
 def test_client(service_name):
     """Test client creation."""
     localstack = test_utils.make_test_LocalstackSession()
@@ -49,7 +49,7 @@ def test_client(service_name):
         assert '127.0.0.1' in client._endpoint.host
 
 
-@pytest.mark.parametrize('service_name', constants.SERVICE_PORTS.keys())
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
 def test_resource(service_name):
     """Test resource creation."""
     if service_name not in ['cloudformation', 'cloudwatch', 'dynamodb', 'ec2',

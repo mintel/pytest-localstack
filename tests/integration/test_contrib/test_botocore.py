@@ -32,7 +32,7 @@ def test_create_credential_resolver():
 @pytest.mark.parametrize('not_region_name', test_utils.AWS_REGIONS)
 @pytest.mark.parametrize(
     'service_alias',
-    (
+    sorted(
         list(constants.SERVICE_ALIASES.keys()) +
         list(constants.SERVICE_PORTS.keys())
     ),
@@ -87,7 +87,7 @@ def test_LocalstackEndpointResolver(region_name, not_region_name,
 
 
 @pytest.mark.parametrize('region_name', test_utils.AWS_REGIONS)
-@pytest.mark.parametrize('service_name', constants.SERVICE_PORTS.keys())
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
 def test_session(region_name, service_name):
     """Test Session creation."""
     localstack = test_utils.make_test_LocalstackSession(
@@ -110,7 +110,7 @@ def test_session(region_name, service_name):
 
 
 @pytest.mark.parametrize('region_name', test_utils.AWS_REGIONS)
-@pytest.mark.parametrize('service_name', constants.SERVICE_PORTS.keys())
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
 def test_client(region_name, service_name):
     """Test Client creation."""
     localstack = test_utils.make_test_LocalstackSession(
@@ -138,7 +138,7 @@ def test_default_session(region_name):
 
 
 @pytest.mark.parametrize('region_name', test_utils.AWS_REGIONS)
-@pytest.mark.parametrize('service_name', constants.SERVICE_PORTS.keys())
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
 def test_patch(region_name, service_name):
     """Test patching."""
     localstack = test_utils.make_test_LocalstackSession(
