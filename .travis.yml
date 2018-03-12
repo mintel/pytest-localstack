@@ -27,9 +27,7 @@ stages:
 
 before_install: pip install --upgrade pip setuptools
 
-install:
-  - pip install --upgrade -e '.[test]'
-  - pip install codecov pytest-cov
+install: pip install --upgrade -e '.[test]' codecov pytest-cov
 
 script:
   - pytest --version
