@@ -61,3 +61,20 @@ def unbind(func):
     if isinstance(func, types.MethodType):
         func = six.get_method_function(func)
     return func
+
+
+def remove_newline(string, n=1):
+    """Remove up to `n` trailing newlines from `string`."""
+    # Regex returns some weird results when dealing with only newlines,
+    # so we do this manually.
+    # >>> import re
+    # >>> re.sub(r'(?:\r\n|\n\r|\n|\r){,1}$', '', '\n\n', 1)
+    # ''
+    for _ in range(n):
+        if string.endswith('\r\n') or string.endswith('\n\r'):
+            string = string[:-2]
+        elif string.endswith('\n') or string.endswith('\r'):
+            string = string[:-1]
+        else:
+            break
+    return string

@@ -1,6 +1,8 @@
 """Docker container tools."""
 import threading
 
+from pytest_localstack import utils
+
 
 class DockerLogTailer(threading.Thread):
     """Write Docker container logs to a Python standard logger.
@@ -43,7 +45,8 @@ class DockerLogTailer(threading.Thread):
             for line in logs_generator:
                 if self.encoding is not None and isinstance(line, bytes):
                     line = line.decode(self.encoding)
-                self.logger.log(self.log_level, line.rstrip())
+                line = utils.remove_newline(line)
+                self.logger.log(self.log_level, line)
         except Exception as e:
             self.exception = e
             raise

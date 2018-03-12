@@ -3,6 +3,7 @@ import os
 
 import pytest
 from hypothesis import (
+    assume,
     given,
     strategies as st,
 )
@@ -56,3 +57,16 @@ def test_check_proxy_env_vars(http_proxy, https_proxy, HTTP_PROXY, HTTPS_PROXY,
                 utils.check_proxy_env_vars()
         else:
             utils.check_proxy_env_vars()
+
+
+@given(
+    string=st.text(),
+    newline=st.sampled_from(['\n', '\r\n', '\r', '\n\r']),
+    num_newlines=st.integers(min_value=0, max_value=100),
+    n=st.integers(min_value=-100, max_value=100),
+)
+def test_remove_newline(string, newline, num_newlines, n):
+    assume(not (string.endswith('\n') or string.endswith('\r')))
+    string_with_newlines = string + (newline * num_newlines)
+    result = utils.remove_newline(string_with_newlines, n)
+    assert result == string + (newline * (num_newlines - max(n, 0)))
