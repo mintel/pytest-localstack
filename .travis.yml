@@ -31,7 +31,7 @@ install: pip install --upgrade -e '.[test]' pytest-cov
 
 script:
   - pytest --version
-  - pytest -k "tests/$TEST_SUITE" --ra --cov-config .coveragerc -cov=pytest_localstack --cov=tests --cov-report=term-missing:skip-covered
+  - pytest -k "tests/$TEST_SUITE" --ra --cov-config .coveragerc --cov=pytest_localstack --cov=tests --cov-report=term-missing:skip-covered
 
 after_success:
   - coverage --version
