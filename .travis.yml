@@ -1,0 +1,80 @@
+language: python
+
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+  - 3.7-dev
+
+branches:
+  only:
+    - master
+    - /v.*/
+
+env:
+  - TEST_SUITE=unit
+  - TEST_SUITE=integration
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - python: 3.7-dev
+
+stages:
+  - test
+  - docs
+
+before_install: pip install --upgrade pip setuptools
+
+install: pip install --upgrade -e '.[test]' codecov pytest-cov pytest-xdist
+
+script:
+  - pytest --version
+  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k "tests/$TEST_SUITE" $([ "$TEST_SUITE" != "functional" ] && echo -n '-n 4 --forked')
+  - codecov --required -e TRAVIS_EVENT_TYPE -F "$TEST_SUITE"
+
+jobs:
+  include:
+    - stage: test
+      python: 3.6
+      services: []
+      env: TEST_SUITE=lint
+      install: pip install --upgrade pipenv docutils flake8 flake8-debugger flake8-docstrings flake8-isort Pygments
+      script:
+        - pipenv check
+        - flake8
+        - flake8 --config tests/.flake8 tests/
+        - python setup.py check --restructuredtext --strict
+
+    - stage: test
+      python: 2.7
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.4
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.5
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.6
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.7-dev
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: docs
+      python: 3.6
+      services: []
+      env: TEST_SUITE=docs
+      install: pip install --upgrade Sphinx recommonmark
+      script: cd docs && make html
