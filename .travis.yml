@@ -27,11 +27,11 @@ stages:
 
 before_install: pip install --upgrade pip setuptools
 
-install: pip install --upgrade -e '.[test]' codecov pytest-cov pytest-xdist
+install: pip install --upgrade -e '.[test]' codecov pytest-cov
 
 script:
   - pytest --version
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k "tests/$TEST_SUITE" $([ "$TEST_SUITE" != "functional" ] && echo -n '-n 4 --forked')
+  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k "tests/$TEST_SUITE"
   - codecov --required -e TRAVIS_EVENT_TYPE -F "$TEST_SUITE"
 
 jobs:
