@@ -1,4 +1,12 @@
 [run]
+parallel = true
+source = .
+branch = true
 omit =
 	pytest_localstack/_version.py
 	pytest_localstack/hookspecs.py
+
+[report]
+show_missing = true
+precision = 2
+include = pytest_localstack/*,tests/*
