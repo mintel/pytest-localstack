@@ -6,12 +6,11 @@ coverage:
   round: down
   precision: 2
 
-# TODO: uncomment this after initial merge
-#  status:
-#    patch:
-#      default:
-#        target: 100%
-#        only_pulls: true
+status:
+  patch:
+    default:
+      target: 100%
+      only_pulls: true
 
 flags:
   contrib:
