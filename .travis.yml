@@ -31,9 +31,12 @@ install: pip install --upgrade -e '.[test]' pytest-cov
 
 script:
   - pytest --version
-  - pytest -ra --cov-config .coveragerc -k "tests/$TEST_SUITE"
+  - pytest -k "tests/$TEST_SUITE" --ra --cov-config .coveragerc -cov=pytest_localstack --cov=tests --cov-report=term-missing:skip-covered
 
 after_success:
+  - coverage --version
+  - coverage combine
+  - coverage xml
   - bash <(curl -s https://codecov.io/bash) --required -e TRAVIS_EVENT_TYPE -F "$TEST_SUITE"
 
 jobs:

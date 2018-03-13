@@ -7,6 +7,5 @@ omit =
 	pytest_localstack/hookspecs.py
 
 [report]
-show_missing = true
 precision = 2
 include = pytest_localstack/*,tests/*
