@@ -32,6 +32,8 @@ install: pip install --upgrade -e '.[test]' codecov pytest-cov
 script:
   - pytest --version
   - pytest -ra --cov-config .coveragerc -k "tests/$TEST_SUITE"
+
+after_success:
   - codecov --required -e TRAVIS_EVENT_TYPE -F "$TEST_SUITE"
 
 jobs:
@@ -46,6 +48,7 @@ jobs:
         - flake8
         - flake8 --config tests/.flake8 tests/
         - python setup.py check --restructuredtext --strict
+      after_success: true
 
     - stage: test
       python: 2.7
@@ -78,3 +81,4 @@ jobs:
       env: TEST_SUITE=docs
       install: pip install --upgrade Sphinx recommonmark
       script: cd docs && make html
+      after_success: true
