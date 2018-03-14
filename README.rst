@@ -1,6 +1,10 @@
 pytest-localstack
 =================
 
+.. image:: https://img.shields.io/pypi/v/pytest-localstack.svg
+    :alt: PyPI
+    :target: https://pypi.org/project/pytest-localstack/
+
 .. image:: https://img.shields.io/travis/mintel/pytest-localstack/master.svg
     :alt: Travis-CI
     :target: https://travis-ci.org/mintel/pytest-localstack
