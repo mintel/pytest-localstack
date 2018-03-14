@@ -85,6 +85,7 @@ Install with pipenv:
 TODO
 ----
 
+* More detailed docs.
 * Break Docker container running out of LocalstackSession.
 * Make botocore patching more comprehensible.
 * Add common test resource fixture factories i.e. S3 buckets, SQS queues, SNS topics, etc.
