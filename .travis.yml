@@ -7,11 +7,6 @@ python:
   - 3.6
   - 3.7-dev
 
-branches:
-  only:
-    - master
-    - /v.*/
-
 env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
