@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-0.1.0-dev (unreleased)
+0.1.0 (unreleased)
 ----------------------
 
 - Initial release
