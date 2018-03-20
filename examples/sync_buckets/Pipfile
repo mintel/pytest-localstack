@@ -1,0 +1,16 @@
+[[source]]
+
+url = "http://devpi/pi/+simple/"
+verify_ssl = false
+name = "devpi"
+
+
+[packages]
+
+"boto3" = "*"
+click = "*"
+
+
+[dev-packages]
+
+"pytest-localstack" = "*"
