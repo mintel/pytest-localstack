@@ -1,5 +1,5 @@
+"""Copy objects from one S3 bucket to another."""
 import optparse
-import sys
 
 import boto3
 
@@ -30,6 +30,7 @@ def sync_buckets(src_bucket, dest_bucket):
 
 
 def sync_buckets_by_name(src_bucket_name, dest_bucket_name):
+    """Sync objects from one AWS S3 bucket to another by name."""
     src_bucket = s3.Bucket(src_bucket_name)
     dest_bucket = s3.Bucket(dest_bucket_name)
     return sync_buckets(src_bucket, dest_bucket)
