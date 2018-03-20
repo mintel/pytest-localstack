@@ -1,6 +1,6 @@
+import optparse
 import sys
 
-import click
 import boto3
 
 s3 = boto3.resource('s3')
@@ -8,7 +8,7 @@ s3 = boto3.resource('s3')
 
 def sync_buckets(src_bucket, dest_bucket):
     """Sync objects from one AWS S3 bucket to another.
-    
+
     Args:
         src_bucket (boto3 Bucket): Objects will be copied from this bucket
             to *dest_bucket*.
@@ -35,10 +35,13 @@ def sync_buckets_by_name(src_bucket_name, dest_bucket_name):
     return sync_buckets(src_bucket, dest_bucket)
 
 
-@click.command()
-@click.argument('src_bucket')
-@click.argument('dest_bucket')
-def main(src_bucket, dest_bucket):
+def main():
+    parser = optparse.OptionParser(
+        description="Copy objects from one S3 bucket to another.",
+        usage="usage: %prog [options] src_bucket dest_bucket",
+    )
+    options, args = parser.parse_args()
+    src_bucket, dest_bucket = args
     sync_buckets_by_name(src_bucket, dest_bucket)
 
 
