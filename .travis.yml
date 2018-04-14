@@ -20,7 +20,10 @@ stages:
   - test
   - docs
 
-before_install: pip install --upgrade pip setuptools
+before_install:
+  - pip install --upgrade pip setuptools pipenv
+  - pip --version
+  - pipenv --version
 
 install: pip install --upgrade -e '.[test]' codecov pytest-cov pytest-xdist
 
@@ -35,7 +38,8 @@ jobs:
       python: 3.6
       services: []
       env: TEST_SUITE=lint
-      install: pip install --upgrade pipenv docutils flake8 flake8-debugger flake8-docstrings flake8-isort Pygments
+      install:
+        - pipenv install --dev --deploy
       script:
         - pipenv check
         - flake8
