@@ -21,8 +21,7 @@ stages:
   - docs
 
 before_install:
-  - pip install --upgrade pip setuptools pipenv
-  - pip --version
+  - pip install pipenv
   - pipenv --version
 
 install: pip install --upgrade -e '.[test]' codecov pytest-cov pytest-xdist
