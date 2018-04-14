@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import contextlib
 import io
 import os
 import sys
@@ -31,18 +30,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def setup_package():
-    with chdir(HERE):
-        packages = find_packages(exclude=['docs', 'tests'])
+    with io.open(os.path.join(HERE, 'pytest_localstack', '_version.py'), 'r', encoding='utf8') as f:
+        about = {}
+        exec(f.read(), about)
 
-        with io.open(os.path.join('pytest_localstack', '_version.py'), 'r', encoding='utf8') as f:
-            about = {}
-            exec(f.read(), about)
+    with io.open(os.path.join(HERE, 'README.rst'), 'r', encoding='utf8') as f:
+        readme = f.read()
 
-        with io.open('README.rst', 'r', encoding='utf8') as f:
-            readme = f.read()
-
-        with io.open('CHANGELOG.rst', 'r', encoding='utf8') as f:
-            changes = f.read()
+    with io.open(os.path.join(HERE, 'CHANGELOG.rst'), 'r', encoding='utf8') as f:
+        changes = f.read()
 
     setup(
         name=about['__title__'],
@@ -53,7 +49,7 @@ def setup_package():
         author_email=about['__author_email__'],
         license='MIT',
         url=about['__uri__'],
-        packages=packages,
+        packages=['pytest_localstack'],
         install_requires=REQUIRES,
         tests_require=TEST_REQUIREMENTS,
         extras_require={'test': TEST_REQUIREMENTS},
@@ -83,18 +79,6 @@ def setup_package():
             ]
         },
     )
-
-
-@contextlib.contextmanager
-def chdir(new_dir):
-    old_dir = os.getcwd()
-    try:
-        os.chdir(new_dir)
-        sys.path.insert(0, new_dir)
-        yield
-    finally:
-        del sys.path[0]
-        os.chdir(old_dir)
 
 
 class PyTest(TestCommand):
