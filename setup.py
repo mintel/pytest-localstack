@@ -49,7 +49,10 @@ def setup_package():
         author_email=about['__author_email__'],
         license='MIT',
         url=about['__uri__'],
-        packages=['pytest_localstack'],
+        packages=find_packages(
+            where=HERE,
+            exclude=['tests']
+        ),
         install_requires=REQUIRES,
         tests_require=TEST_REQUIREMENTS,
         extras_require={'test': TEST_REQUIREMENTS},
