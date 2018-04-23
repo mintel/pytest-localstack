@@ -1,4 +1,5 @@
 import botocore
+import botocore.session
 
 import pytest
 from tests import utils as test_utils
@@ -178,3 +179,20 @@ def test_patch(region_name, service_name):
 
         # Localstack client create while patched still points to Localstack
         assert '127.0.0.1' in ls_client._endpoint.host
+
+
+def test_exceptions_populated():
+    """Patched botocore clients populated `exceptions` correctly."""
+    botocore_session = botocore.session.get_session()
+    botocore_client = botocore_session.create_client('s3')
+
+    localstack = test_utils.make_test_LocalstackSession()
+
+    assert botocore_client._exceptions is None
+
+    with localstack, localstack.botocore.patch_botocore():
+        result = botocore_client.exceptions
+        assert result is not None
+        assert botocore_client._exceptions is not None
+
+    assert botocore_client._exceptions is None

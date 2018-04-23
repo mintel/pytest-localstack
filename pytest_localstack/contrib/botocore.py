@@ -206,6 +206,7 @@ class BotocoreTestResourceFactory(object):
                     '_endpoint',
                     '_exceptions_factory',
                     '_exceptions',
+                    'exceptions',
                     '_loader',
                     '_request_signer',
                     '_response_parser',
