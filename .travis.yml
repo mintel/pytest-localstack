@@ -74,5 +74,5 @@ jobs:
       python: 3.6
       services: []
       env: TEST_SUITE=docs
-      install: pip install --upgrade Sphinx recommonmark
+      install: pip install --upgrade Sphinx recommonmark .
       script: cd docs && make html
