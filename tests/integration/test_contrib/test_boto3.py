@@ -21,53 +21,78 @@ def test_session_contribution():
     assert isinstance(dummy_session.boto3, ptls_boto3.Boto3TestResourceFactory)
 
 
-def test_session():
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
+def test_session(make_test_session):
     """Test session creation."""
-    localstack = test_utils.make_test_LocalstackSession()
+    localstack = make_test_session()
 
     ls_session = localstack.boto3.session()
     assert isinstance(ls_session, boto3.session.Session)
 
 
-def test_default_session():
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
+def test_default_session(make_test_session):
     """Test default session."""
-    localstack = test_utils.make_test_LocalstackSession()
+    localstack = make_test_session()
     session_1 = localstack.boto3.default_session
     session_2 = localstack.boto3.default_session
     assert session_1 is session_2
 
 
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
 @pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
-def test_client(service_name):
+def test_client(service_name, make_test_session):
     """Test client creation."""
-    localstack = test_utils.make_test_LocalstackSession()
-    with pytest.raises(exceptions.ContainerNotStartedError):
-        client = localstack.boto3.client(service_name)
+    localstack = make_test_session()
+    if hasattr(localstack, '_container'):
+        with pytest.raises(exceptions.ContainerNotStartedError):
+            client = localstack.boto3.client(service_name)
+
     with localstack:
         client = localstack.boto3.client(service_name)
         assert isinstance(client, botocore.client.BaseClient)
         assert '127.0.0.1' in client._endpoint.host
 
 
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
 @pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
-def test_resource(service_name):
+def test_resource(service_name, make_test_session):
     """Test resource creation."""
     if service_name not in ['cloudformation', 'cloudwatch', 'dynamodb', 'ec2',
                             'glacier', 'iam', 'opsworks', 's3', 'sns', 'sqs']:
         pytest.skip("No boto3 resource available for this service.")
-    localstack = test_utils.make_test_LocalstackSession()
-    with pytest.raises(exceptions.ContainerNotStartedError):
-        resource = localstack.boto3.resource(service_name)
+    localstack = make_test_session()
+
+    if hasattr(localstack, '_container'):
+        with pytest.raises(exceptions.ContainerNotStartedError):
+            resource = localstack.boto3.resource(service_name)
+
     with localstack:
         resource = localstack.boto3.resource(service_name)
         assert isinstance(resource, boto3.resources.base.ServiceResource)
         assert '127.0.0.1' in resource.meta.client._endpoint.host
 
 
-def test_patch_botocore_credentials():
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
+def test_patch_botocore_credentials(make_test_session):
     """Test to the default boto3 session credentials get patched correctly."""
     session = boto3._get_default_session()
-    localstack = test_utils.make_test_LocalstackSession()
+    localstack = make_test_session()
 
     credentials = session.get_credentials()
     initial_access_key = credentials.access_key if credentials else None
