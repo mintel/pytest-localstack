@@ -8,6 +8,7 @@ from pytest_localstack import (
     session,
 )
 
+
 @pytest.mark.parametrize('test_service', sorted(constants.SERVICE_PORTS))
 def test_RunningSession_individual_services(test_service, docker_client):
     localstack_imagename = 'localstack/localstack:latest'
@@ -37,6 +38,7 @@ def test_RunningSession_individual_services(test_service, docker_client):
     finally:
         if localstack_container:
             localstack_container.stop(timeout=10)
+
 
 @pytest.mark.parametrize('test_service', sorted(constants.SERVICE_PORTS))
 def test_LocalstackSession_individual_services(test_service, docker_client):
