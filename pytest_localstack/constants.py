@@ -23,6 +23,9 @@ def get_version_tuple(version):
     return tuple(version_numbers)
 
 
+# IP for localhost
+LOCALHOST = '127.0.0.1'
+
 # The default AWS region.
 DEFAULT_AWS_REGION = 'us-east-1'
 
