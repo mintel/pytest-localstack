@@ -224,7 +224,7 @@ class LocalstackSession(RunningSession):
         self.auto_remove = bool(auto_remove)
         self.pull_image = bool(pull_image)
 
-        super(RunningSession, self).__init__(hostname=constants.LOCALHOST, services=services, region_name=region_name, use_ssl=use_ssl, **kwargs) 
+        super(LocalstackSession, self).__init__(hostname=constants.LOCALHOST, services=services, region_name=region_name, use_ssl=use_ssl, **kwargs) 
 
         self.container_log_level = container_log_level
         self.localstack_verison = localstack_verison
