@@ -56,7 +56,7 @@ class RunningSession(object):
 
     @property
     def hostname(self):
-        """Return hostname of localstack."""
+        """Return hostname of Localstack."""
         return self._hostname
 
     @property
@@ -71,6 +71,7 @@ class RunningSession(object):
         return result
 
     def start(self, timeout=60):
+        """Starts Localstack if needed."""
         plugin.manager.hook.session_starting(session=self)
 
         self._check_services(timeout)
@@ -121,6 +122,7 @@ class RunningSession(object):
             )
 
     def stop(self, timeout=10):
+        """Stops Localstack."""
         plugin.manager.hook.session_stopping(session=self)
         plugin.manager.hook.session_stopped(session=self)
 
@@ -135,6 +137,7 @@ class RunningSession(object):
         self.stop(timeout=timeout)
 
     def map_port(self, port):
+        """Return host port based on Localstack port."""
         return port
 
     def service_hostname(self, service_name):
