@@ -16,17 +16,21 @@ from pytest_localstack import (
 
 logger = logging.getLogger(__name__)
 
-class RunningSession(object):
-    """
-    Connects to an already running localstack server
-    """
 
-    def __init__(self, hostname, services=None, region_name=constants.DEFAULT_AWS_REGION, use_ssl=False, **kwargs):
+class RunningSession(object):
+    """Connects to an already running localstack server"""
+
+    def __init__(self, hostname,
+                 services=None,
+                 region_name=constants.DEFAULT_AWS_REGION,
+                 use_ssl=False,
+                 **kwargs):
+
         self.kwargs = kwargs
         self.use_ssl = use_ssl
         self.region_name = region_name
         self._hostname = hostname
-        
+
         plugin.manager.hook.contribute_to_session(session=self)
 
         if services is None:
@@ -52,6 +56,7 @@ class RunningSession(object):
 
     @property
     def hostname(self):
+        """Return hostname of localstack."""
         return self._hostname
 
     @property
@@ -114,7 +119,7 @@ class RunningSession(object):
             raise exceptions.TimeoutError(
                 "Localstack services not started: {0!r}".format(services)
             )
-    
+
     def stop(self, timeout=10):
         plugin.manager.hook.session_stopping(session=self)
         plugin.manager.hook.session_stopped(session=self)
@@ -131,7 +136,7 @@ class RunningSession(object):
 
     def map_port(self, port):
         return port
-    
+
     def service_hostname(self, service_name):
         """Get hostname and port for an AWS service."""
         service_name = constants.SERVICE_ALIASES.get(service_name, service_name)
@@ -147,6 +152,7 @@ class RunningSession(object):
         url = ('https' if self.use_ssl else 'http') + '://'
         url += self.service_hostname(service_name)
         return url
+
 
 class LocalstackSession(RunningSession):
     """Run a localstack Docker container.
@@ -224,7 +230,13 @@ class LocalstackSession(RunningSession):
         self.auto_remove = bool(auto_remove)
         self.pull_image = bool(pull_image)
 
-        super(LocalstackSession, self).__init__(hostname=constants.LOCALHOST, services=services, region_name=region_name, use_ssl=use_ssl, **kwargs) 
+        super(LocalstackSession, self).__init__(
+            hostname=constants.LOCALHOST,
+            services=services,
+            region_name=region_name,
+            use_ssl=use_ssl,
+            **kwargs
+        )
 
         self.container_log_level = container_log_level
         self.localstack_verison = localstack_verison
@@ -357,6 +369,7 @@ class LocalstackSession(RunningSession):
         if not result:
             return None
         return int(result[0]['HostPort'])
+
 
 def generate_container_name():
     """Generate a random name for a Localstack container."""
