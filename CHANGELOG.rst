@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.1.2 (2018-06-22)
+------------------
+
+- Broke out LocalstackSession into RunningSession which doesn't start localstack itself.
+
 0.1.1 (2018-04-23)
 ------------------
 
