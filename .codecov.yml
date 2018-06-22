@@ -5,13 +5,13 @@ coverage:
   range: 50..90
   round: down
   precision: 2
-
-# TODO: uncomment this after initial merge
-#  status:
-#    patch:
-#      default:
-#        target: 100%
-#        only_pulls: true
+  status:
+    project:
+      default:
+        threshold: "1%"
+    patch:
+      default:
+        threshold: "1%"
 
 flags:
   contrib:
