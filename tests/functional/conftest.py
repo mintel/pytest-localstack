@@ -4,7 +4,7 @@ import docker
 import pytest
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def docker_client():
     """Fixture to create a local Docker client."""
     return docker.from_env()

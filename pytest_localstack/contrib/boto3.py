@@ -5,10 +5,7 @@ import logging
 
 import boto3.session
 
-from pytest_localstack import (
-    constants,
-    hookspecs,
-)
+from pytest_localstack import constants, hookspecs
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +13,7 @@ logger = logging.getLogger(__name__)
 @hookspecs.pytest_localstack_hookimpl
 def contribute_to_session(session):
     """Add :class:`Boto3TestResourceFactory` to :class:`~.LocalstackSession`."""
-    logger.debug('patching session %r', session)
+    logger.debug("patching session %r", session)
     session.boto3 = Boto3TestResourceFactory(session)
 
 
@@ -39,11 +36,13 @@ class Boto3TestResourceFactory(object):
 
         Arguments are the same as :class:`boto3.session.Session`.
         """
-        kwargs['botocore_session'] = self.localstack_session.botocore.default_session
-        kwargs.setdefault('region_name', constants.DEFAULT_AWS_REGION)
-        kwargs.setdefault('aws_access_key_id', constants.DEFAULT_AWS_ACCESS_KEY_ID)
-        kwargs.setdefault('aws_secret_access_key', constants.DEFAULT_AWS_SECRET_ACCESS_KEY)
-        kwargs.setdefault('aws_session_token', constants.DEFAULT_AWS_SESSION_TOKEN)
+        kwargs["botocore_session"] = self.localstack_session.botocore.default_session
+        kwargs.setdefault("region_name", constants.DEFAULT_AWS_REGION)
+        kwargs.setdefault("aws_access_key_id", constants.DEFAULT_AWS_ACCESS_KEY_ID)
+        kwargs.setdefault(
+            "aws_secret_access_key", constants.DEFAULT_AWS_SECRET_ACCESS_KEY
+        )
+        kwargs.setdefault("aws_session_token", constants.DEFAULT_AWS_SESSION_TOKEN)
         return boto3.session.Session(*args, **kwargs)
 
     @property

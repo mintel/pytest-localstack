@@ -57,8 +57,6 @@ class RegionError(Error):
 
     def __init__(self, region_name, should_be_region):
         super(RegionError, self).__init__(
-            "This LocalstackSession is configured for region %s, not %s" % (
-                should_be_region,
-                region_name,
-            )
+            "This LocalstackSession is configured for region %s, not %s"
+            % (should_be_region, region_name)
         )

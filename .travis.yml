@@ -41,8 +41,7 @@ jobs:
         - pipenv install --dev --deploy
       script:
         - pipenv check
-        - flake8
-        - flake8 --config tests/.flake8 tests/
+        - pipenv run black --check $(find . -name "*.py" -not -path "*/.venv/*")
         - python setup.py check --restructuredtext --strict
 
     - stage: test

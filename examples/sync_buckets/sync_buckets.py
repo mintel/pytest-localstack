@@ -3,7 +3,7 @@ import optparse
 
 import boto3
 
-s3 = boto3.resource('s3')
+s3 = boto3.resource("s3")
 
 
 def sync_buckets(src_bucket, dest_bucket):
@@ -21,10 +21,7 @@ def sync_buckets(src_bucket, dest_bucket):
     count = 0
     for src_obj in src_bucket.objects.all():
         response = src_obj.get()
-        dest_bucket.put_object(
-            Key=src_obj.key,
-            Body=response['Body'].read(),
-        )
+        dest_bucket.put_object(Key=src_obj.key, Body=response["Body"].read())
         count += 1
     return count
 

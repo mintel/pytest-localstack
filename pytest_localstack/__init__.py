@@ -6,18 +6,13 @@ import docker
 
 import pytest
 
-from pytest_localstack import (
-    constants,
-    plugin,
-    session,
-    utils,
-)
+from pytest_localstack import constants, plugin, session, utils
 from pytest_localstack._version import __version__  # noqa: F401
 
 
 def pytest_addoption(parser):
     """Hook to add pytest-localstack command line options to pytest."""
-    group = parser.getgroup('pytest-localstack')
+    group = parser.getgroup("pytest-localstack")
     group.addoption(
         "--no-localstack",
         action="store_true",
@@ -40,19 +35,21 @@ def pytest_addoption(parser):
     )
 
 
-def session_fixture(scope='function',
-                    services=None,
-                    autouse=False,
-                    docker_client=None,
-                    region_name=constants.DEFAULT_AWS_REGION,
-                    kinesis_error_probability=0.0,
-                    dynamodb_error_probability=0.0,
-                    container_log_level=logging.DEBUG,
-                    localstack_verison='latest',
-                    auto_remove=True,
-                    pull_image=True,
-                    container_name=None,
-                    **kwargs):
+def session_fixture(
+    scope="function",
+    services=None,
+    autouse=False,
+    docker_client=None,
+    region_name=constants.DEFAULT_AWS_REGION,
+    kinesis_error_probability=0.0,
+    dynamodb_error_probability=0.0,
+    container_log_level=logging.DEBUG,
+    localstack_verison="latest",
+    auto_remove=True,
+    pull_image=True,
+    container_name=None,
+    **kwargs
+):
     """Create a pytest fixture that provides a LocalstackSession.
 
     This is not a fixture! It is a factory to create them.
@@ -109,19 +106,22 @@ def session_fixture(scope='function',
         A :func:`pytest fixture <_pytest.fixtures.fixture>`.
 
     """
+
     @pytest.fixture(scope=scope, autouse=autouse)
     def _fixture():
-        with _make_session(docker_client=docker_client,
-                           services=services,
-                           region_name=region_name,
-                           kinesis_error_probability=kinesis_error_probability,
-                           dynamodb_error_probability=dynamodb_error_probability,
-                           container_log_level=container_log_level,
-                           localstack_verison=localstack_verison,
-                           auto_remove=auto_remove,
-                           pull_image=pull_image,
-                           container_name=container_name,
-                           **kwargs) as session:
+        with _make_session(
+            docker_client=docker_client,
+            services=services,
+            region_name=region_name,
+            kinesis_error_probability=kinesis_error_probability,
+            dynamodb_error_probability=dynamodb_error_probability,
+            container_log_level=container_log_level,
+            localstack_verison=localstack_verison,
+            auto_remove=auto_remove,
+            pull_image=pull_image,
+            container_name=container_name,
+            **kwargs
+        ) as session:
             yield session
 
     return _fixture
@@ -129,8 +129,8 @@ def session_fixture(scope='function',
 
 @contextlib.contextmanager
 def _make_session(docker_client, *args, **kwargs):
-    if pytest.config.getoption('--no-localstack'):
-        pytest.skip('skipping because --no-localstack is set')
+    if pytest.config.getoption("--no-localstack"):
+        pytest.skip("skipping because --no-localstack is set")
 
     utils.check_proxy_env_vars()
 
@@ -144,8 +144,8 @@ def _make_session(docker_client, *args, **kwargs):
 
     _session = session.LocalstackSession(docker_client, *args, **kwargs)
 
-    start_timeout = pytest.config.getoption('--localstack-start-timeout')
-    stop_timeout = pytest.config.getoption('--localstack-stop-timeout')
+    start_timeout = pytest.config.getoption("--localstack-start-timeout")
+    stop_timeout = pytest.config.getoption("--localstack-stop-timeout")
 
     _session.start(timeout=start_timeout)
     try:
@@ -155,13 +155,13 @@ def _make_session(docker_client, *args, **kwargs):
 
 
 # Register contrib modules
-plugin.register_plugin_module('pytest_localstack.contrib.botocore')
-plugin.register_plugin_module('pytest_localstack.contrib.boto3', False)
+plugin.register_plugin_module("pytest_localstack.contrib.botocore")
+plugin.register_plugin_module("pytest_localstack.contrib.boto3", False)
 
 # Register 3rd-party modules
 plugin.manager.load_setuptools_entrypoints("pytest-localstack")
 
 # Trigger pytest_localstack_contribute_to_module hook
 plugin.manager.hook.contribute_to_module.call_historic(
-    kwargs={'pytest_localstack': sys.modules[__name__]},
+    kwargs={"pytest_localstack": sys.modules[__name__]}
 )
