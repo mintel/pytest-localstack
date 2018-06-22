@@ -52,15 +52,17 @@ def botocore_check(service_name, list_func_name):
             url = localstack_session.endpoint_url(service_name)
             if not is_port_open(url):
                 raise exceptions.ServiceError(service_name=service_name)
+            config_kwargs = {
+                'connect_timeout': 1,
+                'read_timeout': 1,
+                's3': {'addressing_style': 'path'},
+            }
+            if constants.BOTOCORE_VERSION >= (1, 6, 0):
+                config_kwargs['retries'] = {'max_attempts': 1}
             client = localstack_session.botocore.client(
                 service_name,
                 # Handle retries at a higher level
-                config=botocore.config.Config(
-                    connect_timeout=1,
-                    read_timeout=1,
-                    retries={'max_attempts': 1},
-                    s3={'addressing_style': 'path'},
-                ),
+                config=botocore.config.Config(**config_kwargs),
             )
             list_func = getattr(client, list_func_name)
             try:
