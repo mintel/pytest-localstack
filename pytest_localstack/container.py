@@ -22,9 +22,9 @@ class DockerLogTailer(threading.Thread):
 
     """
 
-    def __init__(self, container, logger, log_level,
-                 stdout=True, stderr=True,
-                 encoding='utf-8'):
+    def __init__(
+        self, container, logger, log_level, stdout=True, stderr=True, encoding="utf-8"
+    ):
         self.container = container
         self.logger = logger
         self.log_level = log_level
@@ -38,9 +38,7 @@ class DockerLogTailer(threading.Thread):
         """Tail the container logs as a separate thread."""
         try:
             logs_generator = self.container.logs(
-                stream=True,
-                stdout=self.stdout,
-                stderr=self.stderr,
+                stream=True, stdout=self.stdout, stderr=self.stderr
             )
             for line in logs_generator:
                 if self.encoding is not None and isinstance(line, bytes):

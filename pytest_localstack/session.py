@@ -6,13 +6,7 @@ import time
 
 import six
 
-from pytest_localstack import (
-    constants,
-    container,
-    exceptions,
-    plugin,
-    service_checks,
-)
+from pytest_localstack import constants, container, exceptions, plugin, service_checks
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +14,14 @@ logger = logging.getLogger(__name__)
 class RunningSession(object):
     """Connects to an already running localstack server"""
 
-    def __init__(self, hostname,
-                 services=None,
-                 region_name=constants.DEFAULT_AWS_REGION,
-                 use_ssl=False,
-                 **kwargs):
+    def __init__(
+        self,
+        hostname,
+        services=None,
+        region_name=constants.DEFAULT_AWS_REGION,
+        use_ssl=False,
+        **kwargs
+    ):
 
         self.kwargs = kwargs
         self.use_ssl = use_ssl
@@ -52,7 +49,7 @@ class RunningSession(object):
                     port = constants.SERVICE_PORTS[service_name]
                 self.services[service_name] = port
         else:
-            raise TypeError('unsupported services type: %r' % (services,))
+            raise TypeError("unsupported services type: %r" % (services,))
 
     @property
     def hostname(self):
@@ -103,7 +100,9 @@ class RunningSession(object):
         num_retries = 0
         start_time = time.time()
         while services and (time.time() - start_time) < timeout:
-            for service_name in list(services):  # list() because set may change during iteration
+            for service_name in list(
+                services
+            ):  # list() because set may change during iteration
                 try:
                     service_checks.SERVICE_CHECKS[service_name](self)
                     services.discard(service_name)
@@ -126,14 +125,19 @@ class RunningSession(object):
         plugin.manager.hook.session_stopping(session=self)
         plugin.manager.hook.session_stopped(session=self)
 
-    def __enter__(self, start_timeout=constants.DEFAULT_CONTAINER_START_TIMEOUT,
-                  stop_timeout=constants.DEFAULT_CONTAINER_STOP_TIMEOUT):
+    def __enter__(
+        self,
+        start_timeout=constants.DEFAULT_CONTAINER_START_TIMEOUT,
+        stop_timeout=constants.DEFAULT_CONTAINER_STOP_TIMEOUT,
+    ):
         self.__stop_timeout = stop_timeout
         self.start(timeout=start_timeout)
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        timeout = getattr(self, '__stop_timeout', constants.DEFAULT_CONTAINER_STOP_TIMEOUT)
+        timeout = getattr(
+            self, "__stop_timeout", constants.DEFAULT_CONTAINER_STOP_TIMEOUT
+        )
         self.stop(timeout=timeout)
 
     def map_port(self, port):
@@ -145,14 +149,14 @@ class RunningSession(object):
         service_name = constants.SERVICE_ALIASES.get(service_name, service_name)
         if service_name not in self.services:
             raise exceptions.ServiceError(
-                "{0!r} does not have {1} enabled".format(self, service_name),
+                "{0!r} does not have {1} enabled".format(self, service_name)
             )
         port = self.map_port(self.services[service_name])
-        return '%s:%i' % (self.hostname, port)
+        return "%s:%i" % (self.hostname, port)
 
     def endpoint_url(self, service_name):
         """Get the URL for a service endpoint."""
-        url = ('https' if self.use_ssl else 'http') + '://'
+        url = ("https" if self.use_ssl else "http") + "://"
         url += self.service_hostname(service_name)
         return url
 
@@ -208,21 +212,24 @@ class LocalstackSession(RunningSession):
 
     """
 
-    image_name = 'localstack/localstack'
+    image_name = "localstack/localstack"
     factories = []
 
-    def __init__(self, docker_client,
-                 services=None,
-                 region_name=constants.DEFAULT_AWS_REGION,
-                 kinesis_error_probability=0.0,
-                 dynamodb_error_probability=0.0,
-                 container_log_level=logging.DEBUG,
-                 localstack_verison='latest',
-                 auto_remove=True,
-                 pull_image=True,
-                 container_name=None,
-                 use_ssl=False,
-                 **kwargs):
+    def __init__(
+        self,
+        docker_client,
+        services=None,
+        region_name=constants.DEFAULT_AWS_REGION,
+        kinesis_error_probability=0.0,
+        dynamodb_error_probability=0.0,
+        container_log_level=logging.DEBUG,
+        localstack_verison="latest",
+        auto_remove=True,
+        pull_image=True,
+        container_name=None,
+        use_ssl=False,
+        **kwargs
+    ):
         self._container = None
         self._factory_cache = {}
 
@@ -262,20 +269,20 @@ class LocalstackSession(RunningSession):
         if self._container is not None:
             raise exceptions.ContainerAlreadyStartedError(self)
 
-        logger.debug('Starting Localstack container %s', self.container_name)
-        logger.debug('%r running starting hooks', self)
+        logger.debug("Starting Localstack container %s", self.container_name)
+        logger.debug("%r running starting hooks", self)
         plugin.manager.hook.session_starting(session=self)
 
         image_name = self.image_name + ":" + self.localstack_verison
         if self.pull_image:
-            logger.debug('Pulling docker image %r', image_name)
+            logger.debug("Pulling docker image %r", image_name)
             self.docker_client.images.pull(image_name)
 
         start_time = time.time()
 
-        services = ','.join('%s:%s' % pair for pair in self.services.items())
-        kinesis_error_probability = '%f' % self.kinesis_error_probability
-        dynamodb_error_probability = '%f' % self.dynamodb_error_probability
+        services = ",".join("%s:%s" % pair for pair in self.services.items())
+        kinesis_error_probability = "%f" % self.kinesis_error_probability
+        dynamodb_error_probability = "%f" % self.dynamodb_error_probability
         use_ssl = str(self.use_ssl).lower()
         self._container = self.docker_client.containers.run(
             image_name,
@@ -283,26 +290,25 @@ class LocalstackSession(RunningSession):
             detach=True,
             auto_remove=self.auto_remove,
             environment={
-                'DEFAULT_REGION': self.region_name,
-                'SERVICES': services,
-                'KINESIS_ERROR_PROBABILITY': kinesis_error_probability,
-                'DYNAMODB_ERROR_PROBABILITY': dynamodb_error_probability,
-                'USE_SSL': use_ssl,
+                "DEFAULT_REGION": self.region_name,
+                "SERVICES": services,
+                "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
+                "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
+                "USE_SSL": use_ssl,
             },
             ports={port: None for port in self.services.values()},
         )
         logger.debug(
-            'Started Localstack container %s (id: %s)',
+            "Started Localstack container %s (id: %s)",
             self.container_name,
             self._container.short_id,
         )
 
         # Tail container logs
-        container_logger = logger.getChild(
-            'containers.%s' % self._container.short_id)
+        container_logger = logger.getChild("containers.%s" % self._container.short_id)
         self._stdout_tailer = container.DockerLogTailer(
             self._container,
-            container_logger.getChild('stdout'),
+            container_logger.getChild("stdout"),
             self.container_log_level,
             stdout=True,
             stderr=False,
@@ -310,7 +316,7 @@ class LocalstackSession(RunningSession):
         self._stdout_tailer.start()
         self._stderr_tailer = container.DockerLogTailer(
             self._container,
-            container_logger.getChild('stderr'),
+            container_logger.getChild("stderr"),
             self.container_log_level,
             stdout=False,
             stderr=True,
@@ -324,9 +330,9 @@ class LocalstackSession(RunningSession):
 
             self._check_services(timeout_remaining)
 
-            logger.debug('%r running started hooks', self)
+            logger.debug("%r running started hooks", self)
             plugin.manager.hook.session_started(session=self)
-            logger.debug('%r finished started hooks', self)
+            logger.debug("%r finished started hooks", self)
         except exceptions.TimeoutError:
             if self._container is not None:
                 self.stop(0.1)
@@ -344,18 +350,18 @@ class LocalstackSession(RunningSession):
 
         """
         if self._container is not None:
-            logger.debug('Stopping %r', self)
-            logger.debug('Running stopping hooks for %r', self)
+            logger.debug("Stopping %r", self)
+            logger.debug("Running stopping hooks for %r", self)
             plugin.manager.hook.session_stopping(session=self)
-            logger.debug('Finished stopping hooks for %r', self)
+            logger.debug("Finished stopping hooks for %r", self)
             self._container.stop(timeout=10)
             self._container = None
             self._stdout_tailer = None
             self._stderr_tailer = None
-            logger.debug('Stopped %r', self)
-            logger.debug('Running stopped hooks for %r', self)
+            logger.debug("Stopped %r", self)
+            logger.debug("Running stopped hooks for %r", self)
             plugin.manager.hook.session_stopped(session=self)
-            logger.debug('Finished stopped hooks for %r', self)
+            logger.debug("Finished stopped hooks for %r", self)
 
     def __del__(self):
         """Stop container on garbage collection."""
@@ -365,13 +371,10 @@ class LocalstackSession(RunningSession):
         """Return host port based on Localstack container port."""
         if self._container is None:
             raise exceptions.ContainerNotStartedError(self)
-        result = self.docker_client.api.port(
-            self._container.id,
-            int(port),
-        )
+        result = self.docker_client.api.port(self._container.id, int(port))
         if not result:
             return None
-        return int(result[0]['HostPort'])
+        return int(result[0]["HostPort"])
 
 
 def generate_container_name():
@@ -381,4 +384,4 @@ def generate_container_name():
     while len(chars) < 6:
         new_chars = [chr(c) for c in six.iterbytes(os.urandom(6 - len(chars)))]
         chars += [c for c in new_chars if c in valid_chars]
-    return 'pytest-localstack-' + ''.join(chars)
+    return "pytest-localstack-" + "".join(chars)

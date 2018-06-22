@@ -11,7 +11,7 @@ def test_DockerLogTailer_stdout(docker_client, caplog):
     _do_DockerLogTailer_test(
         docker_client,
         caplog,
-        'echo foo && echo bar 1>&2',
+        "echo foo && echo bar 1>&2",
         logs=["foo"],
         does_not_log=["bar"],
         stdout=True,
@@ -24,7 +24,7 @@ def test_DockerLogTailer_stderr(docker_client, caplog):
     _do_DockerLogTailer_test(
         docker_client,
         caplog,
-        'echo foo && echo bar 1>&2',
+        "echo foo && echo bar 1>&2",
         logs=["bar"],
         does_not_log=["foo"],
         stdout=False,
@@ -37,33 +37,26 @@ def test_DockerLogTailer_both(docker_client, caplog):
     _do_DockerLogTailer_test(
         docker_client,
         caplog,
-        'echo foo && echo bar 1>&2',
+        "echo foo && echo bar 1>&2",
         logs=["foo", "bar"],
         stdout=True,
         stderr=True,
     )
 
 
-def _do_DockerLogTailer_test(docker_client, caplog, cmd, logs=(), does_not_log=(), **kwargs):
-    echo = docker_client.containers.run(
-        'busybox',
-        ["sh", '-c', cmd],
-        detach=True,
-    )
+def _do_DockerLogTailer_test(
+    docker_client, caplog, cmd, logs=(), does_not_log=(), **kwargs
+):
+    echo = docker_client.containers.run("busybox", ["sh", "-c", cmd], detach=True)
     try:
-        tailer = container.DockerLogTailer(
-            echo,
-            logger,
-            logging.INFO,
-            **kwargs
-        )
+        tailer = container.DockerLogTailer(echo, logger, logging.INFO, **kwargs)
         with caplog.at_level(logging.INFO, logger=logger.name):
             tailer.start()
             echo.wait(timeout=1)
             tailer.join(timeout=1)
         if tailer.is_alive():
             raise Exception("DockerLogTailer didn't stop")
-        if hasattr(tailer, 'exception'):
+        if hasattr(tailer, "exception"):
             raise tailer.exception
         for line in logs:
             assert (logger.name, logging.INFO, line) in caplog.record_tuples

@@ -16,13 +16,7 @@ import botocore.session
 
 import pytest
 
-from pytest_localstack import (
-    _make_session,
-    constants,
-    exceptions,
-    hookspecs,
-    utils,
-)
+from pytest_localstack import _make_session, constants, exceptions, hookspecs, utils
 from pytest_localstack.utils import mock
 
 logger = logging.getLogger(__name__)
@@ -31,14 +25,14 @@ logger = logging.getLogger(__name__)
 @hookspecs.pytest_localstack_hookimpl
 def contribute_to_session(session):
     """Add :class:`BotocoreTestResourceFactory` to :class:`.LocalstackSession`."""
-    logger.debug('patching session %r', session)
+    logger.debug("patching session %r", session)
     session.botocore = BotocoreTestResourceFactory(session)
 
 
 @hookspecs.pytest_localstack_hookimpl
 def contribute_to_module(pytest_localstack):
     """Add :func:`patch_fixture` to :mod:`pytest_localstack`."""
-    logger.debug('patching module %r', pytest_localstack)
+    logger.debug("patching module %r", pytest_localstack)
     pytest_localstack.patch_fixture = patch_fixture
 
 
@@ -52,7 +46,7 @@ class BotocoreTestResourceFactory(object):
     """
 
     def __init__(self, localstack_session):
-        logger.debug('BotocoreTestResourceFactory.__init__')
+        logger.debug("BotocoreTestResourceFactory.__init__")
         self.localstack_session = localstack_session
         self._default_session = None
 
@@ -69,11 +63,7 @@ class BotocoreTestResourceFactory(object):
         Arguments are the same as
         :meth:`botocore.session.Session.create_client`.
         """
-        return self.default_session.create_client(
-            service_name,
-            *args,
-            **kwargs
-        )
+        return self.default_session.create_client(service_name, *args, **kwargs)
 
     @property
     def default_session(self):
@@ -102,25 +92,25 @@ class BotocoreTestResourceFactory(object):
             def localstack_session(self):
                 # Simlate the 'localstack_session' attr from Session class below.
                 # Patch this into the botocore Session class.
-                if 'localstack_session' in self.__dict__:
+                if "localstack_session" in self.__dict__:
                     # We're patching this into the base botocore Session,
                     # but we don't want to override things for the Session
                     # subclass below.
-                    return self.__dict__['localstack_session']
+                    return self.__dict__["localstack_session"]
                 return factory.localstack_session
 
             @localstack_session.setter
             def localstack_session(self, value):
                 assert isinstance(self, Session)
-                self.__dict__['localstack_session'] = value
+                self.__dict__["localstack_session"] = value
 
             @property
             def _components(self):
                 if isinstance(self, Session):
                     try:
-                        return self.__dict__['_components']
+                        return self.__dict__["_components"]
                     except KeyError:
-                        raise AttributeError('_components')
+                        raise AttributeError("_components")
                 proxy_components = botocore.session.Session._proxy_components
                 if self not in proxy_components:
                     proxy_components[self] = botocore.session.ComponentLocator()
@@ -129,7 +119,7 @@ class BotocoreTestResourceFactory(object):
 
             @_components.setter
             def _components(self, value):
-                self.__dict__['_components'] = value
+                self.__dict__["_components"] = value
 
             @property
             def _credentials(self):
@@ -139,36 +129,48 @@ class BotocoreTestResourceFactory(object):
             def _credentials(self, value):
                 self._proxy_credentials[self] = value
 
-            patches.append(mock.patch.multiple(
-                'botocore.session.Session',
-                localstack_session=localstack_session,
-                _proxy_components=weakref.WeakKeyDictionary(),
-                _proxy_credentials=weakref.WeakKeyDictionary(),
-                _credentials=_credentials,
-                _components=_components,
-                create=True,
-            ))
-            patches.append(mock.patch.multiple(
-                botocore.session.Session,
-                _register_endpoint_resolver=utils.unbind(Session._register_endpoint_resolver),
-                _register_credential_provider=utils.unbind(Session._register_credential_provider),
-                create_client=utils.unbind(Session.create_client),
-            ))
+            patches.append(
+                mock.patch.multiple(
+                    "botocore.session.Session",
+                    localstack_session=localstack_session,
+                    _proxy_components=weakref.WeakKeyDictionary(),
+                    _proxy_credentials=weakref.WeakKeyDictionary(),
+                    _credentials=_credentials,
+                    _components=_components,
+                    create=True,
+                )
+            )
+            patches.append(
+                mock.patch.multiple(
+                    botocore.session.Session,
+                    _register_endpoint_resolver=utils.unbind(
+                        Session._register_endpoint_resolver
+                    ),
+                    _register_credential_provider=utils.unbind(
+                        Session._register_credential_provider
+                    ),
+                    create_client=utils.unbind(Session.create_client),
+                )
+            )
 
             # Step 2: Safety checks
             # Make absolutly sure we use Localstack and not AWS.
-            _original_convert_to_request_dict = botocore.client.BaseClient._convert_to_request_dict
+            _original_convert_to_request_dict = (
+                botocore.client.BaseClient._convert_to_request_dict
+            )
 
             @functools.wraps(_original_convert_to_request_dict)
             def _convert_to_request_dict(self, *args, **kwargs):
                 request_dict = _original_convert_to_request_dict(self, *args, **kwargs)
-                assert factory.localstack_session.hostname in request_dict['url']
+                assert factory.localstack_session.hostname in request_dict["url"]
                 return request_dict
 
-            patches.append(mock.patch(
-                'botocore.client.BaseClient._convert_to_request_dict',
-                _convert_to_request_dict,
-            ))
+            patches.append(
+                mock.patch(
+                    "botocore.client.BaseClient._convert_to_request_dict",
+                    _convert_to_request_dict,
+                )
+            )
 
             # Step 3: Patch existing clients
             # Patching botocore Session doesn't help with an existing
@@ -185,60 +187,64 @@ class BotocoreTestResourceFactory(object):
                 self._is_pytest_localstack = True
                 original_init(self, *args, **kwargs)
 
-            patches.append(mock.patch.multiple(
-                botocore.client.BaseClient,
-                __init__=new_init,
-            ))
+            patches.append(
+                mock.patch.multiple(botocore.client.BaseClient, __init__=new_init)
+            )
 
             # Create a place to store proxy clients.
-            patches.append(mock.patch(
-                'botocore.client.BaseClient._proxy_clients',
-                weakref.WeakKeyDictionary(),
-                create=True,
-            ))
+            patches.append(
+                mock.patch(
+                    "botocore.client.BaseClient._proxy_clients",
+                    weakref.WeakKeyDictionary(),
+                    create=True,
+                )
+            )
 
             def new_getattribute(self, key):
-                if key.startswith('__'):
+                if key.startswith("__"):
                     return object.__getattribute__(self, key)
                 proxied_keys = [
-                    '_cache',
-                    '_client_config',
-                    '_endpoint',
-                    '_exceptions_factory',
-                    '_exceptions',
-                    'exceptions',
-                    '_loader',
-                    '_request_signer',
-                    '_response_parser',
-                    '_serializer',
-                    'meta',
+                    "_cache",
+                    "_client_config",
+                    "_endpoint",
+                    "_exceptions_factory",
+                    "_exceptions",
+                    "exceptions",
+                    "_loader",
+                    "_request_signer",
+                    "_response_parser",
+                    "_serializer",
+                    "meta",
                 ]
-                __dict__ = object.__getattribute__(self, '__dict__')
-                if (__dict__.get('_is_pytest_localstack', False) or
-                        key not in proxied_keys):
+                __dict__ = object.__getattribute__(self, "__dict__")
+                if (
+                    __dict__.get("_is_pytest_localstack", False)
+                    or key not in proxied_keys
+                ):
                     # Don't proxy clients that are already Localstack clients
                     return object.__getattribute__(self, key)
                 if self not in botocore.client.BaseClient._proxy_clients:
                     try:
-                        meta = __dict__['meta']
+                        meta = __dict__["meta"]
                     except KeyError:
-                        raise AttributeError('meta')
+                        raise AttributeError("meta")
                     proxy = factory.default_session.create_client(
                         meta.service_model.service_name,
                         # config=config,
-                        config=__dict__['_client_config'],
+                        config=__dict__["_client_config"],
                     )
                     botocore.client.BaseClient._proxy_clients[self] = proxy
                 return object.__getattribute__(
-                    botocore.client.BaseClient._proxy_clients[self],
-                    key
+                    botocore.client.BaseClient._proxy_clients[self], key
                 )
 
-            patches.append(mock.patch(
-                'botocore.client.BaseClient.__getattribute__',
-                new_getattribute,
-                create=True,
-            ))
+            patches.append(
+                mock.patch(
+                    "botocore.client.BaseClient.__getattribute__",
+                    new_getattribute,
+                    create=True,
+                )
+            )
 
             with utils.nested(*patches):
                 yield
@@ -246,19 +252,21 @@ class BotocoreTestResourceFactory(object):
             logger.debug("exit patch")
 
 
-def patch_fixture(scope='function',
-                  services=None,
-                  autouse=False,
-                  docker_client=None,
-                  region_name=constants.DEFAULT_AWS_REGION,
-                  kinesis_error_probability=0.0,
-                  dynamodb_error_probability=0.0,
-                  container_log_level=logging.DEBUG,
-                  localstack_verison='latest',
-                  auto_remove=True,
-                  pull_image=True,
-                  container_name=None,
-                  **kwargs):
+def patch_fixture(
+    scope="function",
+    services=None,
+    autouse=False,
+    docker_client=None,
+    region_name=constants.DEFAULT_AWS_REGION,
+    kinesis_error_probability=0.0,
+    dynamodb_error_probability=0.0,
+    container_log_level=logging.DEBUG,
+    localstack_verison="latest",
+    auto_remove=True,
+    pull_image=True,
+    container_name=None,
+    **kwargs
+):
     """Create a pytest fixture that temporarially redirects all botocore
     sessions and clients to a Localstack container.
 
@@ -314,20 +322,22 @@ def patch_fixture(scope='function',
         A :func:`pytest fixture <_pytest.fixtures.fixture>`.
 
     """
+
     @pytest.fixture(scope=scope, autouse=autouse)
     def _fixture():
         with _make_session(
-                docker_client=docker_client,
-                services=services,
-                region_name=region_name,
-                kinesis_error_probability=kinesis_error_probability,
-                dynamodb_error_probability=dynamodb_error_probability,
-                container_log_level=container_log_level,
-                localstack_verison=localstack_verison,
-                auto_remove=auto_remove,
-                pull_image=pull_image,
-                container_name=container_name,
-                **kwargs) as session:
+            docker_client=docker_client,
+            services=services,
+            region_name=region_name,
+            kinesis_error_probability=kinesis_error_probability,
+            dynamodb_error_probability=dynamodb_error_probability,
+            container_log_level=container_log_level,
+            localstack_verison=localstack_verison,
+            auto_remove=auto_remove,
+            pull_image=pull_image,
+            container_name=container_name,
+            **kwargs
+        ) as session:
             with session.botocore.patch_botocore():
                 yield session
 
@@ -347,29 +357,27 @@ class Session(botocore.session.Session):
 
     def _register_endpoint_resolver(self):
         def create_default_resolver():
-            loader = self.get_component('data_loader')
-            endpoints = loader.load_data('endpoints')
-            return LocalstackEndpointResolver(
-                self.localstack_session,
-                endpoints,
-            )
+            loader = self.get_component("data_loader")
+            endpoints = loader.load_data("endpoints")
+            return LocalstackEndpointResolver(self.localstack_session, endpoints)
+
         self._components.lazy_register_component(
-            'endpoint_resolver', create_default_resolver)
+            "endpoint_resolver", create_default_resolver
+        )
 
     def _register_credential_provider(self):
         self._components.lazy_register_component(
-            'credential_provider',
-            create_credential_resolver
+            "credential_provider", create_credential_resolver
         )
 
     def create_client(self, *args, **kwargs):
         """Create a botocore client."""
         # Localstack doesn't use the virtual host addressing style.
-        config = botocore.config.Config(s3={'addressing_style': 'path'})
+        config = botocore.config.Config(s3={"addressing_style": "path"})
         callargs = inspect.getcallargs(_original_create_client, self, *args, **kwargs)
-        if callargs.get('config'):
-            config = callargs['config'].merge(config)
-        callargs['config'] = config
+        if callargs.get("config"):
+            config = callargs["config"].merge(config)
+        callargs["config"] = config
 
         client = _original_create_client(**callargs)
         client._is_pytest_localstack = True
@@ -380,17 +388,16 @@ def create_credential_resolver():
     """Create a credentials resolver for Localstack."""
     env_provider = botocore.credentials.EnvProvider()
     default = DefaultCredentialProvider()
-    resolver = botocore.credentials.CredentialResolver(providers=[
-        env_provider,
-        default,
-    ])
+    resolver = botocore.credentials.CredentialResolver(
+        providers=[env_provider, default]
+    )
     return resolver
 
 
 class DefaultCredentialProvider(botocore.credentials.CredentialProvider):
     """Provide some default credentials for Localstack clients."""
 
-    METHOD = 'localstack-default'
+    METHOD = "localstack-default"
 
     def load(self):
         """Return credentials."""
@@ -412,27 +419,27 @@ class LocalstackEndpointResolver(botocore.regions.EndpointResolver):
     @property
     def valid_regions(self):
         """Return a list of regions we can resolve endpoints for."""
-        return set([self.localstack_session.region_name, 'aws-global'])
+        return set([self.localstack_session.region_name, "aws-global"])
 
     def get_available_partitions(self):
         """List the partitions available to the endpoint resolver."""
-        return ['aws']
+        return ["aws"]
 
-    def get_available_endpoints(self, service_name, partition_name='aws',
-                                allow_non_regional=False):
+    def get_available_endpoints(
+        self, service_name, partition_name="aws", allow_non_regional=False
+    ):
         """List the endpoint names of a particular partition."""
-        if partition_name != 'aws':
+        if partition_name != "aws":
             raise exceptions.UnsupportedPartitionError(partition_name)
         result = []
-        for partition in self._endpoint_data['partitions']:
-            if partition['partition'] != 'aws':
+        for partition in self._endpoint_data["partitions"]:
+            if partition["partition"] != "aws":
                 continue
-            services = partition['services']
+            services = partition["services"]
             if service_name not in services:
                 continue
-            for endpoint_name in services[service_name]['endpoints']:
-                if allow_non_regional or \
-                        endpoint_name in self.valid_regions:
+            for endpoint_name in services[service_name]["endpoints"]:
+                if allow_non_regional or endpoint_name in self.valid_regions:
                     result.append(endpoint_name)
         return result
 
@@ -442,26 +449,20 @@ class LocalstackEndpointResolver(botocore.regions.EndpointResolver):
             region_name = self.localstack_session.region_name
         elif region_name not in self.valid_regions:
             raise exceptions.RegionError(
-                region_name,
-                self.localstack_session.region_name,
+                region_name, self.localstack_session.region_name
             )
-        for partition in self._endpoint_data['partitions']:
-            if partition['partition'] != 'aws':
+        for partition in self._endpoint_data["partitions"]:
+            if partition["partition"] != "aws":
                 continue
-            result = self._endpoint_for_partition(
-                partition,
-                service_name,
-                region_name,
-            )
+            result = self._endpoint_for_partition(partition, service_name, region_name)
             if result:
-                result['hostname'] = self.localstack_session.service_hostname(
-                    service_name,
+                result["hostname"] = self.localstack_session.service_hostname(
+                    service_name
                 )
-                result['protocols'] = (
-                    result['protocols'] if self.localstack_session.use_ssl
-                    else ['http']
+                result["protocols"] = (
+                    result["protocols"] if self.localstack_session.use_ssl else ["http"]
                 )
                 if not self.localstack_session.use_ssl:
-                    result.pop('sslCommonName', None)
-                result['dnsSuffix'] = self.localstack_session.hostname
+                    result.pop("sslCommonName", None)
+                result["dnsSuffix"] = self.localstack_session.hostname
                 return result

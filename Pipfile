@@ -7,12 +7,9 @@ name = "pypi"
 "e1839a8" = {path = ".", extras = ["test"], editable = true}
 
 [dev-packages]
-docutils = "*"
+black = "*"
 bumpversion = "*"
-"flake8" = "*"
-"flake8-debugger" = "*"
-"flake8-docstrings" = "*"
-"flake8-isort" = "*"
+docutils = "*"
 isort = "*"
 pygments = "*"
 recommonmark = "*"
@@ -20,3 +17,6 @@ sphinx = "*"
 sphinx-autobuild = "*"
 twine = "*"
 wheel = "*"
+
+[pipenv]
+allow_prereleases = true

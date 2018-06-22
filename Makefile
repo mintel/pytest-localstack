@@ -12,6 +12,7 @@ TBOLD := $(shell tput bold)
 TGREEN := $(shell tput setaf 2)
 TRED := $(shell tput setaf 1)
 
+BLACK_TARGETS := $(shell find . -name "*.py" -not -path "*/.venv/*")
 
 
 help:  ## print this help
@@ -36,17 +37,9 @@ test: $(VIRTUALENV)  ## run tests
 
 
 lint: $(VIRTUALENV)  ## check code style
-	@$(PIPENV) check
-
-	@echo "$(TBOLD)Checking code style…$(T)"
-	@if $(PIPENV_RUN) flake8; then \
-		echo "$(TGREEN)OK!$(T)"; \
-	else \
-		echo "$(TRED)ERROR!$(T)"; \
-	fi
-
-	@echo "$(TBOLD)Checking test style…$(T)"
-	@if $(PIPENV_RUN) flake8 --config tests/.flake8 tests/; then \
+	$(PIPENV) check
+	@echo "$(TBOLD)Checking style style…$(T)"
+	@if $(PIPENV_RUN) black --check $(BLACK_TARGETS); then \
 		echo "$(TGREEN)OK!$(T)"; \
 	else \
 		echo "$(TRED)ERROR!$(T)"; \
@@ -61,9 +54,10 @@ lint: $(VIRTUALENV)  ## check code style
 .PHONY: lint
 
 
-isort: $(VIRTUALENV)  ## sort import statements
-	$(PIPENV_RUN) isort
-.PHONY: isort
+fmt: $(VIRTUALENV)  ## apply code style formatting
+	$(PIPENV_RUN) isort --apply
+	$(PIPENV_RUN) black $(BLACK_TARGETS)
+.PHONY: fmt
 
 
 docs: $(VIRTUALENV)
