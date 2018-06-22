@@ -29,6 +29,10 @@ def test_create_credential_resolver():
     assert isinstance(resolver, botocore.credentials.CredentialResolver)
 
 
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
 @pytest.mark.parametrize('region_name', test_utils.AWS_REGIONS)
 @pytest.mark.parametrize('not_region_name', test_utils.AWS_REGIONS)
 @pytest.mark.parametrize(
@@ -39,12 +43,12 @@ def test_create_credential_resolver():
     ),
 )
 def test_LocalstackEndpointResolver(region_name, not_region_name,
-                                    service_alias):
+                                    service_alias, make_test_session):
     """Test pytest_localstack.botocore.LocalstackEndpointResolver."""
     if region_name == not_region_name:
         pytest.skip("Should not be equal.")
     service_name = constants.SERVICE_ALIASES.get(service_alias, service_alias)
-    localstack = test_utils.make_test_LocalstackSession(
+    localstack = make_test_session(
         region_name=region_name,
         use_ssl=False,
     )
@@ -67,9 +71,10 @@ def test_LocalstackEndpointResolver(region_name, not_region_name,
     result.discard('aws-global')
     assert not result
 
-    # Can't construct endpoints until the container is started.
-    with pytest.raises(exceptions.ContainerNotStartedError):
-        result = resolver.construct_endpoint(service_alias)
+    if hasattr(localstack, '_container'):
+        # Can't construct endpoints until the container is started.
+        with pytest.raises(exceptions.ContainerNotStartedError):
+            result = resolver.construct_endpoint(service_alias)
 
     with localstack:  # Start container.
         with pytest.raises(exceptions.RegionError):
@@ -87,22 +92,27 @@ def test_LocalstackEndpointResolver(region_name, not_region_name,
         assert result['protocols'] == ['http']
 
 
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
 @pytest.mark.parametrize('region_name', test_utils.AWS_REGIONS)
 @pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
-def test_session(region_name, service_name):
+def test_session(region_name, service_name, make_test_session):
     """Test Session creation."""
-    localstack = test_utils.make_test_LocalstackSession(
+    localstack = make_test_session(
         region_name=region_name,
     )
 
     ls_session = localstack.botocore.session()
     assert isinstance(ls_session, localstack_botocore.Session)
 
-    with pytest.raises(exceptions.ContainerNotStartedError):
-        # Can't create clients until the container is started,
-        # because the client needs to know what port its
-        # target service is running on.
-        bc_client = ls_session.create_client(service_name, localstack.region_name)
+    if hasattr(localstack, '_container'):
+        with pytest.raises(exceptions.ContainerNotStartedError):
+            # Can't create clients until the container is started,
+            # because the client needs to know what port its
+            # target service is running on.
+            bc_client = ls_session.create_client(service_name, localstack.region_name)
 
     with localstack:  # Start container.
         bc_client = ls_session.create_client(service_name, localstack.region_name)
@@ -110,16 +120,21 @@ def test_session(region_name, service_name):
         assert '127.0.0.1' in bc_client._endpoint.host
 
 
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
 @pytest.mark.parametrize('region_name', test_utils.AWS_REGIONS)
 @pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
-def test_client(region_name, service_name):
+def test_client(region_name, service_name, make_test_session):
     """Test Client creation."""
-    localstack = test_utils.make_test_LocalstackSession(
+    localstack = make_test_session(
         region_name=region_name,
     )
 
-    with pytest.raises(exceptions.ContainerNotStartedError):
-        bc_client = localstack.botocore.client(service_name, localstack.region_name)
+    if hasattr(localstack, '_container'):
+        with pytest.raises(exceptions.ContainerNotStartedError):
+            bc_client = localstack.botocore.client(service_name, localstack.region_name)
 
     with localstack:  # Start container.
         bc_client = localstack.botocore.client(service_name, localstack.region_name)
@@ -127,10 +142,14 @@ def test_client(region_name, service_name):
         assert '127.0.0.1' in bc_client._endpoint.host
 
 
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
 @pytest.mark.parametrize('region_name', test_utils.AWS_REGIONS)
-def test_default_session(region_name):
+def test_default_session(region_name, make_test_session):
     """Test default session."""
-    localstack = test_utils.make_test_LocalstackSession(
+    localstack = make_test_session(
         region_name=region_name,
     )
     session_1 = localstack.botocore.default_session
@@ -138,11 +157,15 @@ def test_default_session(region_name):
     assert session_1 is session_2
 
 
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
 @pytest.mark.parametrize('region_name', test_utils.AWS_REGIONS)
 @pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
-def test_patch(region_name, service_name):
+def test_patch(region_name, service_name, make_test_session):
     """Test patching."""
-    localstack = test_utils.make_test_LocalstackSession(
+    localstack = make_test_session(
         region_name=region_name,
     )
 
@@ -181,12 +204,16 @@ def test_patch(region_name, service_name):
         assert '127.0.0.1' in ls_client._endpoint.host
 
 
-def test_exceptions_populated():
+@pytest.mark.parametrize('make_test_session', [
+    test_utils.make_test_LocalstackSession,
+    test_utils.make_test_RunningSession,
+])
+def test_exceptions_populated(make_test_session):
     """Patched botocore clients populated `exceptions` correctly."""
     botocore_session = botocore.session.get_session()
     botocore_client = botocore_session.create_client('s3')
 
-    localstack = test_utils.make_test_LocalstackSession()
+    localstack = make_test_session()
 
     assert botocore_client._exceptions is None
 

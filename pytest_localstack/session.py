@@ -17,7 +17,147 @@ from pytest_localstack import (
 logger = logging.getLogger(__name__)
 
 
-class LocalstackSession(object):
+class RunningSession(object):
+    """Connects to an already running localstack server"""
+
+    def __init__(self, hostname,
+                 services=None,
+                 region_name=constants.DEFAULT_AWS_REGION,
+                 use_ssl=False,
+                 **kwargs):
+
+        self.kwargs = kwargs
+        self.use_ssl = use_ssl
+        self.region_name = region_name
+        self._hostname = hostname
+
+        plugin.manager.hook.contribute_to_session(session=self)
+
+        if services is None:
+            self.services = dict(constants.SERVICE_PORTS)
+        elif isinstance(services, (list, tuple, set)):
+            self.services = {}
+            for service_name in services:
+                try:
+                    port = constants.SERVICE_PORTS[service_name]
+                except KeyError:
+                    raise exceptions.ServiceError("unknown service " + service_name)
+                self.services[service_name] = port
+        elif isinstance(services, dict):
+            self.services = {}
+            for service_name, port in services.items():
+                if service_name not in constants.SERVICE_PORTS:
+                    raise exceptions.ServiceError("unknown service " + service_name)
+                if port is None:
+                    port = constants.SERVICE_PORTS[service_name]
+                self.services[service_name] = port
+        else:
+            raise TypeError('unsupported services type: %r' % (services,))
+
+    @property
+    def hostname(self):
+        """Return hostname of Localstack."""
+        return self._hostname
+
+    @property
+    def service_aliases(self):
+        """Return a full list of possible names supported."""
+        services = set(self.services)
+        result = set()
+        for alias, service_name in constants.SERVICE_ALIASES.items():
+            if service_name in services:
+                result.add(service_name)
+                result.add(alias)
+        return result
+
+    def start(self, timeout=60):
+        """Starts Localstack if needed."""
+        plugin.manager.hook.session_starting(session=self)
+
+        self._check_services(timeout)
+        plugin.manager.hook.session_started(session=self)
+
+    def _check_services(self, timeout, initial_retry_delay=0.01, max_delay=1):
+        """Check that all Localstack services are running and accessible.
+
+        Does exponential backoff up to `max_delay`.
+
+        Args:
+            timeout (float): Number of seconds to wait for services to
+                be available.
+            initial_retry_delay (float, optional): Initial retry delay value
+                in seconds. Will be multiplied by `2^n` for each retry.
+                Default: 0.01
+            max_delay (float, optional): Max time in seconds to wait between
+                checking service availability. Default: 1
+
+        Returns:
+            None
+
+        Raises:
+            pytest_localstack.exceptions.TimeoutError: If not all services
+                started before `timeout` was reached.
+
+        """
+        services = set(self.services)
+        num_retries = 0
+        start_time = time.time()
+        while services and (time.time() - start_time) < timeout:
+            for service_name in list(services):  # list() because set may change during iteration
+                try:
+                    service_checks.SERVICE_CHECKS[service_name](self)
+                    services.discard(service_name)
+                except exceptions.ServiceError:
+                    pass
+            if services:
+                delay = (2 ** num_retries) * initial_retry_delay
+                if delay > max_delay:
+                    delay = max_delay
+                    time.sleep(delay)
+                    num_retries += 1
+        if services:
+            services = list(services)
+            raise exceptions.TimeoutError(
+                "Localstack services not started: {0!r}".format(services)
+            )
+
+    def stop(self, timeout=10):
+        """Stops Localstack."""
+        plugin.manager.hook.session_stopping(session=self)
+        plugin.manager.hook.session_stopped(session=self)
+
+    def __enter__(self, start_timeout=constants.DEFAULT_CONTAINER_START_TIMEOUT,
+                  stop_timeout=constants.DEFAULT_CONTAINER_STOP_TIMEOUT):
+        self.__stop_timeout = stop_timeout
+        self.start(timeout=start_timeout)
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        timeout = getattr(self, '__stop_timeout', constants.DEFAULT_CONTAINER_STOP_TIMEOUT)
+        self.stop(timeout=timeout)
+
+    def map_port(self, port):
+        """Return host port based on Localstack port."""
+        return port
+
+    def service_hostname(self, service_name):
+        """Get hostname and port for an AWS service."""
+        service_name = constants.SERVICE_ALIASES.get(service_name, service_name)
+        if service_name not in self.services:
+            raise exceptions.ServiceError(
+                "{0!r} does not have {1} enabled".format(self, service_name),
+            )
+        port = self.map_port(self.services[service_name])
+        return '%s:%i' % (self.hostname, port)
+
+    def endpoint_url(self, service_name):
+        """Get the URL for a service endpoint."""
+        url = ('https' if self.use_ssl else 'http') + '://'
+        url += self.service_hostname(service_name)
+        return url
+
+
+class LocalstackSession(RunningSession):
     """Run a localstack Docker container.
 
     This class can start and stop a Localstack container, as well as capture
@@ -83,8 +223,6 @@ class LocalstackSession(object):
                  container_name=None,
                  use_ssl=False,
                  **kwargs):
-        self.kwargs = kwargs
-        self.use_ssl = use_ssl
         self._container = None
         self._factory_cache = {}
 
@@ -95,51 +233,17 @@ class LocalstackSession(object):
         self.auto_remove = bool(auto_remove)
         self.pull_image = bool(pull_image)
 
-        plugin.manager.hook.contribute_to_session(session=self)
-
-        if services is None:
-            self.services = dict(constants.SERVICE_PORTS)
-        elif isinstance(services, (list, tuple, set)):
-            self.services = {}
-            for service_name in services:
-                try:
-                    port = constants.SERVICE_PORTS[service_name]
-                except KeyError:
-                    raise exceptions.ServiceError("unknown service " + service_name)
-                self.services[service_name] = port
-        elif isinstance(services, dict):
-            self.services = {}
-            for service_name, port in services.items():
-                if service_name not in constants.SERVICE_PORTS:
-                    raise exceptions.ServiceError("unknown service " + service_name)
-                if port is None:
-                    port = constants.SERVICE_PORTS[service_name]
-                self.services[service_name] = port
-        else:
-            raise TypeError('unsupported services type: %r' % (services,))
+        super(LocalstackSession, self).__init__(
+            hostname=constants.LOCALHOST,
+            services=services,
+            region_name=region_name,
+            use_ssl=use_ssl,
+            **kwargs
+        )
 
         self.container_log_level = container_log_level
         self.localstack_verison = localstack_verison
         self.container_name = container_name or generate_container_name()
-
-    @property
-    def hostname(self):
-        """Return hostname for Localstack container.
-
-        Currently only supports locally running containers.
-        """
-        return '127.0.0.1'
-
-    @property
-    def service_aliases(self):
-        """Return a full list of possible names supported."""
-        services = set(self.services)
-        result = set()
-        for alias, service_name in constants.SERVICE_ALIASES.items():
-            if service_name in services:
-                result.add(service_name)
-                result.add(alias)
-        return result
 
     def start(self, timeout=60):
         """Start the Localstack container.
@@ -228,50 +332,6 @@ class LocalstackSession(object):
                 self.stop(0.1)
             raise
 
-    def _check_services(self, timeout, initial_retry_delay=0.01, max_delay=1):
-        """Check that all Localstack services are running and accessible.
-
-        Does exponential backoff up to `max_delay`.
-
-        Args:
-            timeout (float): Number of seconds to wait for services to
-                be available.
-            initial_retry_delay (float, optional): Initial retry delay value
-                in seconds. Will be multiplied by `2^n` for each retry.
-                Default: 0.01
-            max_delay (float, optional): Max time in seconds to wait between
-                checking service availability. Default: 1
-
-        Returns:
-            None
-
-        Raises:
-            pytest_localstack.exceptions.TimeoutError: If not all services
-                started before `timeout` was reached.
-
-        """
-        services = set(self.services)
-        num_retries = 0
-        start_time = time.time()
-        while services and (time.time() - start_time) < timeout:
-            for service_name in list(services):  # list() because set may change during iteration
-                try:
-                    service_checks.SERVICE_CHECKS[service_name](self)
-                    services.discard(service_name)
-                except exceptions.ServiceError:
-                    pass
-            if services:
-                delay = (2 ** num_retries) * initial_retry_delay
-                if delay > max_delay:
-                    delay = max_delay
-                    time.sleep(delay)
-                    num_retries += 1
-        if services:
-            services = list(services)
-            raise exceptions.TimeoutError(
-                "Localstack services not started: {0!r}".format(services)
-            )
-
     def stop(self, timeout=10):
         """Stop the Localstack container.
 
@@ -301,16 +361,6 @@ class LocalstackSession(object):
         """Stop container on garbage collection."""
         self.stop(0.1)
 
-    def __enter__(self, start_timeout=constants.DEFAULT_CONTAINER_START_TIMEOUT,
-                  stop_timeout=constants.DEFAULT_CONTAINER_STOP_TIMEOUT):
-        self.__stop_timeout = stop_timeout
-        self.start(timeout=start_timeout)
-        return self
-
-    def __exit__(self, exc_type, exc, tb):
-        timeout = getattr(self, '__stop_timeout', constants.DEFAULT_CONTAINER_STOP_TIMEOUT)
-        self.stop(timeout=timeout)
-
     def map_port(self, port):
         """Return host port based on Localstack container port."""
         if self._container is None:
@@ -322,22 +372,6 @@ class LocalstackSession(object):
         if not result:
             return None
         return int(result[0]['HostPort'])
-
-    def service_hostname(self, service_name):
-        """Get hostname and port for an AWS service."""
-        service_name = constants.SERVICE_ALIASES.get(service_name, service_name)
-        if service_name not in self.services:
-            raise exceptions.ServiceError(
-                "{0!r} does not have {1} enabled".format(self, service_name),
-            )
-        port = self.map_port(self.services[service_name])
-        return '%s:%i' % (self.hostname, port)
-
-    def endpoint_url(self, service_name):
-        """Get the URL for a service endpoint."""
-        url = ('https' if self.use_ssl else 'http') + '://'
-        url += self.service_hostname(service_name)
-        return url
 
 
 def generate_container_name():

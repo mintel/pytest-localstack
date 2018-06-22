@@ -80,3 +80,16 @@ def make_test_LocalstackSession(*args, **kwargs):
     )
 
     return test_session
+
+
+def make_test_RunningSession(*args, **kwargs):
+    """Make a test RunningSession that isn't actually connected to Localstack."""
+    test_session = session.RunningSession('127.0.0.1', *args, **kwargs)
+
+    test_session._check_services = mock.Mock(
+        return_value=None,
+        __name__=test_session._check_services.__name__,
+        __code__=test_session._check_services.__code__,
+    )
+
+    return test_session

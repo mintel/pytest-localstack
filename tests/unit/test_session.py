@@ -62,6 +62,26 @@ def test_LocalstackSession_service_hostname(service_name, not_service_name):
     assert result == '127.0.0.1:%i' % (constants.SERVICE_PORTS[service_name])
 
 
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
+@pytest.mark.parametrize('not_service_name', sorted(constants.SERVICE_PORTS.keys()))
+def test_RunningSession_service_hostname(service_name, not_service_name):
+    """Test pytest_localstack.session.RunningSession.service_hostname."""
+    if service_name == not_service_name:
+        pytest.skip("should not be equal")
+
+    test_session = test_utils.make_test_RunningSession(
+        services=[service_name],
+    )
+
+    with pytest.raises(exceptions.ServiceError):
+        test_session.service_hostname(not_service_name)
+
+    result = test_session.service_hostname(service_name)
+
+    # see tests.utils.make_mock_docker_client()
+    assert result == '127.0.0.1:%i' % (constants.SERVICE_PORTS[service_name])
+
+
 @pytest.mark.parametrize('use_ssl', [(True,), (False,)])
 @pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
 @pytest.mark.parametrize('not_service_name', sorted(constants.SERVICE_PORTS.keys()))
@@ -79,6 +99,31 @@ def test_LocalstackSession_endpoint_url(use_ssl, service_name, not_service_name)
         test_session.endpoint_url(service_name)
 
     test_session.start()
+
+    with pytest.raises(exceptions.ServiceError):
+        test_session.endpoint_url(not_service_name)
+
+    result = test_session.endpoint_url(service_name)
+    if test_session.use_ssl:
+        # see tests.utils.make_mock_docker_client()
+        assert result == 'https://127.0.0.1:%i' % (constants.SERVICE_PORTS[service_name])
+    else:
+        # see tests.utils.make_mock_docker_client()
+        assert result == 'http://127.0.0.1:%i' % (constants.SERVICE_PORTS[service_name])
+
+
+@pytest.mark.parametrize('use_ssl', [(True,), (False,)])
+@pytest.mark.parametrize('service_name', sorted(constants.SERVICE_PORTS.keys()))
+@pytest.mark.parametrize('not_service_name', sorted(constants.SERVICE_PORTS.keys()))
+def test_RunningSession_endpoint_url(use_ssl, service_name, not_service_name):
+    """Test pytest_localstack.session.RunningSession.endpoint_url."""
+    if service_name == not_service_name:
+        pytest.skip("should not be equal")
+
+    test_session = test_utils.make_test_RunningSession(
+        services=[service_name],
+        use_ssl=use_ssl,
+    )
 
     with pytest.raises(exceptions.ServiceError):
         test_session.endpoint_url(not_service_name)
