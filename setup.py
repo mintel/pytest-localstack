@@ -51,7 +51,7 @@ def setup_package():
         extras_require={"test": TEST_REQUIREMENTS},
         cmdclass={"test": PyTest},
         zip_safe=True,
-        classifiers=(
+        classifiers=[
             "Development Status :: 4 - Beta",
             "Framework :: Pytest",
             "Intended Audience :: Developers",
@@ -68,7 +68,7 @@ def setup_package():
             "Topic :: Software Development :: Libraries",
             "Topic :: Software Development :: Testing",
             "Topic :: Utilities",
-        ),
+        ],
         entry_points={"pytest11": ["pytest-localstack = pytest_localstack"]},
     )
 
