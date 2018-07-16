@@ -2,7 +2,7 @@
 import os
 
 import pytest
-from hypothesis import assume, given, strategies as st
+from hypothesis import assume, given, settings, strategies as st
 
 from pytest_localstack import utils
 
@@ -26,6 +26,7 @@ def _set_env_var(name, value):
     no_proxy=st.sampled_from([None, "localhost,127.0.0.1", "localhost", "foobar"]),
     NO_PROXY=st.sampled_from([None, "localhost,127.0.0.1", "localhost", "foobar"]),
 )
+@settings(deadline=1000)
 def test_check_proxy_env_vars(
     http_proxy, https_proxy, HTTP_PROXY, HTTPS_PROXY, no_proxy, NO_PROXY
 ):
