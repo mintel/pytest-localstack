@@ -88,6 +88,8 @@ class BotocoreTestResourceFactory(object):
             patches = []
 
             # Step 1: patch botocore Session to use Localstack.
+            attr = {}
+
             @property
             def localstack_session(self):
                 # Simlate the 'localstack_session' attr from Session class below.
@@ -103,6 +105,8 @@ class BotocoreTestResourceFactory(object):
             def localstack_session(self, value):
                 assert isinstance(self, Session)
                 self.__dict__["localstack_session"] = value
+
+            attr["localstack_session"] = localstack_session
 
             @property
             def _components(self):
@@ -121,6 +125,14 @@ class BotocoreTestResourceFactory(object):
             def _components(self, value):
                 self.__dict__["_components"] = value
 
+            attr.update(
+                {
+                    "_components": _components,
+                    "_internal_components": _components,  # This probably isn't the best way to handle _internal_components, but w/e
+                    "_proxy_components": weakref.WeakKeyDictionary(),
+                }
+            )
+
             @property
             def _credentials(self):
                 return self._proxy_credentials.get(self)
@@ -129,16 +141,15 @@ class BotocoreTestResourceFactory(object):
             def _credentials(self, value):
                 self._proxy_credentials[self] = value
 
+            attr.update(
+                {
+                    "_credentials": _credentials,
+                    "_proxy_credentials": weakref.WeakKeyDictionary(),
+                }
+            )
+
             patches.append(
-                mock.patch.multiple(
-                    "botocore.session.Session",
-                    localstack_session=localstack_session,
-                    _proxy_components=weakref.WeakKeyDictionary(),
-                    _proxy_credentials=weakref.WeakKeyDictionary(),
-                    _credentials=_credentials,
-                    _components=_components,
-                    create=True,
-                )
+                mock.patch.multiple("botocore.session.Session", create=True, **attr)
             )
             patches.append(
                 mock.patch.multiple(
@@ -361,9 +372,14 @@ class Session(botocore.session.Session):
             endpoints = loader.load_data("endpoints")
             return LocalstackEndpointResolver(self.localstack_session, endpoints)
 
-        self._components.lazy_register_component(
-            "endpoint_resolver", create_default_resolver
-        )
+        if constants.BOTOCORE_VERSION >= (1, 10, 58):
+            self._internal_components.lazy_register_component(
+                "endpoint_resolver", create_default_resolver
+            )
+        else:
+            self._components.lazy_register_component(
+                "endpoint_resolver", create_default_resolver
+            )
 
     def _register_credential_provider(self):
         self._components.lazy_register_component(

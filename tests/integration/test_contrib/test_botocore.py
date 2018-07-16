@@ -49,7 +49,12 @@ def test_LocalstackEndpointResolver(
     localstack = make_test_session(region_name=region_name, use_ssl=False)
 
     # Is the correct type.
-    resolver = localstack.botocore.session().get_component("endpoint_resolver")
+    if constants.BOTOCORE_VERSION >= (1, 10, 58):
+        resolver = localstack.botocore.session()._get_internal_component(
+            "endpoint_resolver"
+        )
+    else:
+        resolver = localstack.botocore.session().get_component("endpoint_resolver")
     assert isinstance(resolver, localstack_botocore.LocalstackEndpointResolver)
     assert isinstance(resolver, botocore.regions.EndpointResolver)
 
