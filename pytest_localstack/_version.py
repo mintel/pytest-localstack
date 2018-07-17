@@ -1,6 +1,6 @@
 # noqa
 __title__ = "pytest-localstack"
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __summary__ = "Pytest plugin for AWS integration tests"
 __author__ = "Jaye Doepke"
 __author_email__ = "jdoepke@mintel.com"
