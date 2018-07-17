@@ -7,8 +7,8 @@ name = "pypi"
 "e1839a8" = {path = ".", extras = ["test"], editable = true}
 
 [dev-packages]
+advbumpversion = "*"
 black = "*"
-bumpversion = "*"
 docutils = "*"
 isort = "*"
 pygments = "*"
