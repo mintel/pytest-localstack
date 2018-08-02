@@ -12,7 +12,7 @@ REQUIRES = [
     'contextlib2; python_version < "3.3"',
     "docker",
     'mock; python_version < "3.3"',
-    "pluggy>=0.6.0,<0.7.0",
+    "pluggy>=0.6.0",
     "pytest>=3.3.0",  # need caplog (+ warnings for tests)
     "six",
 ]
