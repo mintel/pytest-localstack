@@ -1,8 +1,10 @@
 Change Log
 ==========
 
-0.1.4 (unreleased)
+0.1.4 (2018-08-03)
 ------------------
+
+- Fix pinned install requirements conflict between pytest and pluggy.
 
 0.1.3 (2018-07-17)
 ------------------
