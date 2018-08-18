@@ -1,8 +1,10 @@
 Change Log
 ==========
 
-0.1.5 (Unreleased)
+0.1.5 (2018-08-17)
 ------------------
+
+- Fix a bug involving our patched botocore Session trying to access `_internal_components` and getting `_components` instead.
 
 0.1.4 (2018-08-03)
 ------------------
