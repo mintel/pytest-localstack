@@ -125,10 +125,27 @@ class BotocoreTestResourceFactory(object):
             def _components(self, value):
                 self.__dict__["_components"] = value
 
+            @property
+            def _internal_components(self):
+                if isinstance(self, Session):
+                    try:
+                        return self.__dict__["_internal_components"]
+                    except KeyError:
+                        raise AttributeError("_internal_components")
+                proxy_components = botocore.session.Session._proxy_components
+                if self not in proxy_components:
+                    proxy_components[self] = DebugComponentLocator()
+                    self._register_components()
+                return proxy_components[self]
+
+            @_internal_components.setter
+            def _internal_components(self, value):
+                self.__dict__["_internal_components"] = value
+
             attr.update(
                 {
                     "_components": _components,
-                    "_internal_components": _components,  # This probably isn't the best way to handle _internal_components, but w/e
+                    "_internal_components": _internal_components,
                     "_proxy_components": weakref.WeakKeyDictionary(),
                 }
             )
