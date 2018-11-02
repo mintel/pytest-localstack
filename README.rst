@@ -70,6 +70,24 @@ Example
         bucket.create()
         assert len(list(s3.buckets.all())) == 1
 
+Services
+--------
+* apigateway
+* cloudformation
+* cloudwatch
+* dynamodb
+* dynamodbstreams
+* es
+* firehose
+* kinesis
+* lambda
+* redshift
+* route53
+* s3
+* ses
+* sns
+* ssm
+* sqs
 
 Installation
 ------------
