@@ -47,7 +47,10 @@ def test_DockerLogTailer_both(docker_client, caplog):
 def _do_DockerLogTailer_test(
     docker_client, caplog, cmd, logs=(), does_not_log=(), **kwargs
 ):
-    echo = docker_client.containers.run("busybox", ["sh", "-c", cmd], detach=True)
+    docker_client.images.pull("busybox", "latest")
+    echo = docker_client.containers.run(
+        "busybox:latest", command=["sh", "-c", cmd], detach=True
+    )
     try:
         tailer = container.DockerLogTailer(echo, logger, logging.INFO, **kwargs)
         with caplog.at_level(logging.INFO, logger=logger.name):
