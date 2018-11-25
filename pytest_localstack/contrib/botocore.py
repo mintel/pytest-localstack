@@ -82,6 +82,24 @@ class BotocoreTestResourceFactory(object):
         Since boto3 relies on botocore to perform API calls, this method
         also effectively patches boto3.
         """
+        # Q: Why is this method so complicated?
+        # A: Because the most common usecase is something like this::
+        #
+        #     >>> import boto3
+        #     >>>
+        #     >>> S3 = boto3.resource('s3')
+        #     >>>
+        #     >>> def do_stuff():
+        #     >>>     bucket = S3.Bucket('foobar')
+        #     >>>     bucket.create()
+        #     ...
+        #
+        #   The `S3` resource creates a botocore Client when the module
+        #   is loaded. It's hard to patch existing Client instances since
+        #   there isn't a good way to find them.
+        #   You must add a descriptor to the Client class
+        #   that overrides specific properties of the Client instances.
+        #   TODO: Could we use use `gc.get_referrers()` to find instances?
         logger.debug("enter patch")
         try:
             factory = self
