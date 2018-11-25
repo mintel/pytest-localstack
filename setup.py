@@ -10,7 +10,7 @@ from setuptools.command.test import test as TestCommand
 REQUIRES = [
     "botocore>=1.4.31,!=1.4.45",
     'contextlib2; python_version < "3.3"',
-    "docker",
+    "docker>=3.0.0,<4.0.0",
     'mock; python_version < "3.3"',
     "pluggy>=0.6.0",
     "pytest>=3.3.0",  # need caplog (+ warnings for tests)

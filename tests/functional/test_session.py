@@ -6,14 +6,14 @@ from pytest_localstack import constants, exceptions, service_checks, session
 
 @pytest.mark.parametrize("test_service", sorted(constants.SERVICE_PORTS))
 def test_RunningSession_individual_services(test_service, docker_client):
-    localstack_imagename = "localstack/localstack:latest"
+    localstack_imagename = "localstack/localstack"
 
-    docker_client.images.pull(localstack_imagename)
+    docker_client.images.pull(localstack_imagename, tag="latest")
     localstack_container = None
     try:
         port = constants.SERVICE_PORTS[test_service]
         localstack_container = docker_client.containers.run(
-            localstack_imagename,
+            localstack_imagename + ":latest",
             name="localstack_test",
             detach=True,
             auto_remove=True,

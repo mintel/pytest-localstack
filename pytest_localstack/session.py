@@ -273,10 +273,9 @@ class LocalstackSession(RunningSession):
         logger.debug("%r running starting hooks", self)
         plugin.manager.hook.session_starting(session=self)
 
-        image_name = self.image_name + ":" + self.localstack_version
         if self.pull_image:
-            logger.debug("Pulling docker image %r", image_name)
-            self.docker_client.images.pull(image_name)
+            logger.debug("Pulling docker image %r", self.image_name)
+            self.docker_client.images.pull(self.image_name, tag=self.localstack_version)
 
         start_time = time.time()
 
@@ -285,7 +284,7 @@ class LocalstackSession(RunningSession):
         dynamodb_error_probability = "%f" % self.dynamodb_error_probability
         use_ssl = str(self.use_ssl).lower()
         self._container = self.docker_client.containers.run(
-            image_name,
+            self.image_name + ":" + self.localstack_version,
             name=self.container_name,
             detach=True,
             auto_remove=self.auto_remove,
