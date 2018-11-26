@@ -17,7 +17,7 @@ env:
 matrix:
   fast_finish: true
   allow_failures:
-    - python: 3.7-dev
+    - python: 3.8-dev
 
 stages:
   - test
@@ -68,7 +68,12 @@ jobs:
       env: TEST_SUITE=functional
 
     - stage: test
-      python: 3.7-dev
+      python: 3.7
+      services: docker
+      env: TEST_SUITE=functional
+
+    - stage: test
+      python: 3.8-dev
       services: docker
       env: TEST_SUITE=functional
 
