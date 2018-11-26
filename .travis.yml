@@ -31,7 +31,8 @@ install: pip install --upgrade -e '.[test]' codecov pytest-cov pytest-xdist
 
 script:
   - docker logout
-  - env | grep DOCKER
+  - env
+  - set
   - pytest --version
   - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k "tests/$TEST_SUITE" $([ "$TEST_SUITE" != "functional" ] && echo -n '-n 4 --forked')
   - codecov --required -e TRAVIS_EVENT_TYPE -F "$TEST_SUITE"
