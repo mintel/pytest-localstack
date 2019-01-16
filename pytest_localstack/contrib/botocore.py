@@ -370,9 +370,10 @@ def patch_fixture(
     """
 
     @pytest.fixture(scope=scope, autouse=autouse)
-    def _fixture():
+    def _fixture(request):
         with _make_session(
             docker_client=docker_client,
+            request=request,
             services=services,
             region_name=region_name,
             kinesis_error_probability=kinesis_error_probability,

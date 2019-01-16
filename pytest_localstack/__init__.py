@@ -108,9 +108,10 @@ def session_fixture(
     """
 
     @pytest.fixture(scope=scope, autouse=autouse)
-    def _fixture():
+    def _fixture(request):
         with _make_session(
             docker_client=docker_client,
+            request=request,
             services=services,
             region_name=region_name,
             kinesis_error_probability=kinesis_error_probability,
@@ -128,8 +129,8 @@ def session_fixture(
 
 
 @contextlib.contextmanager
-def _make_session(docker_client, *args, **kwargs):
-    if pytest.config.getoption("--no-localstack"):
+def _make_session(docker_client, request, *args, **kwargs):
+    if request.config.getoption("--no-localstack"):
         pytest.skip("skipping because --no-localstack is set")
 
     utils.check_proxy_env_vars()
