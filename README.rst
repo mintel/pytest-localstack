@@ -92,13 +92,9 @@ Services
 
 Installation
 ------------
-Install with pipenv:
-
 .. code-block:: bash
 
-    $ pipenv install pytest-localstack
-
-(You have `pipenv <https://pipenv.readthedocs.io>`_, right?)
+    $ pip install pytest-localstack
 
 
 TODO
