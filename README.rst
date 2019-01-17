@@ -35,6 +35,7 @@ via a Localstack_ Docker container.
 - pytest >= 3.3.0
 - Docker
 
+Tested against Python >= 3.6.
 
 .. _pytest: http://docs.pytest.org/
 .. _AWS: https://aws.amazon.com/
