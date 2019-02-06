@@ -37,7 +37,6 @@ class Boto3TestResourceFactory(object):
         Arguments are the same as :class:`boto3.session.Session`.
         """
         kwargs["botocore_session"] = self.localstack_session.botocore.default_session
-        kwargs.setdefault("region_name", constants.DEFAULT_AWS_REGION)
         kwargs.setdefault("aws_access_key_id", constants.DEFAULT_AWS_ACCESS_KEY_ID)
         kwargs.setdefault(
             "aws_secret_access_key", constants.DEFAULT_AWS_SECRET_ACCESS_KEY
