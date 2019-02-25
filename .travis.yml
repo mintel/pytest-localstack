@@ -18,6 +18,9 @@ stages:
 
 before_install:
   - pip install --upgrade pipenv
+  # Numpy isn't needed by pytest-localstack, but it comes preinstalled in Travis.
+  # `pipenv check` complains if numpy<=1.16.0.
+  - pip install 'numpy>1.16.0'
   - pipenv --version
 
 install:
