@@ -27,7 +27,7 @@ def get_version_tuple(version):
 LOCALHOST = "127.0.0.1"
 
 # The default AWS region.
-DEFAULT_AWS_REGION = "us-east-1"
+DEFAULT_AWS_REGION = "us-east-2"
 
 # The default AWS access key.
 DEFAULT_AWS_ACCESS_KEY_ID = "accesskey"
