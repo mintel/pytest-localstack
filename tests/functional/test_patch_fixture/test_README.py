@@ -5,7 +5,7 @@ import pytest
 
 import pytest_localstack
 
-patch_s3 = pytest_localstack.patch_fixture(services=["s3"])
+patch_s3 = pytest_localstack.patch_fixture(services=["s3"], region_name="us-east-2")
 
 
 @pytest.mark.usefixtures("patch_s3")

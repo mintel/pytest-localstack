@@ -4,7 +4,7 @@ import botocore
 
 import pytest_localstack
 
-localstack = pytest_localstack.patch_fixture(scope="module", autouse=True)
+localstack = pytest_localstack.patch_fixture(scope="module", autouse=True, region_name="us-east-2")
 
 
 def _assert_key_isinstance(result, key, type):

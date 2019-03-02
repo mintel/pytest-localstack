@@ -4,7 +4,7 @@ from sync_buckets import sync_buckets
 
 import pytest_localstack
 
-patch = pytest_localstack.patch_fixture(services=["s3"])
+patch = pytest_localstack.patch_fixture(services=["s3"], region_name="us-east-2")
 localstack_1 = pytest_localstack.session_fixture()
 localstack_2 = pytest_localstack.session_fixture()
 
