@@ -7,8 +7,8 @@ from pytest_localstack import session
 from pytest_localstack.utils import mock
 
 AWS_REGIONS = [
-    "us-east-1",
     "us-east-2",
+    "us-east-1",
     "us-west-1",
     "us-west-2",
     "ca-central-1",
