@@ -201,10 +201,9 @@ def test_patch(region_name, service_name, make_test_session):
 @pytest.mark.parametrize("region_name", test_utils.AWS_REGIONS)
 def test_exceptions_populated(make_test_session, region_name):
     """Patched botocore clients populated `exceptions` correctly."""
-    botocore_session = botocore.session.get_session(region_name=region_name)
+    localstack = make_test_session(region_name=region_name)
+    botocore_session = botocore.session.get_session()
     botocore_client = botocore_session.create_client("s3")
-
-    localstack = make_test_session()
 
     assert botocore_client._exceptions is None
 
