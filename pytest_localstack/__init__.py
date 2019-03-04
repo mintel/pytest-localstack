@@ -1,6 +1,7 @@
 import contextlib
 import logging
 import sys
+import warnings
 
 import docker
 
@@ -8,6 +9,24 @@ import pytest
 
 from pytest_localstack import constants, plugin, session, utils
 from pytest_localstack._version import __version__  # noqa: F401
+
+start_timeout = None
+stop_timeout = None
+
+
+def pytest_configure(config):
+    global start_timeout, stop_timeout
+    if config.getoption("--no-localstack"):
+        pm = config.pluginmanager
+        pm.unregister(name="pytest-localstack")
+        warnings.warn(
+            "You can disable this plugin with pytest -p no:localstack",
+            DeprecationWarning,
+        )
+        pytest.skip("skipping because --no-localstack is set")
+
+    start_timeout = config.getoption("--localstack-start-timeout")
+    stop_timeout = config.getoption("--localstack-stop-timeout")
 
 
 def pytest_addoption(parser):
@@ -129,9 +148,6 @@ def session_fixture(
 
 @contextlib.contextmanager
 def _make_session(docker_client, *args, **kwargs):
-    if pytest.config.getoption("--no-localstack"):
-        pytest.skip("skipping because --no-localstack is set")
-
     utils.check_proxy_env_vars()
 
     if docker_client is None:
@@ -143,9 +159,6 @@ def _make_session(docker_client, *args, **kwargs):
         pytest.fail("Could not connect to Docker.")
 
     _session = session.LocalstackSession(docker_client, *args, **kwargs)
-
-    start_timeout = pytest.config.getoption("--localstack-start-timeout")
-    stop_timeout = pytest.config.getoption("--localstack-stop-timeout")
 
     _session.start(timeout=start_timeout)
     try:
