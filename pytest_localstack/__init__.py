@@ -12,19 +12,21 @@ from pytest_localstack._version import __version__  # noqa: F401
 
 start_timeout = None
 stop_timeout = None
-
+plugin_enabled = False
 
 def pytest_configure(config):
-    global start_timeout, stop_timeout
+    global start_timeout, stop_timeout, plugin_enabled
     if config.getoption("--no-localstack"):
         pm = config.pluginmanager
         pm.unregister(name="pytest-localstack")
+        warning_message = ("The custom --no-localstack flag is depreciated."
+            "You can disable this plugin with pytest -p no:pytest-localstack")
         warnings.warn(
-            "You can disable this plugin with pytest -p no:localstack",
-            DeprecationWarning,
+            message=warning_message,
+            category=DeprecationWarning,
         )
-        pytest.skip("skipping because --no-localstack is set")
-
+        pytest.skip("Skipping because --no-localstack is set\n"+warning_message)
+    plugin_enabled = config.pluginmanager.hasplugin("pytest-localstack")
     start_timeout = config.getoption("--localstack-start-timeout")
     stop_timeout = config.getoption("--localstack-stop-timeout")
 
@@ -128,6 +130,8 @@ def session_fixture(
 
     @pytest.fixture(scope=scope, autouse=autouse)
     def _fixture():
+        if not plugin_enabled:
+            pytest.skip("skipping because pytest-localstack plugin isn't loaded")
         with _make_session(
             docker_client=docker_client,
             services=services,
