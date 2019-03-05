@@ -46,6 +46,7 @@ def setup_package():
         license="MIT",
         url=about["__uri__"],
         packages=find_packages(where=HERE, exclude=["tests"]),
+        py_modules=["pytest_localstack"],
         install_requires=REQUIRES,
         tests_require=TEST_REQUIREMENTS,
         extras_require={"test": TEST_REQUIREMENTS},
@@ -69,7 +70,7 @@ def setup_package():
             "Topic :: Software Development :: Testing",
             "Topic :: Utilities",
         ],
-        entry_points={"pytest11": ["pytest-localstack = pytest_localstack"]},
+        entry_points={"pytest11": ["localstack = pytest_localstack"]},
     )
 
 

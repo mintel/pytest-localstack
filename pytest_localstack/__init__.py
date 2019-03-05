@@ -18,27 +18,27 @@ def pytest_configure(config):
     global start_timeout, stop_timeout, plugin_enabled
     if config.getoption("--no-localstack"):
         pm = config.pluginmanager
-        pm.unregister(name="pytest-localstack")
+        pm.unregister(name="localstack")
         warning_message = ("The custom --no-localstack flag is depreciated."
-            "You can disable this plugin with pytest -p no:pytest-localstack")
+            "You can disable this plugin with pytest -p no:localstack")
         warnings.warn(
             message=warning_message,
             category=DeprecationWarning,
         )
         pytest.skip("Skipping because --no-localstack is set\n"+warning_message)
-    plugin_enabled = config.pluginmanager.hasplugin("pytest-localstack")
+    plugin_enabled = config.pluginmanager.hasplugin("localstack")
     start_timeout = config.getoption("--localstack-start-timeout")
     stop_timeout = config.getoption("--localstack-stop-timeout")
 
 
 def pytest_addoption(parser):
-    """Hook to add pytest-localstack command line options to pytest."""
-    group = parser.getgroup("pytest-localstack")
+    """Hook to add pytest_localstack command line options to pytest."""
+    group = parser.getgroup("pytest_localstack")
     group.addoption(
         "--no-localstack",
         action="store_true",
         default=False,
-        help="skip tests with a pytest-localstack fixture",
+        help="skip tests with a pytest_localstack fixture",
     )
     group.addoption(
         "--localstack-start-timeout",
@@ -131,7 +131,7 @@ def session_fixture(
     @pytest.fixture(scope=scope, autouse=autouse)
     def _fixture():
         if not plugin_enabled:
-            pytest.skip("skipping because pytest-localstack plugin isn't loaded")
+            pytest.skip("skipping because pytest_localstack plugin isn't loaded")
         with _make_session(
             docker_client=docker_client,
             services=services,
@@ -176,7 +176,7 @@ plugin.register_plugin_module("pytest_localstack.contrib.botocore")
 plugin.register_plugin_module("pytest_localstack.contrib.boto3", False)
 
 # Register 3rd-party modules
-plugin.manager.load_setuptools_entrypoints("pytest-localstack")
+plugin.manager.load_setuptools_entrypoints("localstack")
 
 # Trigger pytest_localstack_contribute_to_module hook
 plugin.manager.hook.contribute_to_module.call_historic(
