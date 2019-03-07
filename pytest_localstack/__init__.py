@@ -25,8 +25,8 @@ def pytest_configure(config):
             "You can disable this plugin with pytest -p no:localstack"
         )
         warnings.warn(message=warning_message, category=DeprecationWarning)
-        pytest.skip("Skipping because --no-localstack is set\n" + warning_message)
-    plugin_enabled = config.pluginmanager.hasplugin("localstack")
+    elif config.pluginmanager.hasplugin("localstack"):
+        plugin_enabled = True
     start_timeout = config.getoption("--localstack-start-timeout")
     stop_timeout = config.getoption("--localstack-stop-timeout")
 
