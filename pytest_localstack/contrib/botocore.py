@@ -370,7 +370,9 @@ def patch_fixture(
     """
 
     @pytest.fixture(scope=scope, autouse=autouse)
-    def _fixture():
+    def _fixture(pytestconfig):
+        if not pytestconfig.pluginmanager.hasplugin("localstack"):
+            pytest.skip("skipping because localstack plugin isn't loaded")
         with _make_session(
             docker_client=docker_client,
             services=services,
