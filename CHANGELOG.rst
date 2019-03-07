@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-0.2.0 (unreleased)
+0.2.0 (2019-03-06)
 ------------------
 
 - Use botocore to determine default AWS region (will us-east-1 fallback).
