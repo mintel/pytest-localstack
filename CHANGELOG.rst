@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+0.2.0 (unreleased)
+------------------
+
+- Use botocore to determine default AWS region (will us-east-1 fallback).
+- Replace use of `pytest.config` with `pytest_configure()` hook.
+
 0.1.5 (2018-08-17)
 ------------------
 
