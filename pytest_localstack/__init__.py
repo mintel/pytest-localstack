@@ -10,12 +10,12 @@ import pytest
 from pytest_localstack import constants, plugin, session, utils
 from pytest_localstack._version import __version__  # noqa: F401
 
-start_timeout = None
-stop_timeout = None
+_start_timeout = None
+_stop_timeout = None
 
 
 def pytest_configure(config):
-    global start_timeout, stop_timeout
+    global _start_timeout, _stop_timeout
     if config.getoption("--no-localstack"):
         pm = config.pluginmanager
         pm.unregister(name="localstack")
@@ -24,8 +24,8 @@ def pytest_configure(config):
             "You can disable this plugin with pytest -p no:localstack"
         )
         warnings.warn(message=warning_message, category=DeprecationWarning)
-    start_timeout = config.getoption("--localstack-start-timeout")
-    stop_timeout = config.getoption("--localstack-stop-timeout")
+    _start_timeout = config.getoption("--localstack-start-timeout")
+    _stop_timeout = config.getoption("--localstack-stop-timeout")
 
 
 def pytest_addoption(parser):
@@ -161,11 +161,11 @@ def _make_session(docker_client, *args, **kwargs):
 
     _session = session.LocalstackSession(docker_client, *args, **kwargs)
 
-    _session.start(timeout=start_timeout)
+    _session.start(timeout=_start_timeout)
     try:
         yield _session
     finally:
-        _session.stop(timeout=stop_timeout)
+        _session.stop(timeout=_stop_timeout)
 
 
 # Register contrib modules
