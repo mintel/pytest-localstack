@@ -1,6 +1,7 @@
 import contextlib
 import logging
 import sys
+import warnings
 
 import docker
 
@@ -9,15 +10,32 @@ import pytest
 from pytest_localstack import constants, plugin, session, utils
 from pytest_localstack._version import __version__  # noqa: F401
 
+_start_timeout = None
+_stop_timeout = None
+
+
+def pytest_configure(config):
+    global _start_timeout, _stop_timeout
+    if config.getoption("--no-localstack"):
+        pm = config.pluginmanager
+        pm.unregister(name="localstack")
+        warning_message = (
+            "The custom --no-localstack flag is depreciated. "
+            "You can disable this plugin with pytest -p no:localstack"
+        )
+        warnings.warn(message=warning_message, category=DeprecationWarning)
+    _start_timeout = config.getoption("--localstack-start-timeout")
+    _stop_timeout = config.getoption("--localstack-stop-timeout")
+
 
 def pytest_addoption(parser):
-    """Hook to add pytest-localstack command line options to pytest."""
-    group = parser.getgroup("pytest-localstack")
+    """Hook to add pytest_localstack command line options to pytest."""
+    group = parser.getgroup("localstack")
     group.addoption(
         "--no-localstack",
         action="store_true",
         default=False,
-        help="skip tests with a pytest-localstack fixture",
+        help="skip tests with a pytest_localstack fixture (deprecated: use `-p no:localstack`)",
     )
     group.addoption(
         "--localstack-start-timeout",
@@ -108,7 +126,9 @@ def session_fixture(
     """
 
     @pytest.fixture(scope=scope, autouse=autouse)
-    def _fixture():
+    def _fixture(pytestconfig):
+        if not pytestconfig.pluginmanager.hasplugin("localstack"):
+            pytest.skip("skipping because localstack plugin isn't loaded")
         with _make_session(
             docker_client=docker_client,
             services=services,
@@ -129,9 +149,6 @@ def session_fixture(
 
 @contextlib.contextmanager
 def _make_session(docker_client, *args, **kwargs):
-    if pytest.config.getoption("--no-localstack"):
-        pytest.skip("skipping because --no-localstack is set")
-
     utils.check_proxy_env_vars()
 
     if docker_client is None:
@@ -144,14 +161,11 @@ def _make_session(docker_client, *args, **kwargs):
 
     _session = session.LocalstackSession(docker_client, *args, **kwargs)
 
-    start_timeout = pytest.config.getoption("--localstack-start-timeout")
-    stop_timeout = pytest.config.getoption("--localstack-stop-timeout")
-
-    _session.start(timeout=start_timeout)
+    _session.start(timeout=_start_timeout)
     try:
         yield _session
     finally:
-        _session.stop(timeout=stop_timeout)
+        _session.stop(timeout=_stop_timeout)
 
 
 # Register contrib modules
@@ -159,7 +173,7 @@ plugin.register_plugin_module("pytest_localstack.contrib.botocore")
 plugin.register_plugin_module("pytest_localstack.contrib.boto3", False)
 
 # Register 3rd-party modules
-plugin.manager.load_setuptools_entrypoints("pytest-localstack")
+plugin.manager.load_setuptools_entrypoints("localstack")
 
 # Trigger pytest_localstack_contribute_to_module hook
 plugin.manager.hook.contribute_to_module.call_historic(
