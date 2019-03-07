@@ -38,7 +38,7 @@ def pytest_addoption(parser):
         "--no-localstack",
         action="store_true",
         default=False,
-        help="skip tests with a pytest_localstack fixture",
+        help="skip tests with a pytest_localstack fixture (deprecated: use `-p no:localstack`)",
     )
     group.addoption(
         "--localstack-start-timeout",
