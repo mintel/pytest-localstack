@@ -20,7 +20,7 @@ def pytest_configure(config):
         pm = config.pluginmanager
         pm.unregister(name="localstack")
         warning_message = (
-            "The custom --no-localstack flag is depreciated."
+            "The custom --no-localstack flag is depreciated. "
             "You can disable this plugin with pytest -p no:localstack"
         )
         warnings.warn(message=warning_message, category=DeprecationWarning)
