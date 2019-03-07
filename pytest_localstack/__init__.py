@@ -131,7 +131,7 @@ def session_fixture(
     @pytest.fixture(scope=scope, autouse=autouse)
     def _fixture():
         if not plugin_enabled:
-            pytest.skip("skipping because pytest_localstack plugin isn't loaded")
+            pytest.skip("skipping because localstack plugin isn't loaded")
         with _make_session(
             docker_client=docker_client,
             services=services,
