@@ -303,7 +303,7 @@ def patch_fixture(
     services=None,
     autouse=False,
     docker_client=None,
-    region_name=constants.DEFAULT_AWS_REGION,
+    region_name=None,
     kinesis_error_probability=0.0,
     dynamodb_error_probability=0.0,
     container_log_level=logging.DEBUG,

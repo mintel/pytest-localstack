@@ -15,12 +15,7 @@ class RunningSession(object):
     """Connects to an already running localstack server"""
 
     def __init__(
-        self,
-        hostname,
-        services=None,
-        region_name=constants.DEFAULT_AWS_REGION,
-        use_ssl=False,
-        **kwargs
+        self, hostname, services=None, region_name=None, use_ssl=False, **kwargs
     ):
 
         self.kwargs = kwargs
@@ -29,6 +24,12 @@ class RunningSession(object):
         self._hostname = hostname
 
         plugin.manager.hook.contribute_to_session(session=self)
+        # If no region was provided, use what botocore defaulted to.
+        if not region_name:
+            self.region_name = (
+                self.botocore.session().get_config_variable("region")
+                or constants.DEFAULT_AWS_REGION
+            )
 
         if services is None:
             self.services = dict(constants.SERVICE_PORTS)
@@ -219,7 +220,7 @@ class LocalstackSession(RunningSession):
         self,
         docker_client,
         services=None,
-        region_name=constants.DEFAULT_AWS_REGION,
+        region_name=None,
         kinesis_error_probability=0.0,
         dynamodb_error_probability=0.0,
         container_log_level=logging.DEBUG,
