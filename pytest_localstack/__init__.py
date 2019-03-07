@@ -33,7 +33,7 @@ def pytest_configure(config):
 
 def pytest_addoption(parser):
     """Hook to add pytest_localstack command line options to pytest."""
-    group = parser.getgroup("pytest_localstack")
+    group = parser.getgroup("localstack")
     group.addoption(
         "--no-localstack",
         action="store_true",
