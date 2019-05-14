@@ -26,8 +26,7 @@ before_install:
 install:
   # Do this instead of `make env` so we always test with latest versions
   # of packages.
-  - pipenv install --skip-lock --dev --pre
-  - pipenv run pip install codecov pytest-cov pytest-xdist
+  - pipenv install --dev --pre codecov pytest-cov pytest-xdist
 
 script:
   - pytest --version
