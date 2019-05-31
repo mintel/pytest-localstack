@@ -79,6 +79,7 @@ Services
 * dynamodb
 * dynamodbstreams
 * es
+* elasticsearch
 * firehose
 * kinesis
 * lambda
