@@ -48,6 +48,8 @@ def test_default_session(make_test_session):
 @pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
 def test_client(service_name, make_test_session):
     """Test client creation."""
+    if service_name == "elasticsearch":
+        pytest.skip("No boto3 client available for this service")
     localstack = make_test_session()
     if hasattr(localstack, "_container"):
         with pytest.raises(exceptions.ContainerNotStartedError):
