@@ -9,6 +9,10 @@ from pytest_localstack import constants, exceptions, plugin
 from pytest_localstack.contrib import botocore as localstack_botocore
 
 
+SERVICE_NAMES = list(constants.SERVICE_PORTS.keys())
+SERVICE_NAMES.remove("elasticsearch")  # can't use boto to connect to ES
+
+
 def test_patch_fixture_contributed_to_module():
     assert pytest_localstack.patch_fixture is localstack_botocore.patch_fixture
 
@@ -98,7 +102,7 @@ def test_LocalstackEndpointResolver(
     [test_utils.make_test_LocalstackSession, test_utils.make_test_RunningSession],
 )
 @pytest.mark.parametrize("region_name", test_utils.AWS_REGIONS)
-@pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
+@pytest.mark.parametrize("service_name", SERVICE_NAMES)
 def test_session(region_name, service_name, make_test_session):
     """Test Session creation."""
     localstack = make_test_session(region_name=region_name)
@@ -124,7 +128,7 @@ def test_session(region_name, service_name, make_test_session):
     [test_utils.make_test_LocalstackSession, test_utils.make_test_RunningSession],
 )
 @pytest.mark.parametrize("region_name", test_utils.AWS_REGIONS)
-@pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
+@pytest.mark.parametrize("service_name", SERVICE_NAMES)
 def test_client(region_name, service_name, make_test_session):
     """Test Client creation."""
     localstack = make_test_session(region_name=region_name)
@@ -157,7 +161,7 @@ def test_default_session(region_name, make_test_session):
     [test_utils.make_test_LocalstackSession, test_utils.make_test_RunningSession],
 )
 @pytest.mark.parametrize("region_name", test_utils.AWS_REGIONS)
-@pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
+@pytest.mark.parametrize("service_name", SERVICE_NAMES)
 def test_patch(region_name, service_name, make_test_session):
     """Test patching."""
     localstack = make_test_session(region_name=region_name)
