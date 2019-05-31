@@ -9,8 +9,12 @@ from __future__ import absolute_import
 import contextlib
 import functools
 import socket
+from datetime import datetime, timedelta
+from functools import partial
+from time import sleep
 
 import botocore.config
+import requests
 import six
 
 from pytest_localstack import constants, exceptions
@@ -32,15 +36,31 @@ def is_port_open(port_or_url, timeout=1):
         return result == 0
 
 
-def port_check(service_name):
-    """Check that a service port is open."""
+def api_up(url, timeout=60):
+    start = datetime.now()
+    while datetime.now() < start + timedelta(seconds=timeout):
+        try:
+            response = requests.get(url)
+            if response.ok:
+                return True
+        except requests.exceptions.RequestException:
+            pass
+        sleep(1)
+    return False
+
+
+def service_check(service_name, checker):
 
     def _check(localstack_session):
         url = localstack_session.endpoint_url(service_name)
-        if not is_port_open(url):
+        if not checker(url):
             raise exceptions.ServiceError(service_name=service_name)
 
     return _check
+
+
+port_check = partial(service_check, checker=is_port_open)
+api_check = partial(service_check, checker=api_up)
 
 
 def botocore_check(service_name, list_func_name):
@@ -124,6 +144,7 @@ SERVICE_CHECKS = {
     "cloudwatch": port_check("cloudwatch"),
     "dynamodb": check_dynamodb,
     "dynamodbstreams": check_dynamodb_streams,
+    "elasticsearch": api_check("elasticsearch"),
     "es": check_elasticsearch,
     "firehose": check_firehose,
     "kinesis": check_kinesis,
@@ -133,8 +154,8 @@ SERVICE_CHECKS = {
     "s3": check_s3,
     "ses": port_check("ses"),
     "sns": port_check("sns"),
-    "ssm": check_ssm,
     "sqs": port_check("sqs"),
+    "ssm": check_ssm,
 }
 
 # All services should have a check.

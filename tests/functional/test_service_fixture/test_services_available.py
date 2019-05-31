@@ -1,5 +1,8 @@
 """Test all services accessible for pytest_localstack.session_fixture."""
+import requests
+
 import pytest_localstack
+from pytest_localstack.session import RunningSession
 
 localstack = pytest_localstack.session_fixture(scope="module", autouse=True)
 
@@ -61,6 +64,12 @@ class TestBotocore(object):
         client = localstack.botocore.client("es")
         result = client.list_domain_names()
         _assert_key_isinstance(result, "DomainNames", list)
+
+    def test_elasticsearch_available(self, localstack):
+        url = localstack.endpoint_url("elasticsearch")
+        response = requests.get(url)
+        assert response.ok
+        assert response.json()["tagline"] == "You Know, for Search"
 
     def test_firehose_available(self, localstack):
         client = localstack.botocore.client("firehose")

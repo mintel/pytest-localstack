@@ -45,6 +45,7 @@ SERVICE_PORTS = {
     "cloudwatch": 4582,
     "dynamodb": 4569,
     "dynamodbstreams": 4570,
+    "elasticsearch": 4571,
     "es": 4578,
     "firehose": 4573,
     "kinesis": 4568,
@@ -54,8 +55,8 @@ SERVICE_PORTS = {
     "s3": 4572,
     "ses": 4579,
     "sns": 4575,
-    "ssm": 4583,
     "sqs": 4576,
+    "ssm": 4583,
 }
 
 # AWS uses multiple names for some services. Map alias to service name.
