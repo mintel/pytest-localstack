@@ -5,6 +5,7 @@ import contextlib
 import functools
 import inspect
 import logging
+import socket
 import weakref
 
 import botocore
@@ -208,7 +209,10 @@ class BotocoreTestResourceFactory(object):
             @functools.wraps(_original_convert_to_request_dict)
             def _convert_to_request_dict(self, *args, **kwargs):
                 request_dict = _original_convert_to_request_dict(self, *args, **kwargs)
-                assert factory.localstack_session.hostname in request_dict["url"]
+                assert any(
+                    (factory.localstack_session.hostname in request_dict["url"],
+                    socket.gethostname() in request_dict["url"])
+                )
                 return request_dict
 
             patches.append(

@@ -49,6 +49,7 @@ SERVICE_PORTS = {
     "firehose": 4573,
     "kinesis": 4568,
     "lambda": 4574,
+    "logs": 4586,
     "redshift": 4577,
     "route53": 4580,
     "s3": 4572,

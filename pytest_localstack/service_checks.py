@@ -128,6 +128,7 @@ SERVICE_CHECKS = {
     "firehose": check_firehose,
     "kinesis": check_kinesis,
     "lambda": port_check("lambda"),
+    "logs": port_check("logs"),
     "redshift": port_check("redshift"),
     "route53": port_check("route53"),
     "s3": check_s3,
