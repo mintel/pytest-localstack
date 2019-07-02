@@ -82,6 +82,7 @@ Services
 * firehose
 * kinesis
 * lambda
+* logs
 * redshift
 * route53
 * s3
