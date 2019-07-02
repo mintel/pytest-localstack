@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.3.0 (unreleased)
+------------------
+
+- Add CloudWatch Logs service.
+
 0.2.0 (2019-03-06)
 ------------------
 
