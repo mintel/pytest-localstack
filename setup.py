@@ -45,7 +45,7 @@ def setup_package():
         author_email=about["__author_email__"],
         license="MIT",
         url=about["__uri__"],
-        packages=find_packages(where=HERE, exclude=["tests"]),
+        packages=find_packages(where=HERE, exclude=["tests*"]),
         py_modules=["pytest_localstack"],
         install_requires=REQUIRES,
         tests_require=TEST_REQUIREMENTS,
