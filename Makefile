@@ -39,18 +39,9 @@ test: $(VIRTUALENV)  ## run tests
 lint: $(VIRTUALENV)  ## check code style
 	$(PIPENV) check
 	@echo "$(TBOLD)Checking style style…$(T)"
-	@if $(PIPENV_RUN) black --check $(BLACK_TARGETS); then \
-		echo "$(TGREEN)OK!$(T)"; \
-	else \
-		echo "$(TRED)ERROR!$(T)"; \
-	fi
-
+	@$(PIPENV_RUN) black --check $(BLACK_TARGETS)
 	@echo "$(TBOLD)Checking .rst file syntax…$(T)"
-	@if $(PIPENV_RUN) python setup.py check --restructuredtext --strict; then\
-		echo "$(TGREEN)OK!$(T)"; \
-	else \
-		echo "$(TRED)ERROR!$(T)"; \
-	fi
+	@$(PIPENV_RUN) python setup.py check --restructuredtext --strict
 .PHONY: lint
 
 
