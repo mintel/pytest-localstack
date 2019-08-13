@@ -15,6 +15,7 @@ matrix:
 stages:
   - lint
   - test
+  - deploy
 
 before_install:
   - pip install --upgrade pipenv
@@ -37,18 +38,6 @@ script:
 after_success:
   - codecov
 
-deploy:
-  provider: pypi
-  user: jdoepke_mintel
-  password:
-    secure: fMzAGIp0OJQI5GdeiN0u6g2uTUvlHmGskWfvvaNF+xM4/J3o33LWqyRjRa7m07Mv+2XtuUaFyh5s/wcHlro4Ianx7c3hRa6gx+MxB4akgj8H0xgFrKduZfOcruNGcz0qOwk9PsYSk+KBdfESy0SHotoOZdYT4rB3i12PJgCrO3Dn466qbeNYdWEO+1nZMkGjkGPmGTgann9d2HbRZP1Eu/0ehIU02Gvs0uPzNpq2UBtE6XpAPu7O/yq7l02m21hj1GuMJq86wNHkVi9LGvSvDBIF+iZSvrRSM6/+DYzCq5UKnQy1gPHUVWkZXWcuDrJW5ODZzlG0JHbagLdl4gQKU/0giMHCo9g3f6X7jeFUIAYMKEmwsU6qOO31KiAat7mWMI07peD4SCexQxksVYcUeuriF8A+AkG8qDaeJKdX3wDpOMpi4aWYt2KvIUEyPiHeGruv5y1NIwTQrcpkOxYcZ4/nwrMTph0vvAJsgOCg6NueIQLq2ungeBbXRarg9afU16j5ODWWDNLvJSVE02VgAkKc8Gw7EvtyWRmsr/aV86UXHZ85VImDKvIA1pdJAypa+PjdsVNnfDtcfsDnkROu18dJCBy0tXNuHtsHOjESHrODHBfGh/Wr4/qVO4CQVloB+NIIZNLv9QvbFQV5jfiyLALCIGCw3mujp3y5kJBE2zI=
-  distributions: 'sdist bdist_wheel'
-  python: '3.7'
-  on:
-    tags: true
-    condition: '$TRAVIS_TAG =~ ^v'
-  skip_existing: true
-
 jobs:
   include:
     - stage: lint
@@ -60,3 +49,20 @@ jobs:
         - make docs
       after_success: []
       deploy: []
+
+    - stage: deploy
+      python: '3.7'
+      before_install: []
+      install: []
+      script: []
+      after_success: []
+      deploy:
+        provider: pypi
+        user: jdoepke_mintel
+        password:
+          secure: fMzAGIp0OJQI5GdeiN0u6g2uTUvlHmGskWfvvaNF+xM4/J3o33LWqyRjRa7m07Mv+2XtuUaFyh5s/wcHlro4Ianx7c3hRa6gx+MxB4akgj8H0xgFrKduZfOcruNGcz0qOwk9PsYSk+KBdfESy0SHotoOZdYT4rB3i12PJgCrO3Dn466qbeNYdWEO+1nZMkGjkGPmGTgann9d2HbRZP1Eu/0ehIU02Gvs0uPzNpq2UBtE6XpAPu7O/yq7l02m21hj1GuMJq86wNHkVi9LGvSvDBIF+iZSvrRSM6/+DYzCq5UKnQy1gPHUVWkZXWcuDrJW5ODZzlG0JHbagLdl4gQKU/0giMHCo9g3f6X7jeFUIAYMKEmwsU6qOO31KiAat7mWMI07peD4SCexQxksVYcUeuriF8A+AkG8qDaeJKdX3wDpOMpi4aWYt2KvIUEyPiHeGruv5y1NIwTQrcpkOxYcZ4/nwrMTph0vvAJsgOCg6NueIQLq2ungeBbXRarg9afU16j5ODWWDNLvJSVE02VgAkKc8Gw7EvtyWRmsr/aV86UXHZ85VImDKvIA1pdJAypa+PjdsVNnfDtcfsDnkROu18dJCBy0tXNuHtsHOjESHrODHBfGh/Wr4/qVO4CQVloB+NIIZNLv9QvbFQV5jfiyLALCIGCw3mujp3y5kJBE2zI=
+        distributions: 'sdist bdist_wheel'
+        on:
+          tags: true
+          condition: '$TRAVIS_TAG =~ ^v'
+        skip_existing: true
