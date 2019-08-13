@@ -59,4 +59,3 @@ jobs:
         - make lint
         - make docs
       after_success: []
-      deploy: {}
