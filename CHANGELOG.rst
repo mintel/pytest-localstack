@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.3.1 (unreleased)
+------------------
+
+- Fix exclusion of tests from installed packages.
+
 0.3.0 (2019-07-02)
 ------------------
 
