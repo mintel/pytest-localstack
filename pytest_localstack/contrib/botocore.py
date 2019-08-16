@@ -8,7 +8,6 @@ import logging
 import socket
 import weakref
 
-import boto3
 import botocore
 import botocore.client
 import botocore.config
@@ -20,6 +19,11 @@ import pytest
 
 from pytest_localstack import _make_session, constants, exceptions, hookspecs, utils
 from pytest_localstack.utils import mock
+
+try:
+    import boto3
+except ImportError:
+    boto3 = None
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +107,10 @@ class BotocoreTestResourceFactory(object):
         #   that overrides specific properties of the Client instances.
         #   TODO: Could we use use `gc.get_referrers()` to find instances?
         logger.debug("enter patch")
-        pre_existing_session = boto3.DEFAULT_SESSION
+
+        if boto3 is not None:
+            preexisting_boto3_session = boto3.DEFAULT_SESSION
+
         try:
             factory = self
             patches = []
@@ -304,7 +311,8 @@ class BotocoreTestResourceFactory(object):
                 yield
         finally:
             logger.debug("exit patch")
-            boto3.DEFAULT_SESSION = pre_existing_session
+            if boto3 is not None:
+                boto3.DEFAULT_SESSION = preexisting_boto3_session
 
 
 def patch_fixture(
