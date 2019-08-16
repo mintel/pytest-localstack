@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+0.3.2 (2018-08-16)
+------------------
+
+- Track/restore original boto3.DEFAULT_SESSION during patching.
+
+
 0.3.1 (2019-08-13)
 ------------------
 
