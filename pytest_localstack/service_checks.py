@@ -118,9 +118,14 @@ def check_ssm(client_response):
     assert isinstance(client_response["Parameters"], list)
 
 
+@botocore_check("cloudformation", "list_stacks")
+def check_cloudformation(client_response):
+    assert isinstance(client_response["StackSummaries"], list)
+
+
 SERVICE_CHECKS = {
     "apigateway": port_check("apigateway"),
-    "cloudformation": port_check("cloudformation"),
+    "cloudformation": check_cloudformation,
     "cloudwatch": port_check("cloudwatch"),
     "dynamodb": check_dynamodb,
     "dynamodbstreams": check_dynamodb_streams,
