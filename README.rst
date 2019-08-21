@@ -78,18 +78,23 @@ Services
 * cloudwatch
 * dynamodb
 * dynamodbstreams
+* ec2
 * es
 * firehose
+* iam
 * kinesis
 * lambda
 * logs
 * redshift
 * route53
 * s3
+* secretsmanager
 * ses
 * sns
-* ssm
 * sqs
+* ssm
+* stepfunctions
+* sts
 
 Installation
 ------------

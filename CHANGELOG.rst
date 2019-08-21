@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+0.4.0 (unreleased)
+------------------
+
+- Add EC2 service.
+- Add IAM service.
+- Add Secret Manager service.
+- Add Step Functions service.
+- Add STS service.
+
 0.3.2 (2018-08-16)
 ------------------
 
