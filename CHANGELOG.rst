@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-0.4.0 (unreleased)
+0.4.0 (2019-08-21)
 ------------------
 
 - Add EC2 service.
