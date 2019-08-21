@@ -10,7 +10,7 @@ Change Log
 - Add Step Functions service.
 - Add STS service.
 
-0.3.2 (2018-08-16)
+0.3.2 (2019-08-16)
 ------------------
 
 - Track/restore original boto3.DEFAULT_SESSION during patching.
