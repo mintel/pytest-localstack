@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-0.4.1 (unreleased)
+0.4.1 (2019-08-22)
 ------------------
 
 - Raise TimeoutErrors when services fail to start from any causing exception.
