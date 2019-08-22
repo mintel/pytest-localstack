@@ -107,19 +107,22 @@ class RunningSession(object):
                 try:
                     service_checks.SERVICE_CHECKS[service_name](self)
                     services.discard(service_name)
-                except exceptions.ServiceError:
-                    pass
+                except exceptions.ServiceError as e:
+                    if (time.time() - start_time) >= timeout:
+                        six.raise_from(
+                            exceptions.TimeoutError(
+                                "Localstack service not started: {0}".format(
+                                    service_name
+                                )
+                            ),
+                            e,
+                        )
             if services:
                 delay = (2 ** num_retries) * initial_retry_delay
                 if delay > max_delay:
                     delay = max_delay
                     time.sleep(delay)
                     num_retries += 1
-        if services:
-            services = list(services)
-            raise exceptions.TimeoutError(
-                "Localstack services not started: {0!r}".format(services)
-            )
 
     def stop(self, timeout=10):
         """Stops Localstack."""
