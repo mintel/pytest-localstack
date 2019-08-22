@@ -40,8 +40,6 @@ lint: $(VIRTUALENV)  ## check code style
 	$(PIPENV) check
 	@echo "$(TBOLD)Checking style style…$(T)"
 	@$(PIPENV_RUN) black --check $(BLACK_TARGETS)
-	@echo "$(TBOLD)Checking .rst file syntax…$(T)"
-	@$(PIPENV_RUN) python setup.py check --restructuredtext --strict
 .PHONY: lint
 
 
