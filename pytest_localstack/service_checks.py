@@ -43,8 +43,13 @@ def port_check(service_name):
     return _check
 
 
-def botocore_check(service_name, list_func_name):
-    """Decorator to check service via botocore Client."""
+def botocore_check(service_name, client_func_name):
+    """Decorator to check service via botocore Client.
+
+    `client_func_name` should be the name of a harmless client
+    method to call that has no required arguements.
+    `list_*` methods are usually good candidates.
+    """
 
     def _decorator(check_results_func):
         @functools.wraps(check_results_func)
@@ -64,12 +69,12 @@ def botocore_check(service_name, list_func_name):
                 # Handle retries at a higher level
                 config=botocore.config.Config(**config_kwargs),
             )
-            list_func = getattr(client, list_func_name)
+            client_func = getattr(client, client_func_name)
             try:
-                response = list_func()
+                response = client_func()
                 check_results_func(response)
-            except Exception:
-                raise exceptions.ServiceError(service_name=service_name)
+            except Exception as e:
+                six.raise_from(exceptions.ServiceError(service_name=service_name), e)
 
         return _wrapped
 
