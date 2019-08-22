@@ -81,76 +81,79 @@ def botocore_check(service_name, client_func_name):
     return _decorator
 
 
-@botocore_check("dynamodb", "list_tables")
-def check_dynamodb(client_response):
-    """Check that DynamoDB is running."""
-    assert isinstance(client_response["TableNames"], list)
+def botocore_check_response_type(
+    service_name, client_func_name, expected_type, *response_keys
+):
+    """Generate a service check function that tests that the response is a specific type.
 
+    Optionally pass response_keys to check the type of something nested in a
+    response dict.
+    """
 
-@botocore_check("dynamodbstreams", "list_streams")
-def check_dynamodb_streams(client_response):
-    """Check that DynamoDB Streams is running."""
-    assert isinstance(client_response["Streams"], list)
+    @botocore_check(service_name, client_func_name)
+    def _f(client_response):
+        for key in response_keys:
+            client_response = client_response[key]
+        assert isinstance(client_response, expected_type)
 
-
-@botocore_check("s3", "list_buckets")
-def check_s3(client_response):
-    """Check that S3 is running."""
-    assert isinstance(client_response["Buckets"], list)
-
-
-@botocore_check("firehose", "list_delivery_streams")
-def check_firehose(client_response):
-    """Check that Firehose is running."""
-    assert isinstance(client_response["DeliveryStreamNames"], list)
-
-
-@botocore_check("kinesis", "list_streams")
-def check_kinesis(client_response):
-    """Check that Kinesis is running."""
-    assert isinstance(client_response["StreamNames"], list)
-
-
-@botocore_check("es", "list_domain_names")
-def check_elasticsearch(client_response):
-    """Check that Elasticsearch Service is running."""
-    assert isinstance(client_response["DomainNames"], list)
-
-
-@botocore_check("ssm", "describe_parameters")
-def check_ssm(client_response):
-    """Check that Simple Systems Manager Service is running."""
-    assert isinstance(client_response["Parameters"], list)
-
-
-@botocore_check("cloudformation", "list_stacks")
-def check_cloudformation(client_response):
-    assert isinstance(client_response["StackSummaries"], list)
+    return _f
 
 
 SERVICE_CHECKS = {
-    "apigateway": port_check("apigateway"),
-    "cloudformation": check_cloudformation,
-    "cloudwatch": port_check("cloudwatch"),
-    "dynamodb": check_dynamodb,
-    "dynamodbstreams": check_dynamodb_streams,
-    "ec2": port_check("ec2"),
-    "es": check_elasticsearch,
-    "firehose": check_firehose,
-    "iam": port_check("iam"),
-    "kinesis": check_kinesis,
-    "lambda": port_check("lambda"),
-    "logs": port_check("logs"),
-    "redshift": port_check("redshift"),
-    "route53": port_check("route53"),
-    "s3": check_s3,
-    "secretsmanager": port_check("secretsmanager"),
-    "ses": port_check("ses"),
-    "sns": port_check("sns"),
-    "sqs": port_check("sqs"),
-    "ssm": check_ssm,
-    "stepfunctions": port_check("stepfunctions"),
-    "sts": port_check("sts"),
+    "apigateway": port_check(
+        "apigateway"  # moto doesn't implement a good apigateway endpoint for checks yet.
+    ),
+    "cloudformation": botocore_check_response_type(
+        "cloudformation", "list_stacks", list, "StackSummaries"
+    ),
+    "cloudwatch": botocore_check_response_type(
+        "cloudwatch", "list_dashboards", list, "DashboardEntries"
+    ),
+    "dynamodb": botocore_check_response_type(
+        "dynamodb", "list_tables", list, "TableNames"
+    ),
+    "dynamodbstreams": botocore_check_response_type(
+        "dynamodbstreams", "list_streams", list, "Streams"
+    ),
+    "ec2": botocore_check_response_type("ec2", "describe_regions", list, "Regions"),
+    "es": botocore_check_response_type("es", "list_domain_names", list, "DomainNames"),
+    "firehose": botocore_check_response_type(
+        "firehose", "list_delivery_streams", list, "DeliveryStreamNames"
+    ),
+    "iam": botocore_check_response_type("iam", "list_roles", list, "Roles"),
+    "kinesis": botocore_check_response_type(
+        "kinesis", "list_streams", list, "StreamNames"
+    ),
+    "lambda": botocore_check_response_type(
+        "lambda", "list_functions", list, "Functions"
+    ),
+    "logs": botocore_check_response_type(
+        "logs", "describe_log_groups", list, "logGroups"
+    ),
+    "redshift": botocore_check_response_type(
+        "redshift", "describe_clusters", list, "Clusters"
+    ),
+    "route53": port_check(
+        "route53"  # moto doesn't implement a good route53 endpoint for checks yet.
+    ),
+    "s3": botocore_check_response_type("s3", "list_buckets", list, "Buckets"),
+    "secretsmanager": botocore_check_response_type(
+        "secretsmanager", "list_secrets", list, "SecretList"
+    ),
+    "ses": botocore_check_response_type("ses", "list_identities", list, "Identities"),
+    "sns": botocore_check_response_type("sns", "list_topics", list, "Topics"),
+    "sqs": botocore_check_response_type(
+        "sqs", "list_queues", dict  # https://github.com/boto/boto3/issues/1813
+    ),
+    "ssm": botocore_check_response_type(
+        "ssm", "describe_parameters", list, "Parameters"
+    ),
+    "stepfunctions": botocore_check_response_type(
+        "stepfunctions", "list_activities", list, "activities"
+    ),
+    "sts": port_check(
+        "sts"  # moto doesn't implement a good sts endpoint for checks yet.
+    ),
 }
 
 # All services should have a check.

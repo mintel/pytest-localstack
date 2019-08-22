@@ -5,6 +5,7 @@ Change Log
 ------------------
 
 - Raise TimeoutErrors when services fail to start from any causing exception.
+- Use more botocore client-based service checks.
 
 0.4.0 (2019-08-21)
 ------------------
