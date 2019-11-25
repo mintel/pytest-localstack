@@ -48,6 +48,7 @@ def session_fixture(
     kinesis_error_probability=0.0,
     dynamodb_error_probability=0.0,
     container_log_level=logging.DEBUG,
+    localstack_image="localstack/localstack",
     localstack_version="latest",
     auto_remove=True,
     pull_image=True,
@@ -95,6 +96,8 @@ def session_fixture(
             DynamoDB API responses.
         container_log_level (int, optional): The logging level to use
             for Localstack container logs. Defaults to :data:`logging.DEBUG`.
+        localstack_image (str, optional): The Docker image of Localstack
+            to use. Defaults to :const:`"localstack/localstack"`.
         localstack_version (str, optional): The version of the Localstack
             image to use. Defaults to :const:`"latest"`.
         auto_remove (bool, optional): If :obj:`True`, delete the Localstack
@@ -122,6 +125,7 @@ def session_fixture(
             kinesis_error_probability=kinesis_error_probability,
             dynamodb_error_probability=dynamodb_error_probability,
             container_log_level=container_log_level,
+            localstack_image=localstack_image,
             localstack_version=localstack_version,
             auto_remove=auto_remove,
             pull_image=pull_image,

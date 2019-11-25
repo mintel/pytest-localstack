@@ -203,6 +203,8 @@ class LocalstackSession(RunningSession):
             DynamoDB API responses.
         container_log_level (int, optional): The logging level to use
             for Localstack container logs. Defaults to :attr:`logging.DEBUG`.
+        localstack_image (str, optional): The Docker image of Localstack
+            to use. Defaults to `localstack/localstack`.
         localstack_version (str, optional): The version of the Localstack
             image to use. Defaults to `latest`.
         auto_remove (bool, optional): If True, delete the Localstack
@@ -216,7 +218,6 @@ class LocalstackSession(RunningSession):
 
     """
 
-    image_name = "localstack/localstack"
     factories = []
 
     def __init__(
@@ -227,6 +228,7 @@ class LocalstackSession(RunningSession):
         kinesis_error_probability=0.0,
         dynamodb_error_probability=0.0,
         container_log_level=logging.DEBUG,
+        localstack_image="localstack/localstack",
         localstack_version="latest",
         auto_remove=True,
         pull_image=True,
@@ -253,6 +255,7 @@ class LocalstackSession(RunningSession):
         )
 
         self.container_log_level = container_log_level
+        self.localstack_image = localstack_image
         self.localstack_version = localstack_version
         self.container_name = container_name or generate_container_name()
 
@@ -277,7 +280,7 @@ class LocalstackSession(RunningSession):
         logger.debug("%r running starting hooks", self)
         plugin.manager.hook.session_starting(session=self)
 
-        image_name = self.image_name + ":" + self.localstack_version
+        image_name = self.localstack_image + ":" + self.localstack_version
         if self.pull_image:
             logger.debug("Pulling docker image %r", image_name)
             self.docker_client.images.pull(image_name)
