@@ -33,7 +33,7 @@ Pipfile.lock: Pipfile setup.py
 
 test: $(VIRTUALENV)  ## run tests
 	$(PIPENV_RUN) pytest
-.PHONY: ftest
+.PHONY: test
 
 
 lint: $(VIRTUALENV)  ## check code style

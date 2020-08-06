@@ -1,4 +1,5 @@
 """Run and interact with a Localstack container."""
+import docker
 import logging
 import os
 import string
@@ -306,20 +307,26 @@ class LocalstackSession(RunningSession):
         kinesis_error_probability = "%f" % self.kinesis_error_probability
         dynamodb_error_probability = "%f" % self.dynamodb_error_probability
         use_ssl = str(self.use_ssl).lower()
-        self._container = self.docker_client.containers.run(
-            image_name,
-            name=self.container_name,
-            detach=True,
-            auto_remove=self.auto_remove,
-            environment={
-                "DEFAULT_REGION": self.region_name,
-                "SERVICES": services,
-                "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
-                "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
-                "USE_SSL": use_ssl,
-            },
-            ports={port: None for port in self.services.values()},
-        )
+
+        try:
+            _container = self.docker_client.containers.get(self.container_name)
+            _container.start()
+            self._container = _container
+        except (docker.errors.NotFound, docker.errors.APIError):
+            self._container = self.docker_client.containers.run(
+                image_name,
+                name=self.container_name,
+                detach=True,
+                auto_remove=self.auto_remove,
+                environment={
+                    "DEFAULT_REGION": self.region_name,
+                    "SERVICES": services,
+                    "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
+                    "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
+                    "USE_SSL": use_ssl,
+                },
+                ports={port: None for port in self.services.values()},
+            )
         logger.debug(
             "Started Localstack container %s (id: %s)",
             self.container_name,
@@ -376,7 +383,7 @@ class LocalstackSession(RunningSession):
             logger.debug("Running stopping hooks for %r", self)
             plugin.manager.hook.session_stopping(session=self)
             logger.debug("Finished stopping hooks for %r", self)
-            self._container.stop(timeout=10)
+            self._container.stop(timeout=timeout)
             self._container = None
             self._stdout_tailer = None
             self._stderr_tailer = None
