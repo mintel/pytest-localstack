@@ -250,6 +250,7 @@ class LocalstackSession(RunningSession):
         pull_image=True,
         container_name=None,
         use_ssl=False,
+        persistent=False,
         **kwargs
     ):
         self._container = None
@@ -261,6 +262,7 @@ class LocalstackSession(RunningSession):
         self.dynamodb_error_probability = dynamodb_error_probability
         self.auto_remove = bool(auto_remove)
         self.pull_image = bool(pull_image)
+        self.persistent = persistent
 
         super(LocalstackSession, self).__init__(
             hostname=constants.LOCALHOST,
@@ -307,6 +309,16 @@ class LocalstackSession(RunningSession):
         kinesis_error_probability = "%f" % self.kinesis_error_probability
         dynamodb_error_probability = "%f" % self.dynamodb_error_probability
         use_ssl = str(self.use_ssl).lower()
+        environment = {
+            "DEFAULT_REGION": self.region_name,
+            "SERVICES": services,
+            "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
+            "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
+            "USE_SSL": use_ssl,
+        }
+
+        if self.persistent:
+            environment['DATA_DIR'] = '/tmp/localstack/data'
 
         try:
             _container = self.docker_client.containers.get(self.container_name)
@@ -318,13 +330,7 @@ class LocalstackSession(RunningSession):
                 name=self.container_name,
                 detach=True,
                 auto_remove=self.auto_remove,
-                environment={
-                    "DEFAULT_REGION": self.region_name,
-                    "SERVICES": services,
-                    "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
-                    "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
-                    "USE_SSL": use_ssl,
-                },
+                environment=environment,
                 ports={port: None for port in self.services.values()},
             )
         logger.debug(
