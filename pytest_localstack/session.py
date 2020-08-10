@@ -317,14 +317,16 @@ class LocalstackSession(RunningSession):
             "USE_SSL": use_ssl,
         }
 
-        if self.persistent:
-            environment['DATA_DIR'] = '/tmp/localstack/data'
-
         try:
             _container = self.docker_client.containers.get(self.container_name)
             _container.start()
             self._container = _container
         except (docker.errors.NotFound, docker.errors.APIError):
+            if self.persistent:
+                host_data_dir = '/tmp/localstack/data'
+                container_data_dir = '/tmp/localstack_data'
+                environment['DATA_DIR'] = host_data_dir
+
             self._container = self.docker_client.containers.run(
                 image_name,
                 name=self.container_name,
@@ -332,6 +334,9 @@ class LocalstackSession(RunningSession):
                 auto_remove=self.auto_remove,
                 environment=environment,
                 ports={port: None for port in self.services.values()},
+                volumes={
+                    host_data_dir: {'bind': container_data_dir, 'mode': 'rw'},
+                },
             )
         logger.debug(
             "Started Localstack container %s (id: %s)",
