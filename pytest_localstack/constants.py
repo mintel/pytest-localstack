@@ -40,6 +40,7 @@ DEFAULT_AWS_SESSION_TOKEN = "token"
 
 # Mapping AWS service name to default Localstack port.
 SERVICE_PORTS = {
+    "events": 4587,
     "apigateway": 4567,
     "cloudformation": 4581,
     "cloudwatch": 4582,
