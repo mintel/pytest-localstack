@@ -100,6 +100,9 @@ def botocore_check_response_type(
 
 
 SERVICE_CHECKS = {
+    "events": port_check(
+        "events"
+    ),
     "apigateway": port_check(
         "apigateway"  # moto doesn't implement a good apigateway endpoint for checks yet.
     ),
