@@ -458,9 +458,9 @@ class Session(botocore.session.Session):
             config = callargs["config"].merge(config)
         callargs["config"] = config
         with mock.patch(
-                    "botocore.args.ClientArgsCreator._should_set_global_sts_endpoint",
-                    lambda *args, **kwargs: False,
-                ):
+            "botocore.args.ClientArgsCreator._should_set_global_sts_endpoint",
+            lambda *args, **kwargs: False,
+        ):
             client = _original_create_client(**callargs)
         client._is_pytest_localstack = True
         return client
