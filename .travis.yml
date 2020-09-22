@@ -31,9 +31,9 @@ install:
 
 script:
   - pytest --version
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k "tests/unit" -n auto
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append -k "tests/integration" -n auto
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append -k "tests/functional"
+  - pytest tests/unit -ra --cov=pytest_localstack/ --cov-config .coveragerc  -n auto
+  - pytest tests/integration -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append  -n auto
+  - pytest tests/functional -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append
 
 after_success:
   - codecov

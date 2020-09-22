@@ -107,7 +107,6 @@ class BotocoreTestResourceFactory(object):
         #   that overrides specific properties of the Client instances.
         #   TODO: Could we use use `gc.get_referrers()` to find instances?
         logger.debug("enter patch")
-
         if boto3 is not None:
             preexisting_boto3_session = boto3.DEFAULT_SESSION
 
@@ -307,6 +306,16 @@ class BotocoreTestResourceFactory(object):
                 )
             )
 
+            # STS is sneaky and even after patching the endpoint it has a final custom check
+            # to see whether it should override with the global endpoint url... patch that too
+
+            patches.append(
+                mock.patch(
+                    "botocore.args.ClientArgsCreator._should_set_global_sts_endpoint",
+                    lambda *args, **kwargs: False,
+                )
+            )
+
             with utils.nested(*patches):
                 yield
         finally:
@@ -448,8 +457,11 @@ class Session(botocore.session.Session):
         if callargs.get("config"):
             config = callargs["config"].merge(config)
         callargs["config"] = config
-
-        client = _original_create_client(**callargs)
+        with mock.patch(
+                    "botocore.args.ClientArgsCreator._should_set_global_sts_endpoint",
+                    lambda *args, **kwargs: False,
+                ):
+            client = _original_create_client(**callargs)
         client._is_pytest_localstack = True
         return client
 
