@@ -9,12 +9,9 @@ from setuptools.command.test import test as TestCommand
 # Dependencies for this Python library.
 REQUIRES = [
     "botocore>=1.4.31,!=1.4.45",
-    'contextlib2; python_version < "3.3"',
     "docker",
-    'mock; python_version < "3.3"',
     "pluggy>=0.6.0",
     "pytest>=3.3.0",  # need caplog (+ warnings for tests)
-    "six",
 ]
 
 # Dependencies to run the tests for this Python library.
@@ -59,11 +56,9 @@ def setup_package():
             "License :: OSI Approved :: MIT License",
             "Operating System :: POSIX",
             "Operating System :: Unix",
-            "Programming Language :: Python :: 2.7",
-            "Programming Language :: Python :: 2",
-            "Programming Language :: Python :: 3.4",
-            "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3",
             "Programming Language :: Python",
             "Topic :: Software Development :: Libraries",

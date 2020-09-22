@@ -1,6 +1,4 @@
 """pytest-localstack extensions for boto3."""
-from __future__ import absolute_import
-
 import logging
 
 import boto3.session
@@ -17,7 +15,7 @@ def contribute_to_session(session):
     session.boto3 = Boto3TestResourceFactory(session)
 
 
-class Boto3TestResourceFactory(object):
+class Boto3TestResourceFactory:
     """Create boto3 clients and resources to interact with a :class:`~.LocalstackSession`.
 
     Args:

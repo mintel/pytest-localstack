@@ -4,6 +4,7 @@ Change Log
 Unreleased
 ----------
 
+- Drop support for Python < 3.6.
 - Switch to using the new single port for localstack >= 0.11.0.
 - Fix bug in STS client endpoint patching.
 

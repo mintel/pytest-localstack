@@ -9,7 +9,7 @@ def _assert_key_isinstance(result, key, type):
     assert isinstance(result[key], type)
 
 
-class TestBotocore(object):
+class TestBotocore:
     """Test service accessibility via botocore."""
 
     def test_apigateway_available(self, localstack):
@@ -110,7 +110,7 @@ class TestBotocore(object):
         assert result["ResponseMetadata"]["HTTPStatusCode"] == 200
 
 
-class TestBoto3Clients(object):
+class TestBoto3Clients:
     """Test service accessibility via boto3 clients."""
 
     def test_apigateway_available(self, localstack):
@@ -211,7 +211,7 @@ class TestBoto3Clients(object):
         assert result["ResponseMetadata"]["HTTPStatusCode"] == 200
 
 
-class TestBoto3Resources(object):
+class TestBoto3Resources:
     """Test service accessibility via boto3 resources."""
 
     def test_cloudformation_available(self, localstack):

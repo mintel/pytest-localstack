@@ -4,22 +4,20 @@ Each check takes a :class:`.LocalstackSession` and
 raises :class:`~pytest_localstack.exceptions.ServiceError`
 if the service is not available.
 """
-from __future__ import absolute_import
-
 import contextlib
 import functools
 import socket
+import urllib.parse
 
 import botocore.config
-import six
 
 from pytest_localstack import constants, exceptions
 
 
 def is_port_open(port_or_url, timeout=1):
     """Check if TCP port is open."""
-    if isinstance(port_or_url, six.string_types):
-        url = six.moves.urllib.parse.urlparse(port_or_url)
+    if isinstance(port_or_url, (str, bytes)):
+        url = urllib.parse.urlparse(port_or_url)
         port = url.port
         host = url.hostname
     else:
@@ -74,7 +72,7 @@ def botocore_check(service_name, client_func_name):
                 response = client_func()
                 check_results_func(response)
             except Exception as e:
-                six.raise_from(exceptions.ServiceError(service_name=service_name), e)
+                raise exceptions.ServiceError(service_name=service_name) from e
 
         return _wrapped
 

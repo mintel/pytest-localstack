@@ -1,21 +1,14 @@
 """Misc utilities."""
+import contextlib
 import os
-import sys
 import types
-
-import six
-
-if sys.version_info >= (3, 3):
-    import contextlib
-    from unittest import mock
-else:
-    import contextlib2 as contextlib
-    import mock  # noqa
+import urllib.request
+from unittest import mock
 
 
 def check_proxy_env_vars():
     """Raise warnings about improperly-set proxy environment variables."""
-    proxy_settings = six.moves.urllib.request.getproxies()
+    proxy_settings = urllib.request.getproxies()
     if "http" not in proxy_settings and "https" not in proxy_settings:
         return
     for var in ["http_proxy", "https_proxy", "no_proxy"]:
@@ -58,7 +51,7 @@ def nested(*mgrs):
 def unbind(func):
     """Get Function from Method (if not already Function)."""
     if isinstance(func, types.MethodType):
-        func = six.get_method_function(func)
+        func = func.__func__
     return func
 
 

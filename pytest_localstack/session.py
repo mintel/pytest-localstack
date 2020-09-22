@@ -5,7 +5,6 @@ import string
 import time
 from copy import copy
 
-import six
 from packaging import version
 
 from pytest_localstack import (
@@ -20,7 +19,7 @@ from pytest_localstack import (
 logger = logging.getLogger(__name__)
 
 
-class RunningSession(object):
+class RunningSession:
     """Connects to an already running localstack server"""
 
     def __init__(
@@ -132,14 +131,9 @@ class RunningSession(object):
                     services.discard(service_name)
                 except exceptions.ServiceError as e:
                     if (time.time() - start_time) >= timeout:
-                        six.raise_from(
-                            exceptions.TimeoutError(
-                                "Localstack service not started: {0}".format(
-                                    service_name
-                                )
-                            ),
-                            e,
-                        )
+                        raise exceptions.TimeoutError(
+                            "Localstack service not started: {0}".format(service_name)
+                        ) from e
             if services:
                 delay = (2 ** num_retries) * initial_retry_delay
                 if delay > max_delay:
@@ -410,6 +404,6 @@ def generate_container_name():
     valid_chars = set(string.ascii_letters)
     chars = []
     while len(chars) < 6:
-        new_chars = [chr(c) for c in six.iterbytes(os.urandom(6 - len(chars)))]
+        new_chars = [chr(c) for c in os.urandom(6 - len(chars))]
         chars += [c for c in new_chars if c in valid_chars]
     return "pytest-localstack-" + "".join(chars)

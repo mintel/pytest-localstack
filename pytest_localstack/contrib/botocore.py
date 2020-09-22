@@ -1,6 +1,4 @@
 """Test resource factory for the botocore library."""
-from __future__ import absolute_import
-
 import contextlib
 import functools
 import inspect
@@ -42,7 +40,7 @@ def contribute_to_module(pytest_localstack):
     pytest_localstack.patch_fixture = patch_fixture
 
 
-class BotocoreTestResourceFactory(object):
+class BotocoreTestResourceFactory:
     """Create botocore clients to interact with a :class:`.LocalstackSession`.
 
     Args:
