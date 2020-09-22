@@ -5,12 +5,13 @@ language: python
 python:
   - '3.6'
   - '3.7'
-  - '3.8-dev'
+  - '3.8'
+  - '3.9-dev'
 
 matrix:
   fast_finish: true
   allow_failures:
-    - python: 3.8-dev
+    - python: 3.9-dev
 
 stages:
   - lint
@@ -41,7 +42,7 @@ after_success:
 jobs:
   include:
     - stage: lint
-      python: 3.6
+      python: 3.8
       services: []
       install: make env
       script:
@@ -52,7 +53,7 @@ jobs:
 
     - stage: deploy
       if: tag =~ ^v
-      python: '3.7'
+      python: '3.8'
       services: []
       before_install: []
       install: []
