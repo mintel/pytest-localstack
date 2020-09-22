@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+- Switch to using the new single port for localstack >= 0.11.0.
+- Fix bug in STS client endpoint patching.
+
 0.4.1 (2019-08-22)
 ------------------
 
