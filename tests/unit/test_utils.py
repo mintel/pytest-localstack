@@ -70,3 +70,9 @@ def test_remove_newline(string, newline, num_newlines, n):
     string_with_newlines = string + (newline * num_newlines)
     result = utils.remove_newline(string_with_newlines, n)
     assert result == string + (newline * (num_newlines - max(n, 0)))
+
+
+def test_get_version_tuple():
+    assert utils.get_version_tuple("1.2.3") == (1, 2, 3)
+    with pytest.raises(ValueError):
+        utils.get_version_tuple("latest")

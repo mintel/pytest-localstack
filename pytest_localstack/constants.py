@@ -1,27 +1,8 @@
 """pytest-localstack constants."""
 
-from distutils.version import LooseVersion
-
 import botocore
 
-
-def get_version_tuple(version):
-    """
-    Return a tuple of version numbers (e.g. (1, 2, 3)) from the version
-    string (e.g. '1.2.3').
-
-
-    Copyright (c) Django Software Foundation and individual contributors.
-    All rights reserved.
-    """
-    loose_version = LooseVersion(version)
-    version_numbers = []
-    for item in loose_version.version:
-        if not isinstance(item, int):
-            break
-        version_numbers.append(item)
-    return tuple(version_numbers)
-
+from pytest_localstack import utils
 
 # IP for localhost
 LOCALHOST = "127.0.0.1"
@@ -65,31 +46,7 @@ LEGACY_SERVICE_PORTS = {
     "sts": 4592,
 }
 
-SERVICE_PORTS = {
-    "apigateway": 4566,
-    "cloudformation": 4566,
-    "cloudwatch": 4566,
-    "dynamodb": 4566,
-    "dynamodbstreams": 4566,
-    "ec2": 4566,
-    "es": 4566,
-    "events": 4566,
-    "firehose": 4566,
-    "iam": 4566,
-    "kinesis": 4566,
-    "lambda": 4566,
-    "logs": 4566,
-    "redshift": 4566,
-    "route53": 4566,
-    "s3": 4566,
-    "secretsmanager": 4566,
-    "ses": 4566,
-    "sns": 4566,
-    "sqs": 4566,
-    "ssm": 4566,
-    "stepfunctions": 4566,
-    "sts": 4566,
-}
+SERVICE_PORTS = {k: 4566 for k in LEGACY_SERVICE_PORTS}
 
 # AWS uses multiple names for some services. Map alias to service name.
 SERVICE_ALIASES = {
@@ -102,4 +59,4 @@ SERVICE_ALIASES = {
 DEFAULT_CONTAINER_START_TIMEOUT = 60
 DEFAULT_CONTAINER_STOP_TIMEOUT = 10
 
-BOTOCORE_VERSION = get_version_tuple(botocore.__version__)
+BOTOCORE_VERSION = utils.get_version_tuple(botocore.__version__)

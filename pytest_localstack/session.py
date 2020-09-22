@@ -8,7 +8,14 @@ from copy import copy
 import six
 from packaging import version
 
-from pytest_localstack import constants, container, exceptions, plugin, service_checks
+from pytest_localstack import (
+    constants,
+    container,
+    exceptions,
+    plugin,
+    service_checks,
+    utils,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +39,9 @@ class RunningSession(object):
         self._hostname = hostname
         self.localstack_version = localstack_version
 
-        if self.localstack_version != "latest" and version.parse(
+        if self.localstack_version != "latest" and utils.get_version_tuple(
             localstack_version
-        ) < version.parse("v0.11.5"):
+        ) < utils.get_version_tuple("0.11"):
             self.service_ports = constants.LEGACY_SERVICE_PORTS
         else:
             self.service_ports = constants.SERVICE_PORTS

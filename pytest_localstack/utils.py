@@ -77,3 +77,14 @@ def remove_newline(string, n=1):
         else:
             break
     return string
+
+
+def get_version_tuple(version):
+    """
+    Return a tuple of version numbers (e.g. (1, 2, 3)) from the version
+    string (e.g. '1.2.3').
+    """
+    if version[0] == "v":
+        version = version[1:]
+    parts = version.split(".")
+    return tuple(int(p) for p in parts)
