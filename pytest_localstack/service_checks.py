@@ -8,13 +8,17 @@ import contextlib
 import functools
 import socket
 import urllib.parse
+from typing import TYPE_CHECKING, AnyStr, Optional, Union
 
 import botocore.config
 
 from pytest_localstack import constants, exceptions
 
+if TYPE_CHECKING:
+    import pytest_localstack.session
 
-def is_port_open(port_or_url, timeout=1):
+
+def is_port_open(port_or_url: Union[int, str], timeout: Union[float, None] = 1):
     """Check if TCP port is open."""
     if isinstance(port_or_url, (str, bytes)):
         url = urllib.parse.urlparse(port_or_url)
@@ -30,10 +34,10 @@ def is_port_open(port_or_url, timeout=1):
         return result == 0
 
 
-def port_check(service_name):
+def port_check(service_name: str):
     """Check that a service port is open."""
 
-    def _check(localstack_session):
+    def _check(localstack_session: "pytest_localstack.session.LocalstackSession"):
         url = localstack_session.endpoint_url(service_name)
         if not is_port_open(url):
             raise exceptions.ServiceError(service_name=service_name)
@@ -41,7 +45,7 @@ def port_check(service_name):
     return _check
 
 
-def botocore_check(service_name, client_func_name):
+def botocore_check(service_name: str, client_func_name: str):
     """Decorator to check service via botocore Client.
 
     `client_func_name` should be the name of a harmless client
@@ -51,7 +55,7 @@ def botocore_check(service_name, client_func_name):
 
     def _decorator(check_results_func):
         @functools.wraps(check_results_func)
-        def _wrapped(localstack_session):
+        def _wrapped(localstack_session: "pytest_localstack.session.LocalstackSession"):
             url = localstack_session.endpoint_url(service_name)
             if not is_port_open(url):
                 raise exceptions.ServiceError(service_name=service_name)
@@ -80,7 +84,7 @@ def botocore_check(service_name, client_func_name):
 
 
 def botocore_check_response_type(
-    service_name, client_func_name, expected_type, *response_keys
+    service_name: str, client_func_name: str, expected_type: type, *response_keys
 ):
     """Generate a service check function that tests that the response is a specific type.
 

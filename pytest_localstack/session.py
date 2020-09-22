@@ -4,7 +4,10 @@ import os
 import string
 import time
 from copy import copy
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Set, Union
 
+import docker
+import docker.models.containers
 from packaging import version
 
 from pytest_localstack import (
@@ -16,21 +19,29 @@ from pytest_localstack import (
     utils,
 )
 
+if TYPE_CHECKING:
+    import pytest_localstack.contrib.boto3
+    import pytest_localstack.contrib.botocore
+
 logger = logging.getLogger(__name__)
 
 
 class RunningSession:
     """Connects to an already running localstack server"""
 
+    botocore: "pytest_localstack.contrib.botocore.BotocoreTestResourceFactory"
+    boto3: "pytest_localstack.contrib.boto3.Boto3TestResourceFactory"
+    _container: docker.models.containers.Container
+
     def __init__(
         self,
-        hostname,
-        services=None,
-        region_name=None,
-        use_ssl=False,
-        localstack_version="latest",
+        hostname: str,
+        services: Union[None, Sequence[str], Dict[str, int]] = None,
+        region_name: Optional[str] = None,
+        use_ssl: bool = False,
+        localstack_version: str = "latest",
         **kwargs
-    ):
+    ) -> None:
 
         self.kwargs = kwargs
         self.use_ssl = use_ssl
@@ -75,12 +86,12 @@ class RunningSession:
             raise TypeError("unsupported services type: %r" % (services,))
 
     @property
-    def hostname(self):
+    def hostname(self) -> str:
         """Return hostname of Localstack."""
         return self._hostname
 
     @property
-    def service_aliases(self):
+    def service_aliases(self) -> Set[str]:
         """Return a full list of possible names supported."""
         services = set(self.services)
         result = set()
@@ -90,14 +101,16 @@ class RunningSession:
                 result.add(alias)
         return result
 
-    def start(self, timeout=60):
+    def start(self, timeout: float = 60) -> None:
         """Starts Localstack if needed."""
         plugin.manager.hook.session_starting(session=self)
 
         self._check_services(timeout)
         plugin.manager.hook.session_started(session=self)
 
-    def _check_services(self, timeout, initial_retry_delay=0.01, max_delay=1):
+    def _check_services(
+        self, timeout: float, initial_retry_delay: float = 0.01, max_delay: float = 1
+    ) -> None:
         """Check that all Localstack services are running and accessible.
 
         Does exponential backoff up to `max_delay`.
@@ -141,15 +154,15 @@ class RunningSession:
                     time.sleep(delay)
                     num_retries += 1
 
-    def stop(self, timeout=10):
+    def stop(self, timeout: float = 10) -> None:
         """Stops Localstack."""
         plugin.manager.hook.session_stopping(session=self)
         plugin.manager.hook.session_stopped(session=self)
 
     def __enter__(
         self,
-        start_timeout=constants.DEFAULT_CONTAINER_START_TIMEOUT,
-        stop_timeout=constants.DEFAULT_CONTAINER_STOP_TIMEOUT,
+        start_timeout: float = constants.DEFAULT_CONTAINER_START_TIMEOUT,
+        stop_timeout: float = constants.DEFAULT_CONTAINER_STOP_TIMEOUT,
     ):
         self.__stop_timeout = stop_timeout
         self.start(timeout=start_timeout)
@@ -161,11 +174,11 @@ class RunningSession:
         )
         self.stop(timeout=timeout)
 
-    def map_port(self, port):
+    def map_port(self, port: int) -> Optional[int]:
         """Return host port based on Localstack port."""
         return port
 
-    def service_hostname(self, service_name):
+    def service_hostname(self, service_name: str) -> str:
         """Get hostname and port for an AWS service."""
         service_name = constants.SERVICE_ALIASES.get(service_name, service_name)
         if service_name not in self.services:
@@ -173,9 +186,10 @@ class RunningSession:
                 "{0!r} does not have {1} enabled".format(self, service_name)
             )
         port = self.map_port(self.services[service_name])
+        assert port is not None
         return "%s:%i" % (self.hostname, port)
 
-    def endpoint_url(self, service_name):
+    def endpoint_url(self, service_name: str) -> str:
         """Get the URL for a service endpoint."""
         url = ("https" if self.use_ssl else "http") + "://"
         url += self.service_hostname(service_name)
@@ -233,26 +247,24 @@ class LocalstackSession(RunningSession):
 
     """
 
-    image_name = "localstack/localstack"
-    factories = []
+    image_name: str = "localstack/localstack"
 
     def __init__(
         self,
-        docker_client,
-        services=None,
-        region_name=None,
-        kinesis_error_probability=0.0,
-        dynamodb_error_probability=0.0,
-        container_log_level=logging.DEBUG,
-        localstack_version="latest",
-        auto_remove=True,
-        pull_image=True,
-        container_name=None,
-        use_ssl=False,
+        docker_client: docker.client.DockerClient,
+        services: Union[None, Sequence[str], Dict[str, int]] = None,
+        region_name: Optional[str] = None,
+        kinesis_error_probability: float = 0.0,
+        dynamodb_error_probability: float = 0.0,
+        container_log_level: int = logging.DEBUG,
+        localstack_version: str = "latest",
+        auto_remove: bool = True,
+        pull_image: bool = True,
+        container_name: Optional[str] = None,
+        use_ssl: bool = False,
         **kwargs
     ):
         self._container = None
-        self._factory_cache = {}
 
         self.docker_client = docker_client
         self.region_name = region_name
@@ -274,7 +286,7 @@ class LocalstackSession(RunningSession):
         self.localstack_version = localstack_version
         self.container_name = container_name or generate_container_name()
 
-    def start(self, timeout=60):
+    def start(self, timeout: float = 60) -> None:
         """Start the Localstack container.
 
         Args:
@@ -360,7 +372,7 @@ class LocalstackSession(RunningSession):
                 self.stop(0.1)
             raise
 
-    def stop(self, timeout=10):
+    def stop(self, timeout: float = 10) -> None:
         """Stop the Localstack container.
 
         Args:
@@ -378,8 +390,8 @@ class LocalstackSession(RunningSession):
             logger.debug("Finished stopping hooks for %r", self)
             self._container.stop(timeout=10)
             self._container = None
-            self._stdout_tailer = None
-            self._stderr_tailer = None
+            self._stdout_tailer = None  # type: ignore
+            self._stderr_tailer = None  # type: ignore
             logger.debug("Stopped %r", self)
             logger.debug("Running stopped hooks for %r", self)
             plugin.manager.hook.session_stopped(session=self)
@@ -389,8 +401,9 @@ class LocalstackSession(RunningSession):
         """Stop container on garbage collection."""
         self.stop(0.1)
 
-    def map_port(self, port):
-        """Return host port based on Localstack container port."""
+    def map_port(self, port: int) -> Optional[int]:
+        """Return host port based on Localstack container port, or none of the
+        Docker container doesn't expose that port."""
         if self._container is None:
             raise exceptions.ContainerNotStartedError(self)
         result = self.docker_client.api.port(self._container.id, int(port))
@@ -399,10 +412,10 @@ class LocalstackSession(RunningSession):
         return int(result[0]["HostPort"])
 
 
-def generate_container_name():
+def generate_container_name() -> str:
     """Generate a random name for a Localstack container."""
     valid_chars = set(string.ascii_letters)
-    chars = []
+    chars: List[str] = []
     while len(chars) < 6:
         new_chars = [chr(c) for c in os.urandom(6 - len(chars))]
         chars += [c for c in new_chars if c in valid_chars]

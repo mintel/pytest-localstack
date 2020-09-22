@@ -6,14 +6,20 @@ functionality to pytest-localstack and to trigger callbacks when the
 Localstack container is started and stopped.
 
 """
+import typing
+from types import ModuleType
+
 import pluggy
+
+if typing.TYPE_CHECKING:
+    import pytest_localstack.session
 
 pytest_localstack_hookspec = pluggy.HookspecMarker("pytest-localstack")
 pytest_localstack_hookimpl = pluggy.HookimplMarker("pytest-localstack")
 
 
 @pytest_localstack_hookspec(historic=True)
-def contribute_to_module(pytest_localstack):
+def contribute_to_module(pytest_localstack: ModuleType) -> None:
     """
     Hook to add additional functionality to the :mod:`pytest_localstack`
     module.
@@ -23,7 +29,9 @@ def contribute_to_module(pytest_localstack):
 
 
 @pytest_localstack_hookspec
-def contribute_to_session(session):
+def contribute_to_session(
+    session: "pytest_localstack.session.LocalstackSession",
+) -> None:
     """Hook to add additional functionality to :class:`LocalstackSession`.
 
     Primarially used to add test resource factories to sessions.
@@ -32,20 +40,20 @@ def contribute_to_session(session):
 
 
 @pytest_localstack_hookspec
-def session_starting(session):
+def session_starting(session: "pytest_localstack.session.LocalstackSession") -> None:
     """Hook fired when :class:`LocalstackSession` is starting."""
 
 
 @pytest_localstack_hookspec
-def session_started(session):
+def session_started(session: "pytest_localstack.session.LocalstackSession") -> None:
     """Hook fired when :class:`LocalstackSession` has started."""
 
 
 @pytest_localstack_hookspec
-def session_stopping(session):
+def session_stopping(session: "pytest_localstack.session.LocalstackSession") -> None:
     """Hook fired when :class:`LocalstackSession` is stopping."""
 
 
 @pytest_localstack_hookspec
-def session_stopped(session):
+def session_stopped(session: "pytest_localstack.session.LocalstackSession") -> None:
     """Hook fired when :class:`LocalstackSession` has stopped."""

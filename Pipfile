@@ -17,6 +17,7 @@ sphinx = "*"
 sphinx-autobuild = "*"
 twine = "*"
 wheel = "*"
+mypy = "*"
 
 [pipenv]
 allow_prereleases = true

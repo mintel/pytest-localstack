@@ -13,7 +13,7 @@ manager = pluggy.PluginManager("pytest-localstack")
 manager.add_hookspecs(pytest_localstack.hookspecs)
 
 
-def register_plugin_module(module_path, required=True):
+def register_plugin_module(module_path: str, required: bool = True):
     """Register hooks in a module with the PluginManager by Python path.
 
     Args:

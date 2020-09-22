@@ -16,7 +16,7 @@ def test_generate_container_name(random):
 
 
 @pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
-def test_LocalstackSession_map_port(service_name):
+def test_LocalstackSession_map_port(service_name: str):
     """Test pytest_localstack.session.LocalstackSession.map_port."""
     test_session = test_utils.make_test_LocalstackSession()
 
@@ -32,7 +32,7 @@ def test_LocalstackSession_map_port(service_name):
 
 @pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
 @pytest.mark.parametrize("not_service_name", sorted(constants.SERVICE_PORTS.keys()))
-def test_LocalstackSession_service_hostname(service_name, not_service_name):
+def test_LocalstackSession_service_hostname(service_name: str, not_service_name: str):
     """Test pytest_localstack.session.LocalstackSession.service_hostname."""
     if service_name == not_service_name:
         pytest.skip("should not be equal")
@@ -55,7 +55,7 @@ def test_LocalstackSession_service_hostname(service_name, not_service_name):
 
 @pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
 @pytest.mark.parametrize("not_service_name", sorted(constants.SERVICE_PORTS.keys()))
-def test_RunningSession_service_hostname(service_name, not_service_name):
+def test_RunningSession_service_hostname(service_name: str, not_service_name: str):
     """Test pytest_localstack.session.RunningSession.service_hostname."""
     if service_name == not_service_name:
         pytest.skip("should not be equal")
@@ -74,7 +74,9 @@ def test_RunningSession_service_hostname(service_name, not_service_name):
 @pytest.mark.parametrize("use_ssl", [(True,), (False,)])
 @pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
 @pytest.mark.parametrize("not_service_name", sorted(constants.SERVICE_PORTS.keys()))
-def test_LocalstackSession_endpoint_url(use_ssl, service_name, not_service_name):
+def test_LocalstackSession_endpoint_url(
+    use_ssl: bool, service_name: str, not_service_name: str
+):
     """Test pytest_localstack.session.LocalstackSession.endpoint_url."""
     if service_name == not_service_name:
         pytest.skip("should not be equal")
@@ -105,7 +107,9 @@ def test_LocalstackSession_endpoint_url(use_ssl, service_name, not_service_name)
 @pytest.mark.parametrize("use_ssl", [(True,), (False,)])
 @pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
 @pytest.mark.parametrize("not_service_name", sorted(constants.SERVICE_PORTS.keys()))
-def test_RunningSession_endpoint_url(use_ssl, service_name, not_service_name):
+def test_RunningSession_endpoint_url(
+    use_ssl: bool, service_name: str, not_service_name: str
+):
     """Test pytest_localstack.session.RunningSession.endpoint_url."""
     if service_name == not_service_name:
         pytest.skip("should not be equal")

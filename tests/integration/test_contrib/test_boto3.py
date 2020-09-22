@@ -1,4 +1,5 @@
 import os
+from typing import Callable, Union
 
 import boto3
 import botocore
@@ -6,6 +7,7 @@ import botocore
 import pytest
 from tests import utils as test_utils
 
+import pytest_localstack
 from pytest_localstack import constants, exceptions, plugin
 from pytest_localstack.contrib import boto3 as ptls_boto3
 from pytest_localstack.utils import mock
@@ -21,7 +23,9 @@ def test_session_contribution():
     "make_test_session",
     [test_utils.make_test_LocalstackSession, test_utils.make_test_RunningSession],
 )
-def test_session(make_test_session):
+def test_session(
+    make_test_session: Callable[[], pytest_localstack.session.RunningSession]
+):
     """Test session creation."""
     localstack = make_test_session()
 
@@ -33,7 +37,9 @@ def test_session(make_test_session):
     "make_test_session",
     [test_utils.make_test_LocalstackSession, test_utils.make_test_RunningSession],
 )
-def test_default_session(make_test_session):
+def test_default_session(
+    make_test_session: Callable[[], pytest_localstack.session.RunningSession]
+):
     """Test default session."""
     localstack = make_test_session()
     session_1 = localstack.boto3.default_session
@@ -46,7 +52,10 @@ def test_default_session(make_test_session):
     [test_utils.make_test_LocalstackSession, test_utils.make_test_RunningSession],
 )
 @pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
-def test_client(service_name, make_test_session):
+def test_client(
+    service_name: str,
+    make_test_session: Callable[[], pytest_localstack.session.RunningSession],
+):
     """Test client creation."""
     localstack = make_test_session()
     if hasattr(localstack, "_container"):
@@ -64,7 +73,10 @@ def test_client(service_name, make_test_session):
     [test_utils.make_test_LocalstackSession, test_utils.make_test_RunningSession],
 )
 @pytest.mark.parametrize("service_name", sorted(constants.SERVICE_PORTS.keys()))
-def test_resource(service_name, make_test_session):
+def test_resource(
+    service_name: str,
+    make_test_session: Callable[[], pytest_localstack.session.RunningSession],
+):
     """Test resource creation."""
     if service_name not in [
         "cloudformation",
@@ -95,7 +107,9 @@ def test_resource(service_name, make_test_session):
     "make_test_session",
     [test_utils.make_test_LocalstackSession, test_utils.make_test_RunningSession],
 )
-def test_patch_botocore_credentials(make_test_session):
+def test_patch_botocore_credentials(
+    make_test_session: Callable[[], pytest_localstack.session.RunningSession]
+):
     """Test to the default boto3 session credentials get patched correctly."""
     session = boto3._get_default_session()
     localstack = make_test_session()

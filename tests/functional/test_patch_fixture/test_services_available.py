@@ -1,15 +1,17 @@
 """Test all services accessible for pytest_localstack.patch_fixture."""
+from typing import Any, Dict
+
 import boto3
 import botocore
 
 import pytest_localstack
 
-localstack = pytest_localstack.patch_fixture(scope="module", autouse=True)
+localstack = pytest_localstack.patch_fixture(scope="module", autouse=True)  # type: ignore
 
 
-def _assert_key_isinstance(result, key, type):
+def _assert_key_isinstance(result: Dict[str, Any], key: str, _type: type):
     assert key in result
-    assert isinstance(result[key], type)
+    assert isinstance(result[key], _type)
 
 
 class TestBotocore:

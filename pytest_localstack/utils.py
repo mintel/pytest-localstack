@@ -3,10 +3,11 @@ import contextlib
 import os
 import types
 import urllib.request
+from typing import Any, ContextManager, Iterator, List, Sequence, Tuple
 from unittest import mock
 
 
-def check_proxy_env_vars():
+def check_proxy_env_vars() -> None:
     """Raise warnings about improperly-set proxy environment variables."""
     proxy_settings = urllib.request.getproxies()
     if "http" not in proxy_settings and "https" not in proxy_settings:
@@ -41,10 +42,10 @@ def check_proxy_env_vars():
 
 
 @contextlib.contextmanager
-def nested(*mgrs):
+def nested(*mgrs: ContextManager[Any]) -> Iterator[List[ContextManager[Any]]]:
     """Combine multiple context managers."""
     with contextlib.ExitStack() as stack:
-        outputs = [stack.enter_context(cm) for cm in mgrs]
+        outputs: List[ContextManager[Any]] = [stack.enter_context(cm) for cm in mgrs]
         yield outputs
 
 
@@ -55,7 +56,7 @@ def unbind(func):
     return func
 
 
-def remove_newline(string, n=1):
+def remove_newline(string: str, n: int = 1) -> str:
     """Remove up to `n` trailing newlines from `string`."""
     # Regex returns some weird results when dealing with only newlines,
     # so we do this manually.
@@ -72,7 +73,7 @@ def remove_newline(string, n=1):
     return string
 
 
-def get_version_tuple(version):
+def get_version_tuple(version: str) -> Tuple[int, ...]:
     """
     Return a tuple of version numbers (e.g. (1, 2, 3)) from the version
     string (e.g. '1.2.3').

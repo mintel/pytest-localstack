@@ -1,12 +1,16 @@
 import logging
+from typing import TYPE_CHECKING
 
 from tests import utils as test_utils
 
 from pytest_localstack import container as ptls_container, session
 from pytest_localstack.utils import mock
 
+if TYPE_CHECKING:
+    from _pytest.logging import LogCaptureFixture
 
-def test_DockerLogTailer(caplog):
+
+def test_DockerLogTailer(caplog: "LogCaptureFixture"):
     """Test pytest_localstack.container.DockerLogTailer."""
     container = test_utils.make_mock_container(session.LocalstackSession.image_name)
     logger_name = "test_logger.%s." % container.short_id

@@ -1,11 +1,18 @@
 """Functional tests for pytest_localstack.session."""
+from typing import TYPE_CHECKING
+
 import pytest
 
 from pytest_localstack import constants, exceptions, service_checks, session
 
+if TYPE_CHECKING:
+    import docker
+
 
 @pytest.mark.parametrize("test_service", sorted(constants.SERVICE_PORTS))
-def test_RunningSession_individual_services(test_service, docker_client):
+def test_RunningSession_individual_services(
+    test_service: str, docker_client: "docker.DockerClient"
+):
     localstack_imagename = "localstack/localstack:latest"
 
     docker_client.images.pull(localstack_imagename)
@@ -26,14 +33,16 @@ def test_RunningSession_individual_services(test_service, docker_client):
                     service_check(test_session)
                 else:
                     with pytest.raises(exceptions.ServiceError):
-                        test_session.service_hostname(test_session)
+                        test_session.service_hostname(service_name)
     finally:
         if localstack_container:
             localstack_container.stop(timeout=10)
 
 
 @pytest.mark.parametrize("test_service", sorted(constants.SERVICE_PORTS))
-def test_LocalstackSession_individual_services(test_service, docker_client):
+def test_LocalstackSession_individual_services(
+    test_service: str, docker_client: "docker.DockerClient"
+):
     """Test that each service can run individually."""
     test_session = session.LocalstackSession(docker_client, services=[test_service])
     with test_session:
@@ -42,4 +51,4 @@ def test_LocalstackSession_individual_services(test_service, docker_client):
                 service_check(test_session)
             else:
                 with pytest.raises(exceptions.ServiceError):
-                    test_session.service_hostname(test_session)
+                    test_session.service_hostname(service_name)

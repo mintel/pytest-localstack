@@ -1,5 +1,6 @@
 """Unit tests for pytest_localstack.utils."""
 import os
+from typing import Optional
 
 import pytest
 from hypothesis import assume, given, settings, strategies as st
@@ -7,11 +8,11 @@ from hypothesis import assume, given, settings, strategies as st
 from pytest_localstack import utils
 
 
-def _get_env_var(name):
+def _get_env_var(name: str) -> Optional[str]:
     return os.environ.get(name) or os.environ.get(name.upper(), "")
 
 
-def _set_env_var(name, value):
+def _set_env_var(name: str, value: Optional[str]):
     if value is None:
         os.environ.pop(name, None)
     else:
@@ -28,7 +29,12 @@ def _set_env_var(name, value):
 )
 @settings(deadline=1000)
 def test_check_proxy_env_vars(
-    http_proxy, https_proxy, HTTP_PROXY, HTTPS_PROXY, no_proxy, NO_PROXY
+    http_proxy: Optional[str],
+    https_proxy: Optional[str],
+    HTTP_PROXY: Optional[str],
+    HTTPS_PROXY: Optional[str],
+    no_proxy,
+    NO_PROXY: Optional[str],
 ):
     """Test pytest_localstack.utils.check_proxy_env_vars."""
     with utils.mock.patch.dict(os.environ):
@@ -48,7 +54,7 @@ def test_check_proxy_env_vars(
         )
         has_http_proxy = bool(_get_env_var("http_proxy"))
         has_https_proxy = bool(_get_env_var("https_proxy"))
-        good_no_proxy = "127.0.0.1" in _get_env_var("no_proxy")
+        good_no_proxy = "127.0.0.1" in (_get_env_var("no_proxy") or "")
 
         if (has_http_proxy or has_https_proxy) and not (
             settings_match and good_no_proxy
@@ -65,7 +71,7 @@ def test_check_proxy_env_vars(
     num_newlines=st.integers(min_value=0, max_value=100),
     n=st.integers(min_value=-100, max_value=100),
 )
-def test_remove_newline(string, newline, num_newlines, n):
+def test_remove_newline(string: str, newline: str, num_newlines: int, n: int):
     assume(not (string.endswith("\n") or string.endswith("\r")))
     string_with_newlines = string + (newline * num_newlines)
     result = utils.remove_newline(string_with_newlines, n)

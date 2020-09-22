@@ -1,10 +1,12 @@
+from types import ModuleType
+
 import pytest_localstack
 from pytest_localstack import hookspecs, plugin
 
 
 @hookspecs.pytest_localstack_hookimpl
-def contribute_to_module(pytest_localstack):
-    pytest_localstack._foo = "bar"
+def contribute_to_module(pytest_localstack: ModuleType):
+    pytest_localstack._foo = "bar"  # type: ignore
 
 
 def test_register_plugin_module():

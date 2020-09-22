@@ -1,12 +1,19 @@
 """Functional tests for pytest_localstack.container."""
 import logging
+from typing import TYPE_CHECKING, Sequence
 
 from pytest_localstack import container
+
+if TYPE_CHECKING:
+    import docker
+    from _pytest.logging import LogCaptureFixture
 
 logger = logging.getLogger(__name__)
 
 
-def test_DockerLogTailer_stdout(docker_client, caplog):
+def test_DockerLogTailer_stdout(
+    docker_client: "docker.DockerClient", caplog: "LogCaptureFixture"
+):
     """Test DockerLogTailer with stdout-only."""
     _do_DockerLogTailer_test(
         docker_client,
@@ -19,7 +26,9 @@ def test_DockerLogTailer_stdout(docker_client, caplog):
     )
 
 
-def test_DockerLogTailer_stderr(docker_client, caplog):
+def test_DockerLogTailer_stderr(
+    docker_client: "docker.DockerClient", caplog: "LogCaptureFixture"
+):
     """Test DockerLogTailer with stderr-only."""
     _do_DockerLogTailer_test(
         docker_client,
@@ -32,7 +41,9 @@ def test_DockerLogTailer_stderr(docker_client, caplog):
     )
 
 
-def test_DockerLogTailer_both(docker_client, caplog):
+def test_DockerLogTailer_both(
+    docker_client: "docker.DockerClient", caplog: "LogCaptureFixture"
+):
     """Test DockerLogTailer with both stdout and stderr."""
     _do_DockerLogTailer_test(
         docker_client,
@@ -45,7 +56,12 @@ def test_DockerLogTailer_both(docker_client, caplog):
 
 
 def _do_DockerLogTailer_test(
-    docker_client, caplog, cmd, logs=(), does_not_log=(), **kwargs
+    docker_client: "docker.DockerClient",
+    caplog: "LogCaptureFixture",
+    cmd: str,
+    logs: Sequence[str] = (),
+    does_not_log: Sequence[str] = (),
+    **kwargs
 ):
     echo = docker_client.containers.run("busybox", ["sh", "-c", cmd], detach=True)
     try:

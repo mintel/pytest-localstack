@@ -1,7 +1,7 @@
 import contextlib
 import logging
 import sys
-import warnings
+from typing import TYPE_CHECKING, Dict, Iterator, Optional, Sequence, Union
 
 import docker
 
@@ -10,8 +10,11 @@ import pytest
 from pytest_localstack import constants, plugin, session, utils
 from pytest_localstack._version import __version__  # noqa: F401
 
-_start_timeout = None
-_stop_timeout = None
+if TYPE_CHECKING:
+    from _pytest.fixtures import FixtureFunctionMarker, _FixtureFunc
+
+_start_timeout: float = None  # type: ignore
+_stop_timeout: float = None  # type: ignore
 
 
 def pytest_configure(config):
@@ -40,20 +43,20 @@ def pytest_addoption(parser):
 
 
 def session_fixture(
-    scope="function",
-    services=None,
-    autouse=False,
-    docker_client=None,
-    region_name=None,
-    kinesis_error_probability=0.0,
-    dynamodb_error_probability=0.0,
-    container_log_level=logging.DEBUG,
-    localstack_version="latest",
-    auto_remove=True,
-    pull_image=True,
-    container_name=None,
+    scope: str = "function",
+    services: Union[None, Sequence[str], Dict[str, int]] = None,
+    autouse: bool = False,
+    docker_client: docker.client.DockerClient = None,
+    region_name: Optional[str] = None,
+    kinesis_error_probability: float = 0.0,
+    dynamodb_error_probability: float = 0.0,
+    container_log_level: int = logging.DEBUG,
+    localstack_version: str = "latest",
+    auto_remove: bool = True,
+    pull_image: bool = True,
+    container_name: Optional[str] = None,
     **kwargs
-):
+) -> Union["FixtureFunctionMarker", "_FixtureFunc"]:
     """Create a pytest fixture that provides a LocalstackSession.
 
     This is not a fixture! It is a factory to create them.
@@ -134,7 +137,9 @@ def session_fixture(
 
 
 @contextlib.contextmanager
-def _make_session(docker_client, *args, **kwargs):
+def _make_session(
+    docker_client: docker.client.DockerClient, *args, **kwargs
+) -> Iterator[session.LocalstackSession]:
     utils.check_proxy_env_vars()
 
     if docker_client is None:

@@ -1,5 +1,8 @@
 """Docker container tools."""
+import logging
 import threading
+
+import docker
 
 from pytest_localstack import utils
 
@@ -23,8 +26,14 @@ class DockerLogTailer(threading.Thread):
     """
 
     def __init__(
-        self, container, logger, log_level, stdout=True, stderr=True, encoding="utf-8"
-    ):
+        self,
+        container: docker.models.containers.Container,
+        logger: logging.Logger,
+        log_level: int,
+        stdout: bool = True,
+        stderr: bool = True,
+        encoding: str = "utf-8",
+    ) -> None:
         self.container = container
         self.logger = logger
         self.log_level = log_level
@@ -34,7 +43,7 @@ class DockerLogTailer(threading.Thread):
         super(DockerLogTailer, self).__init__()
         self.daemon = True
 
-    def run(self):
+    def run(self) -> None:
         """Tail the container logs as a separate thread."""
         try:
             logs_generator = self.container.logs(
