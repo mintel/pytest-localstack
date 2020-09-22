@@ -39,8 +39,7 @@ DEFAULT_AWS_SECRET_ACCESS_KEY = "secretkey"
 DEFAULT_AWS_SESSION_TOKEN = "token"
 
 # Mapping AWS service name to default Localstack port.
-SERVICE_PORTS = {
-    "events": 4587,
+LEGACY_SERVICE_PORTS = {
     "apigateway": 4567,
     "cloudformation": 4581,
     "cloudwatch": 4582,
@@ -48,6 +47,7 @@ SERVICE_PORTS = {
     "dynamodbstreams": 4570,
     "ec2": 4597,
     "es": 4578,
+    "events": 4587,
     "firehose": 4573,
     "iam": 4593,
     "kinesis": 4568,
@@ -63,6 +63,32 @@ SERVICE_PORTS = {
     "ssm": 4583,
     "stepfunctions": 4585,
     "sts": 4592,
+}
+
+SERVICE_PORTS = {
+    "apigateway": 4566,
+    "cloudformation": 4566,
+    "cloudwatch": 4566,
+    "dynamodb": 4566,
+    "dynamodbstreams": 4566,
+    "ec2": 4566,
+    "es": 4566,
+    "events": 4566,
+    "firehose": 4566,
+    "iam": 4566,
+    "kinesis": 4566,
+    "lambda": 4566,
+    "logs": 4566,
+    "redshift": 4566,
+    "route53": 4566,
+    "s3": 4566,
+    "secretsmanager": 4566,
+    "ses": 4566,
+    "sns": 4566,
+    "sqs": 4566,
+    "ssm": 4566,
+    "stepfunctions": 4566,
+    "sts": 4566,
 }
 
 # AWS uses multiple names for some services. Map alias to service name.

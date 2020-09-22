@@ -3,8 +3,10 @@ import logging
 import os
 import string
 import time
+from copy import copy
 
 import six
+from packaging import version
 
 from pytest_localstack import constants, container, exceptions, plugin, service_checks
 
@@ -15,13 +17,27 @@ class RunningSession(object):
     """Connects to an already running localstack server"""
 
     def __init__(
-        self, hostname, services=None, region_name=None, use_ssl=False, **kwargs
+        self,
+        hostname,
+        services=None,
+        region_name=None,
+        use_ssl=False,
+        localstack_version="latest",
+        **kwargs
     ):
 
         self.kwargs = kwargs
         self.use_ssl = use_ssl
         self.region_name = region_name
         self._hostname = hostname
+        self.localstack_version = localstack_version
+
+        if self.localstack_version != "latest" and version.parse(
+            localstack_version
+        ) < version.parse("v0.11.5"):
+            self.service_ports = constants.LEGACY_SERVICE_PORTS
+        else:
+            self.service_ports = constants.SERVICE_PORTS
 
         plugin.manager.hook.contribute_to_session(session=self)
         # If no region was provided, use what botocore defaulted to.
@@ -32,22 +48,22 @@ class RunningSession(object):
             )
 
         if services is None:
-            self.services = dict(constants.SERVICE_PORTS)
+            self.services = copy(self.service_ports)
         elif isinstance(services, (list, tuple, set)):
             self.services = {}
             for service_name in services:
                 try:
-                    port = constants.SERVICE_PORTS[service_name]
+                    port = self.service_ports[service_name]
                 except KeyError:
                     raise exceptions.ServiceError("unknown service " + service_name)
                 self.services[service_name] = port
         elif isinstance(services, dict):
             self.services = {}
             for service_name, port in services.items():
-                if service_name not in constants.SERVICE_PORTS:
+                if service_name not in self.service_ports:
                     raise exceptions.ServiceError("unknown service " + service_name)
                 if port is None:
-                    port = constants.SERVICE_PORTS[service_name]
+                    port = self.service_ports[service_name]
                 self.services[service_name] = port
         else:
             raise TypeError("unsupported services type: %r" % (services,))
@@ -249,6 +265,7 @@ class LocalstackSession(RunningSession):
             services=services,
             region_name=region_name,
             use_ssl=use_ssl,
+            localstack_version=localstack_version,
             **kwargs
         )
 

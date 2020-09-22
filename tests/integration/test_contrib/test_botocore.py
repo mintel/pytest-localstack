@@ -172,6 +172,7 @@ def test_patch(region_name, service_name, make_test_session):
         assert "127.0.0.1" not in original_bc_client._endpoint.host
 
         with localstack.botocore.patch_botocore():
+
             # Original client should now point to Localstack
             assert "127.0.0.1" in original_bc_client._endpoint.host
 

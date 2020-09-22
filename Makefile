@@ -44,7 +44,7 @@ lint: $(VIRTUALENV)  ## check code style
 
 
 fmt: $(VIRTUALENV)  ## apply code style formatting
-	$(PIPENV_RUN) isort --apply
+	$(PIPENV_RUN) isort --apply $(BLACK_TARGETS)
 	$(PIPENV_RUN) black $(BLACK_TARGETS)
 .PHONY: fmt
 
