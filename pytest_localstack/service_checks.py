@@ -125,6 +125,7 @@ SERVICE_CHECKS = {
     "kinesis": botocore_check_response_type(
         "kinesis", "list_streams", list, "StreamNames"
     ),
+    "kms": botocore_check_response_type("kms", "list_keys", list, "Keys"),
     "lambda": botocore_check_response_type(
         "lambda", "list_functions", list, "Functions"
     ),
