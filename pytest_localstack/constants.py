@@ -1,27 +1,8 @@
 """pytest-localstack constants."""
 
-from distutils.version import LooseVersion
-
 import botocore
 
-
-def get_version_tuple(version):
-    """
-    Return a tuple of version numbers (e.g. (1, 2, 3)) from the version
-    string (e.g. '1.2.3').
-
-
-    Copyright (c) Django Software Foundation and individual contributors.
-    All rights reserved.
-    """
-    loose_version = LooseVersion(version)
-    version_numbers = []
-    for item in loose_version.version:
-        if not isinstance(item, int):
-            break
-        version_numbers.append(item)
-    return tuple(version_numbers)
-
+from pytest_localstack import utils
 
 # IP for localhost
 LOCALHOST = "127.0.0.1"
@@ -47,6 +28,7 @@ SERVICE_PORTS = {
     "dynamodbstreams": 4570,
     "ec2": 4597,
     "es": 4578,
+    "events": 4587,
     "firehose": 4573,
     "iam": 4593,
     "kinesis": 4568,
@@ -75,4 +57,4 @@ SERVICE_ALIASES = {
 DEFAULT_CONTAINER_START_TIMEOUT = 60
 DEFAULT_CONTAINER_STOP_TIMEOUT = 10
 
-BOTOCORE_VERSION = get_version_tuple(botocore.__version__)
+BOTOCORE_VERSION = utils.get_version_tuple(botocore.__version__)

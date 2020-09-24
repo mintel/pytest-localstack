@@ -5,12 +5,13 @@ language: python
 python:
   - '3.6'
   - '3.7'
-  - '3.8-dev'
+  - '3.8'
+  - '3.9-dev'
 
 matrix:
   fast_finish: true
   allow_failures:
-    - python: 3.8-dev
+    - python: 3.9-dev
 
 stages:
   - lint
@@ -31,9 +32,9 @@ install:
 
 script:
   - pytest --version
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc -k "tests/unit" -n auto
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append -k "tests/integration" -n auto
-  - pytest -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append -k "tests/functional"
+  - pytest tests/unit -ra --cov=pytest_localstack/ --cov-config .coveragerc  -n auto
+  - pytest tests/integration -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append  -n auto
+  - pytest tests/functional -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append
 
 after_success:
   - codecov
@@ -41,7 +42,7 @@ after_success:
 jobs:
   include:
     - stage: lint
-      python: 3.6
+      python: 3.8
       services: []
       install: make env
       script:
@@ -52,7 +53,7 @@ jobs:
 
     - stage: deploy
       if: tag =~ ^v
-      python: '3.7'
+      python: '3.8'
       services: []
       before_install: []
       install: []

@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+- Fix bug in STS client endpoint patching.
+
 0.4.1 (2019-08-22)
 ------------------
 
