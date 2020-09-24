@@ -6,6 +6,7 @@ Change Log
 
 - Fixed bug in STS client endpoint patching.
 - Added EventBridge service.
+- Added KMS service.
 
 0.4.1 (2019-08-22)
 ------------------
