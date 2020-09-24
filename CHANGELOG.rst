@@ -1,10 +1,11 @@
 Change Log
 ==========
 
-Unreleased
-----------
+0.5.0 (2020-09-24)
+------------------
 
-- Fix bug in STS client endpoint patching.
+- Fixed bug in STS client endpoint patching.
+- Added EventBridge service.
 
 0.4.1 (2019-08-22)
 ------------------
