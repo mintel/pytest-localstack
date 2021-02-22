@@ -249,6 +249,7 @@ class LocalstackSession(RunningSession):
         pull_image=True,
         container_name=None,
         use_ssl=False,
+        hostname=None,
         **kwargs
     ):
         self._container = None
@@ -262,7 +263,7 @@ class LocalstackSession(RunningSession):
         self.pull_image = bool(pull_image)
 
         super(LocalstackSession, self).__init__(
-            hostname=constants.LOCALHOST,
+            hostname=hostname if hostname else constants.LOCALHOST,
             services=services,
             region_name=region_name,
             use_ssl=use_ssl,
