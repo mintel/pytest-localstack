@@ -1,61 +1,75 @@
-VIRTUALENV := $(shell python -c 'from __future__ import print_function; import sys; print(sys.prefix if hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix) else "", end="")')
-ifeq ($(VIRTUALENV),)
-VIRTUALENV := .venv
-endif
+NAME := pytest_localstack
 
-PIPENV_VARS := PIPENV_VENV_IN_PROJECT=1
-PIPENV := $(PIPENV_VARS) pipenv
-PIPENV_RUN := $(PIPENV) run
-
-T := $(shell tput sgr0)
-TBOLD := $(shell tput bold)
-TGREEN := $(shell tput setaf 2)
-TRED := $(shell tput setaf 1)
-
-BLACK_TARGETS := $(shell find . -name "*.py" -not -path "*/.venv/*")
+INSTALL_STAMP := .install.stamp
+POETRY := $(shell command -v poetry 2> /dev/null)
 
 
+.DEFAULT_GOAL := help
+
+.PHONY: help
 help:  ## print this help
 	@# https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-.PHONY: help
 
 
-env: $(VIRTUALENV)  ## create development virtualenv
-.PHONY: env
-$(VIRTUALENV): $(VIRTUALENV)/bin/activate
-$(VIRTUALENV)/bin/activate: Pipfile.lock
-	$(PIPENV) install --dev --deploy
-	touch $(VIRTUALENV)/bin/activate
-Pipfile.lock: Pipfile setup.py
-	$(PIPENV) lock
+.PHONY: install  ## create development virtualenv
+install: $(INSTALL_STAMP)
+$(INSTALL_STAMP): pyproject.toml poetry.lock
+	@if [ -z $(POETRY) ]; then echo "Poetry could not be found. See https://python-poetry.org/docs/"; exit 2; fi
+	$(POETRY) install
+	@touch $(INSTALL_STAMP)
 
+.PHONY: clean
+clean: ## remove all build, test, coverage and Python artifacts
+	rm -rf \
+		$(INSTALL_STAMP) \
+		.coverage \
+		.mypy_cache \
+		.venv/ \
+		build/ \
+		dist/ \
+		.eggs/ \
+		.tox/ \
+		.coverage \
+		htmlcov/ \
+		coverage.xml \
+		junit.xml \
+		junit-*.xml
+	find . \( \
+		-name "*.egg-info" \
+		-o -name "*.egg" \
+		-o -name "*.pyc" \
+		-o -name "*.pyo" \
+		-o -name "*~" \
+		-o -name "__pycache__" \
+		\) \
+		-exec rm -fr {} +
 
-test: $(VIRTUALENV)  ## run tests
-	$(PIPENV_RUN) pytest
-.PHONY: ftest
-
-
-lint: $(VIRTUALENV)  ## check code style
-	$(PIPENV) check
-	@echo "$(TBOLD)Checking style style…$(T)"
-	@$(PIPENV_RUN) black --check $(BLACK_TARGETS)
 .PHONY: lint
+lint: $(INSTALL_STAMP)  ## check code style
+	$(POETRY) run isort --check-only ./tests/ $(NAME)
+	$(POETRY) run black --check ./tests/ $(NAME) --diff
+	$(POETRY) run pflake8 ./tests/ $(NAME)
+	$(POETRY) run mypy ./tests/ $(NAME) --ignore-missing-imports
+	$(POETRY) run bandit -r $(NAME) -s B608
 
-
-fmt: $(VIRTUALENV)  ## apply code style formatting
-	$(PIPENV_RUN) isort --apply $(BLACK_TARGETS)
-	$(PIPENV_RUN) black $(BLACK_TARGETS)
 .PHONY: fmt
+fmt: $(INSTALL_STAMP)  ## apply code style formatting
+	$(POETRY) run isort --profile=black --lines-after-imports=2 ./tests/ $(NAME)
+	$(POETRY) run black ./tests/ $(NAME)
 
+.PHONY: test
+test: $(INSTALL_STAMP)  ## run tests
+	$(POETRY) run pytest
 
-docs: $(VIRTUALENV)
-	$(PIPENV_RUN) $(MAKE) -C docs html
 .PHONY: docs
+docs: $(INSTALL_STAMP)  ## build documentation
+	$(POETRY) run $(MAKE) -C docs html
 
 
-docs-live: $(VIRTUALENV)  ## build and view docs in real-time
-	$(PIPENV_RUN) sphinx-autobuild -b html \
+.PHONY: docs-live
+docs-live: $(INSTALL_STAMP)  ## build and view docs in real-time
+	$(POETRY) run sphinx-autobuild -b html \
 		-p 0 \
 		--open-browser \
 		--watch ./ \
@@ -76,45 +90,3 @@ docs-live: $(VIRTUALENV)  ## build and view docs in real-time
 		--ignore "setup.cfg" \
 		--ignore "Pipfile*" \
 		docs docs/_build/html
-.PHONY: docs-live
-
-
-lock: $(VIRTUALENV)  ## regenerate Pipfile.lock file
-	$(PIPENV) lock
-.PHONY: lock
-
-
-clean: clean-build clean-pyc clean-env clean-test  ## remove all build, test, coverage and Python artifacts
-.PHONY: clean
-
-
-clean-build:  ## remove build artifacts
-	rm -fr build/
-	rm -fr dist/
-	rm -fr .eggs/
-	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '*.egg' -exec rm -f {} +
-.PHONY: clean-build
-
-
-clean-pyc:  ## remove Python file artifacts
-	find . -name '*.pyc' -exec rm -f {} +
-	find . -name '*.pyo' -exec rm -f {} +
-	find . -name '*~' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -fr {} +
-.PHONY: clean-pyc
-
-
-clean-env:  ## remove development virtualenv
-	pipenv --rm || true
-.PHONY: clean-env
-
-
-clean-test:  ## remove test and coverage artifacts
-	rm -rf .tox/ \
-	       .coverage \
-	       htmlcov/ \
-	       coverage.xml \
-	       junit.xml \
-	       junit-*.xml
-.PHONY: clean-test

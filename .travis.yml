@@ -1,71 +1,66 @@
-dist: xenial
+dist: focal
 services:
-  - docker
+- docker
 language: python
 python:
-  - '3.6'
-  - '3.7'
-  - '3.8'
-  - '3.9-dev'
-
+- '3.6'
+- '3.7'
+- '3.8'
+- '3.9'
+- 3.10-dev
 matrix:
   fast_finish: true
   allow_failures:
-    - python: 3.9-dev
-
+  - python: 3.10-dev
 stages:
-  - lint
-  - test
-  - deploy
-
+- lint
+- test
+- deploy
 before_install:
-  - pip install --upgrade pipenv
-  # Numpy isn't needed by pytest-localstack, but it comes preinstalled in Travis.
-  # `pipenv check` complains if numpy<=1.16.0.
-  - pip install 'numpy>1.16.0'
-  - pipenv --version
-
+- pip install --upgrade poetry
+- poetry --version
+- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
 install:
-  # Do this instead of `make env` so we always test with latest versions
-  # of packages.
-  - pipenv install --dev --pre codecov pytest-cov pytest-xdist
-
+- make install
 script:
-  - pytest --version
-  - pytest tests/unit -ra --cov=pytest_localstack/ --cov-config .coveragerc  -n auto
-  - pytest tests/integration -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append  -n auto
-  - pytest tests/functional -ra --cov=pytest_localstack/ --cov-config .coveragerc --cov-append
-
+- poetry run pytest --version
+- poetry run pytest tests/unit -ra --cov=pytest_localstack/ -n auto
+- poetry run pytest tests/integration -ra --cov=pytest_localstack/ --cov-append  -n
+  auto
+- poetry run pytest tests/functional -ra --cov=pytest_localstack/ --cov-append
 after_success:
-  - codecov
-
+- codecov
 jobs:
   include:
-    - stage: lint
-      python: 3.8
-      services: []
-      install: make env
-      script:
-        - make lint
-        - make docs
-      after_success: []
-      deploy: []
-
-    - stage: deploy
-      if: tag =~ ^v
-      python: '3.8'
-      services: []
-      before_install: []
-      install: []
-      script: 'true'
-      after_success: []
-      deploy:
-        provider: pypi
-        user: jdoepke_mintel
-        password:
-          secure: fMzAGIp0OJQI5GdeiN0u6g2uTUvlHmGskWfvvaNF+xM4/J3o33LWqyRjRa7m07Mv+2XtuUaFyh5s/wcHlro4Ianx7c3hRa6gx+MxB4akgj8H0xgFrKduZfOcruNGcz0qOwk9PsYSk+KBdfESy0SHotoOZdYT4rB3i12PJgCrO3Dn466qbeNYdWEO+1nZMkGjkGPmGTgann9d2HbRZP1Eu/0ehIU02Gvs0uPzNpq2UBtE6XpAPu7O/yq7l02m21hj1GuMJq86wNHkVi9LGvSvDBIF+iZSvrRSM6/+DYzCq5UKnQy1gPHUVWkZXWcuDrJW5ODZzlG0JHbagLdl4gQKU/0giMHCo9g3f6X7jeFUIAYMKEmwsU6qOO31KiAat7mWMI07peD4SCexQxksVYcUeuriF8A+AkG8qDaeJKdX3wDpOMpi4aWYt2KvIUEyPiHeGruv5y1NIwTQrcpkOxYcZ4/nwrMTph0vvAJsgOCg6NueIQLq2ungeBbXRarg9afU16j5ODWWDNLvJSVE02VgAkKc8Gw7EvtyWRmsr/aV86UXHZ85VImDKvIA1pdJAypa+PjdsVNnfDtcfsDnkROu18dJCBy0tXNuHtsHOjESHrODHBfGh/Wr4/qVO4CQVloB+NIIZNLv9QvbFQV5jfiyLALCIGCw3mujp3y5kJBE2zI=
-        distributions: 'sdist bdist_wheel'
-        skip_existing: true
-        on:
-          tags: true
-          all_branches: true
+  - stage: lint
+    python: 3.8
+    services: []
+    install: make install
+    script:
+    - make lint
+    - make docs
+    after_success: []
+    deploy: []
+  - stage: deploy
+    if: tag =~ ^v
+    python: '3.8'
+    services: []
+    before_install: []
+    install: []
+    script: 'true'
+    after_success: []
+    deploy:
+      provider: pypi
+      user: jdoepke_mintel
+      password:
+        secure: fMzAGIp0OJQI5GdeiN0u6g2uTUvlHmGskWfvvaNF+xM4/J3o33LWqyRjRa7m07Mv+2XtuUaFyh5s/wcHlro4Ianx7c3hRa6gx+MxB4akgj8H0xgFrKduZfOcruNGcz0qOwk9PsYSk+KBdfESy0SHotoOZdYT4rB3i12PJgCrO3Dn466qbeNYdWEO+1nZMkGjkGPmGTgann9d2HbRZP1Eu/0ehIU02Gvs0uPzNpq2UBtE6XpAPu7O/yq7l02m21hj1GuMJq86wNHkVi9LGvSvDBIF+iZSvrRSM6/+DYzCq5UKnQy1gPHUVWkZXWcuDrJW5ODZzlG0JHbagLdl4gQKU/0giMHCo9g3f6X7jeFUIAYMKEmwsU6qOO31KiAat7mWMI07peD4SCexQxksVYcUeuriF8A+AkG8qDaeJKdX3wDpOMpi4aWYt2KvIUEyPiHeGruv5y1NIwTQrcpkOxYcZ4/nwrMTph0vvAJsgOCg6NueIQLq2ungeBbXRarg9afU16j5ODWWDNLvJSVE02VgAkKc8Gw7EvtyWRmsr/aV86UXHZ85VImDKvIA1pdJAypa+PjdsVNnfDtcfsDnkROu18dJCBy0tXNuHtsHOjESHrODHBfGh/Wr4/qVO4CQVloB+NIIZNLv9QvbFQV5jfiyLALCIGCw3mujp3y5kJBE2zI=
+      distributions: sdist bdist_wheel
+      skip_existing: true
+      on:
+        tags: true
+        all_branches: true
+env:
+  global:
+  - secure: e3NdHXhVSa0RKUGupcrSsYKAVeKBdDLU5sf37csaiJ/D03bKDn0RQLudeF9R2aumY05ICUOdY3MRhCnEGNp8ptYqGzZpZVlauVApQeZhLV/v+ov8OxdjhVO5ZWlniGAwGdUR9s3z+gIY5hxiZ6qYkEY129K3qwy9twdkn5ay8dtsoBMnA1Ea6DhvWCAWEUsszyz8jzqui6hUO1GXS8yUd2FZFuyy0fLLZ9WHKnByIp7B29zvDQTPZx6lfu4QYOOrCGTUo/oN8cl10njldty/12ITqSLYjQdceIRWlT3vS6i9UtHeIFNIq1tvGG6FzeV+Wp0/5x6E+6Thudr/qQUKsOSrw/Nx90/BZbiTFViAoT7qem1CZfkLFfo73D9t1LbdbakMMBayeDvd/R6yHGfQjQUMjFHVeXcKyHxGAq+wdS96+1f3hS0iCD0DPJdWBojSdq0+4/AbBpk7dUQ5qTc2NlUUkc4oZcRtamBSacCz/lNmdC2Mh8/tdubZp0A5tfZ4ao450WXUnH2+37DHlOvJ3AIrTZ0Psdfw/KQI/yE0gOSn+VU285i0tj9FJumH4JToSL3WNnJqSc2HJudte6IkxNZBaFeugjs24Ie/BvcDmki0L8h/KQ8DYZC8qIRc7owQeWLRCFsAMTFbUr1FxVR42FYgaPZkr1FhSNf1V9fIfKY=
+  - secure: TWuqQB5EqgJNbT7ucY0omr2R6C11h968ouUY+wM2h2I+B/h2A4JgAfb3EkF38MbijxSJw77lT+FT4k6ShdTluhkbQSRNxopWEgqSsKNiKvjBRv/3gDrtNGFiucs9PkSyYA7Z29gee4J9kSOe11z/OvTKIRnS/UijGbTSS9WI8Kun2Jx5uC03uR7HWdEpkOkjMv5vH0XoZ3wLebOcLcaZ++5a9iYzSGv/B8VFTQqs0Ioy3/81RZNRt6oRDobJOKaVFA3qAa2k/Ur+STMPLwW8bjN6Mn1KcLXEe9L2CRkot/8wWMUMix8xFQaZPNVipZ3y77SMMBcvWrWxm/lry2yLwzpnlFp1F1rABuOLnLxv/j/KpGuXo3SSgCc/WvXAKL+Ohebz1EG40eWt5MAD8R2AW/yVErxFWiLRnaxFgFdB+0P6T2Xjk2IkB/qsH0tAE6PrpB9Os1LaJrXwN2mnG0R2AU0i+3BBIcXErZXhDLaRppmgD/rWlNDPTWgTbo5C0VTtlCiROnje5q+2e+O984ZLaMBdV9U5S/+wgVu9v2ycAFmMGX5GCZm7wjdVVmdlEnKoq5c4q+Fde+xSa4waATwmqhbC+jwmT9eQaxWfMTaZv95sXBICk2HSaV1MnMnBRo1jYQpBSdzsDGyoUlcyGpiOG/YoFgAofLSYPycspYEL3MM=
+  - secure: raFVO1bLTD7msQILoOQC2v/TAxFwpF9LD70b2MsAkh1qy5Boc6Y1C4VAHTwhmblKHGIbVgdRkySOj2ZjPmgRrGuEFBOAERDtlZpaoRySz1aAG6TVhDdquPIlEJ9BnLFZxPRPIRUXDKQ+2LaW40zK1sAEKqgkCzU45LzNDqkFyVMNEBX/Ez4ARFfAfB3o4+sMyCU/F+p/J1fpjVfaDbXcFeRkiw/WdAFwPFm+4kaq3F7UfXn1s+haNn/0slC93shfb/LZwlzd39ehcBA2q7LYhPdjcwE3VEhkUv9b90LtA2e6l1XTM+T6cLsgwJEp6AifFZhpQcDzpFUV3CE0K/aV7IhPA2WX5zLTLJT7VLfgPZfdgDlWQ+11+BBpBdTUsNPUjv/Z+O72uda/chDtEXN2wephg+oCavMHJ5G5H8X/YJuoj/02QrhNFGQirLcfcFVquZAfrikSLtpdNe0qEt0/qek7ejO3YZmds7XT7V1Okdz8O0zNUMXF+eQUZkeFClpyUQbaeKNzyH3Dr+xCT4cO7xh2nh3FI8hMKlTHxniWo2hhl+tnb1jJzoZJDLo37AgwGGg67l85jBxzCQJWJF6nrVJ3vXIOw9bqK8+x75bFmJc71oUZixblbVWpyFNPicdQRAvSad/lobVodItsfy/+WPqbCAOcWUd90I7UIusKwyM=

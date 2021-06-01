@@ -3,7 +3,6 @@ import contextlib
 import os
 import types
 import urllib.request
-from unittest import mock
 
 
 def check_proxy_env_vars():
@@ -15,10 +14,7 @@ def check_proxy_env_vars():
         try:
             if os.environ[var.lower()] != os.environ[var.upper()]:
                 raise UserWarning(
-                    "Your {0} and {1} environment "
-                    "variables are set to different values.".format(
-                        var.lower(), var.upper()
-                    )
+                    f"Your {var.lower()} and {var.upper()} environment variables are set to different values."
                 )
         except KeyError:
             pass

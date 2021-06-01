@@ -5,6 +5,7 @@ import inspect
 import logging
 import socket
 import weakref
+from unittest import mock
 
 import botocore
 import botocore.client
@@ -16,7 +17,8 @@ import botocore.session
 import pytest
 
 from pytest_localstack import _make_session, constants, exceptions, hookspecs, utils
-from pytest_localstack.utils import mock
+from pytest_localstack.session import RunningSession
+
 
 try:
     import boto3
@@ -128,7 +130,10 @@ class BotocoreTestResourceFactory:
 
             @localstack_session.setter
             def localstack_session(self, value):
-                assert isinstance(self, Session)
+                if not isinstance(value, RunningSession):
+                    raise TypeError(
+                        f"localstack_session value is type {value.__class__.__name__}, must be a LocalstackSession"
+                    )
                 self.__dict__["localstack_session"] = value
 
             attr["localstack_session"] = localstack_session
@@ -159,7 +164,7 @@ class BotocoreTestResourceFactory:
                         raise AttributeError("_internal_components")
                 proxy_components = botocore.session.Session._proxy_components
                 if self not in proxy_components:
-                    proxy_components[self] = DebugComponentLocator()
+                    proxy_components[self] = DebugComponentLocator()  # noqa
                     self._register_components()
                 return proxy_components[self]
 
@@ -215,12 +220,12 @@ class BotocoreTestResourceFactory:
             @functools.wraps(_original_convert_to_request_dict)
             def _convert_to_request_dict(self, *args, **kwargs):
                 request_dict = _original_convert_to_request_dict(self, *args, **kwargs)
-                assert any(
-                    (
-                        factory.localstack_session.hostname in request_dict["url"],
-                        socket.gethostname() in request_dict["url"],
-                    )
-                )
+                if not (
+                    factory.localstack_session.hostname in request_dict["url"]
+                    or socket.gethostname() in request_dict["url"]
+                ):
+                    # The URL of the request points to something other than localstack.
+                    raise Exception("request dict is not patched")
                 return request_dict
 
             patches.append(
@@ -335,7 +340,7 @@ def patch_fixture(
     auto_remove=True,
     pull_image=True,
     container_name=None,
-    **kwargs
+    **kwargs,
 ):
     """Create a pytest fixture that temporarially redirects all botocore
     sessions and clients to a Localstack container.
@@ -408,7 +413,7 @@ def patch_fixture(
             auto_remove=auto_remove,
             pull_image=pull_image,
             container_name=container_name,
-            **kwargs
+            **kwargs,
         ) as session:
             with session.botocore.patch_botocore():
                 yield session

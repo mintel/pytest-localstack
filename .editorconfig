@@ -12,21 +12,11 @@ trim_trailing_whitespace = true
 [*.{py,md,rst}]
 indent_style = space
 
-[.coveragerc]
-indent_style = tab
-
 [*.{ini,cfg,bat}]
 indent_style = tab
 
-[{Makefile,.coveragerc}]
+[Makefile]
 indent_style = tab
-
-[.bumpversion.cfg]
-indent_style = tab
-# .bumpversion.cfg gets rewritten by Python ConfigParser.
-# Ignore any changes to whitespace.
-trim_trailing_whitespace = false
-insert_final_newline = false
 
 [*.{yml,yaml}]
 indent_style = space

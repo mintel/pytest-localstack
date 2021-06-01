@@ -1,8 +1,0 @@
-include *.rst
-include LICENSE
-include MANIFEST.in
-graft docs
-graft pytest_localstack
-graft tests
-global-exclude __pycache__
-global-exclude *.py[co]
