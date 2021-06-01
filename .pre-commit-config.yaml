@@ -3,14 +3,21 @@ repos:
     hooks:
       - id: fmt
         name: fmt-local
-        description: 'Format Python code by running "make fmt"'
+        description: 'Format Python code'
         language: system
         types: [python]
-        entry: make fmt lint
+        entry: make fmt
+        pass_filenames: false
+      - id: lint
+        name: lint-local
+        description: 'Lint Python code'
+        language: system
+        types: [python]
+        entry: make lint
         pass_filenames: false
 
-  - repo: git@github.com:pre-commit/pre-commit-hooks
-    sha: v1.1.1
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    sha: v4.0.1
     hooks:
       - id: check-ast
       - id: check-case-conflict

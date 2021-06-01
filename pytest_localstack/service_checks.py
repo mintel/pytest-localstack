@@ -92,7 +92,10 @@ def botocore_check_response_type(
     def _f(client_response):
         for key in response_keys:
             client_response = client_response[key]
-        assert isinstance(client_response, expected_type)
+        if not isinstance(client_response, expected_type):
+            raise TypeError(
+                f"Client response type {client_response.__class__.__name__} is not a subtype of {expected_type.__name__}"
+            )
 
     return _f
 
@@ -156,4 +159,4 @@ SERVICE_CHECKS = {
 }
 
 # All services should have a check.
-assert set(SERVICE_CHECKS) == set(constants.SERVICE_PORTS)
+assert set(SERVICE_CHECKS) == set(constants.SERVICE_PORTS)  # nosec

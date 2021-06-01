@@ -1,0 +1,80 @@
+[tool.poetry]
+name = "pytest-localstack"
+version = "0.4.1"
+description = "Pytest plugin for AWS integration tests"
+authors = ["Mintel Group Ltd."]
+license = "MIT"
+readme = "README.rst"
+repository = "https://github.com/mintel/pytest-localstack"
+documentation = "https://pytest-localstack.readthedocs.io/"
+keywords = ["pytest", "localstack", "aws"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Utilities",
+]
+include = ["CHANGELOG.rst", "LICENSE"]
+
+[tool.poetry.plugins.pytest11]
+localstack = "pytest_localstack"
+
+[tool.poetry.dependencies]
+python = "^3.6.2"
+botocore = "^1.4.31,!=1.4.45"
+docker = "^4.0.0"
+pluggy = "^0.12.0"
+pytest = "^6.0.0"  # need caplog (+ warnings for tests)
+
+[tool.poetry.dev-dependencies]
+boto3 = "*"
+hypothesis = "*"
+black = {version = "^21.5b2", allow-prereleases = true}
+isort = "^5.8.0"
+mypy = "^0.812"
+flake8 = "^3.9.2"
+bandit = "^1.7.0"
+pyproject-flake8 = "^0.0.1-alpha.2"
+coverage = {extras = ["toml"], version = "^5.5"}
+codecov = "^2.1.11"
+pytest-cov = "^2.12.1"
+pytest-xdist = "^2.2.1"
+Sphinx = "^4.0.2"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta:__legacy__"
+
+[tool.pytest.ini_options]
+norecursedirs = ".* build dist *.egg tmp*"
+testpaths = "tests/unit tests/integration tests/functional pytest_localstack examples"
+timeout = 300
+addopts = "--doctest-glob='*.rst' --doctest-glob='*.md' --doctest-modules"
+
+[tool.isort]
+skip_glob = "*/.venv/*"
+profile = "black"
+lines_after_imports = 2
+
+# Structure
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTING", "FIRSTPARTY", "LOCALFOLDER"]
+default_section = "THIRDPARTY"
+known_testing = ["hypothesis", "pytest", "tests"]
+known_first_party = ["pytest_localstack"]
+
+[tool.flake8]
+max-line-length = 88 # Black line length.
+extend-ignore = "W503,E501"
+
+[tool.coverage.run]
+omit = ["pytest_localstack/hookspecs.py"]

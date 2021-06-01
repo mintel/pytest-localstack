@@ -9,7 +9,7 @@ class ContainerNotStartedError(Error):
     """Raised when :class:`~.LocalstackSession` container isn't started yet."""
 
     def __init__(self, session, *args, **kwargs):
-        msg = "{0!r} isn't started yet".format(session)
+        msg = f"{session!r} isn't started yet"
         super(ContainerNotStartedError, self).__init__(msg, *args, **kwargs)
 
 
@@ -19,7 +19,7 @@ class ServiceError(Error):
     def __init__(self, msg=None, service_name=None, *args, **kwargs):
         if not msg:
             if service_name:
-                msg = "{0} isn't responding".format(service_name)
+                msg = f"{service_name} isn't responding"
             else:
                 msg = "Service error"
         super(ServiceError, self).__init__(msg, *args, **kwargs)
@@ -29,7 +29,7 @@ class ContainerAlreadyStartedError(Error):
     """Raised when :class:`~.LocalstackSession` container is started twice."""
 
     def __init__(self, session, *args, **kwargs):
-        msg = "{0!r} is already started".format(session)
+        msg = f"{session!r} is already started"
         super(ContainerAlreadyStartedError, self).__init__(msg, *args, **kwargs)
 
 

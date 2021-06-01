@@ -1,14 +1,13 @@
 import contextlib
 import logging
 import sys
-import warnings
 
 import docker
 
 import pytest
 
-from pytest_localstack import constants, plugin, session, utils
-from pytest_localstack._version import __version__  # noqa: F401
+from pytest_localstack import plugin, session, utils
+
 
 _start_timeout = None
 _stop_timeout = None
@@ -62,9 +61,7 @@ def session_fixture(
     a :class:`.LocalstackSession` instance.
     This is useful for simulating multiple AWS accounts.
     It does not automatically redirect botocore/boto3 traffic to Localstack
-    (although :class:`.LocalstackSession` has a method to do that.) The
-    :class:`.LocalstackSession` instance has factories to create botocore/boto3
-    clients that will connect to Localstack.
+    (although :class:`.LocalstackSession` has a method to do that.)
 
     Args:
         scope (str, optional): The pytest scope which this fixture will use.

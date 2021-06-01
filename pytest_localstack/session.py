@@ -5,8 +5,6 @@ import string
 import time
 from copy import copy
 
-from packaging import version
-
 from pytest_localstack import (
     constants,
     container,
@@ -15,6 +13,7 @@ from pytest_localstack import (
     service_checks,
     utils,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,7 @@ class RunningSession:
         region_name=None,
         use_ssl=False,
         localstack_version="latest",
-        **kwargs
+        **kwargs,
     ):
 
         self.kwargs = kwargs
@@ -132,7 +131,7 @@ class RunningSession:
                 except exceptions.ServiceError as e:
                     if (time.time() - start_time) >= timeout:
                         raise exceptions.TimeoutError(
-                            "Localstack service not started: {0}".format(service_name)
+                            f"Localstack service not started: {service_name}"
                         ) from e
             if services:
                 delay = (2 ** num_retries) * initial_retry_delay
@@ -170,7 +169,7 @@ class RunningSession:
         service_name = constants.SERVICE_ALIASES.get(service_name, service_name)
         if service_name not in self.services:
             raise exceptions.ServiceError(
-                "{0!r} does not have {1} enabled".format(self, service_name)
+                f"{self!r} does not have {service_name} enabled"
             )
         port = self.map_port(self.services[service_name])
         return "%s:%i" % (self.hostname, port)
@@ -186,8 +185,7 @@ class LocalstackSession(RunningSession):
     """Run a localstack Docker container.
 
     This class can start and stop a Localstack container, as well as capture
-    its logs. It also implments a plugin system to add factories
-    for the various AWS client libraries (botocore, boto3, etc).
+    its logs.
 
     Can be used as a context manager:
 
@@ -234,7 +232,6 @@ class LocalstackSession(RunningSession):
     """
 
     image_name = "localstack/localstack"
-    factories = []
 
     def __init__(
         self,
@@ -250,7 +247,7 @@ class LocalstackSession(RunningSession):
         container_name=None,
         use_ssl=False,
         hostname=None,
-        **kwargs
+        **kwargs,
     ):
         self._container = None
         self._factory_cache = {}
@@ -268,7 +265,7 @@ class LocalstackSession(RunningSession):
             region_name=region_name,
             use_ssl=use_ssl,
             localstack_version=localstack_version,
-            **kwargs
+            **kwargs,
         )
 
         self.container_log_level = container_log_level

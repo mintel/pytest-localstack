@@ -1,9 +1,10 @@
 import logging
+from unittest import mock
 
 from tests import utils as test_utils
 
-from pytest_localstack import container as ptls_container, session
-from pytest_localstack.utils import mock
+from pytest_localstack import container as ptls_container
+from pytest_localstack import session
 
 
 def test_DockerLogTailer(caplog):

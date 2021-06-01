@@ -1,4 +1,5 @@
 import os
+from unittest import mock
 
 import boto3
 import botocore
@@ -8,7 +9,6 @@ from tests import utils as test_utils
 
 from pytest_localstack import constants, exceptions, plugin
 from pytest_localstack.contrib import boto3 as ptls_boto3
-from pytest_localstack.utils import mock
 
 
 def test_session_contribution():

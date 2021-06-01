@@ -5,6 +5,7 @@ import boto3.session
 
 from pytest_localstack import constants, hookspecs
 
+
 logger = logging.getLogger(__name__)
 
 

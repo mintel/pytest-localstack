@@ -2,7 +2,8 @@ import re
 import time
 
 import pytest
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 from tests import utils as test_utils
 
 from pytest_localstack import constants, exceptions, session

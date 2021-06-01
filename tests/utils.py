@@ -1,10 +1,11 @@
 """Test utils."""
 import hashlib
+from unittest import mock
 
 import docker
 
 from pytest_localstack import session
-from pytest_localstack.utils import mock
+
 
 AWS_REGIONS = [
     "us-east-1",
@@ -28,7 +29,7 @@ AWS_REGIONS = [
 def generate_fake_logs(n=10):
     """Generate some fake log lines."""
     for i in range(n):
-        yield "foobar {}\n".format(i).encode("utf-8")
+        yield f"foobar {i}\n".encode("utf-8")
 
 
 def make_mock_container(

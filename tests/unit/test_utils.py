@@ -1,8 +1,10 @@
 """Unit tests for pytest_localstack.utils."""
 import os
+from unittest import mock
 
 import pytest
-from hypothesis import assume, given, settings, strategies as st
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 from pytest_localstack import utils
 
@@ -31,7 +33,7 @@ def test_check_proxy_env_vars(
     http_proxy, https_proxy, HTTP_PROXY, HTTPS_PROXY, no_proxy, NO_PROXY
 ):
     """Test pytest_localstack.utils.check_proxy_env_vars."""
-    with utils.mock.patch.dict(os.environ):
+    with mock.patch.dict(os.environ):
         # mock.patch.dict can't delete keys.
         # Patch os.environ manually.
         _set_env_var("http_proxy", http_proxy)

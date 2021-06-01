@@ -4,6 +4,7 @@ import botocore
 
 from pytest_localstack import utils
 
+
 # IP for localhost
 LOCALHOST = "127.0.0.1"
 
@@ -11,13 +12,13 @@ LOCALHOST = "127.0.0.1"
 DEFAULT_AWS_REGION = "us-east-1"
 
 # The default AWS access key.
-DEFAULT_AWS_ACCESS_KEY_ID = "accesskey"
+DEFAULT_AWS_ACCESS_KEY_ID = "accesskey"  # nosec
 
 # The default AWS secret access key.
-DEFAULT_AWS_SECRET_ACCESS_KEY = "secretkey"
+DEFAULT_AWS_SECRET_ACCESS_KEY = "secretkey"  # nosec
 
 # The default AWS session token.
-DEFAULT_AWS_SESSION_TOKEN = "token"
+DEFAULT_AWS_SESSION_TOKEN = "token"  # nosec
 
 # Mapping AWS service name to default Localstack port.
 LEGACY_SERVICE_PORTS = {

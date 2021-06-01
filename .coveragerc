@@ -1,4 +1,0 @@
-[run]
-omit =
-	pytest_localstack/_version.py
-	pytest_localstack/hookspecs.py
