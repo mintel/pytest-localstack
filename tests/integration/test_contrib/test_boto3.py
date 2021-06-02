@@ -5,10 +5,10 @@ import boto3
 import botocore
 
 import pytest
-from tests import utils as test_utils
 
 from pytest_localstack import constants, exceptions, plugin
 from pytest_localstack.contrib import boto3 as ptls_boto3
+from tests import utils as test_utils
 
 
 def test_session_contribution():

@@ -2,10 +2,10 @@ import botocore
 import botocore.session
 
 import pytest
-from tests import utils as test_utils
 
 from pytest_localstack import botocore as localstack_botocore
 from pytest_localstack import constants, exceptions
+from tests import utils as test_utils
 
 
 def test_create_credential_resolver():

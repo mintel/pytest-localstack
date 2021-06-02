@@ -69,8 +69,8 @@ lines_after_imports = 2
 # Structure
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTING", "FIRSTPARTY", "LOCALFOLDER"]
 default_section = "THIRDPARTY"
-known_testing = ["hypothesis", "pytest", "tests"]
-known_first_party = ["pytest_localstack"]
+known_testing = ["hypothesis", "pytest"]
+known_first_party = ["pytest_localstack", "tests"]
 
 [tool.flake8]
 max-line-length = 88 # Black line length.
