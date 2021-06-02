@@ -259,7 +259,7 @@ class LocalstackSession(RunningSession):
         self.auto_remove = bool(auto_remove)
         self.pull_image = bool(pull_image)
 
-        super(LocalstackSession, self).__init__(
+        super().__init__(
             hostname=hostname if hostname else constants.LOCALHOST,
             services=services,
             region_name=region_name,

@@ -430,7 +430,7 @@ class Session(botocore.session.Session):
 
     def __init__(self, localstack_session, *args, **kwargs):
         self.localstack_session = localstack_session
-        super(Session, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _register_endpoint_resolver(self):
         def create_default_resolver():
@@ -499,7 +499,7 @@ class LocalstackEndpointResolver(botocore.regions.EndpointResolver):
 
     def __init__(self, localstack_session, endpoints):
         self.localstack_session = localstack_session
-        super(LocalstackEndpointResolver, self).__init__(endpoints)
+        super().__init__(endpoints)
 
     @property
     def valid_regions(self):

@@ -31,7 +31,7 @@ class DockerLogTailer(threading.Thread):
         self.stdout = stdout
         self.stderr = stderr
         self.encoding = encoding
-        super(DockerLogTailer, self).__init__()
+        super().__init__()
         self.daemon = True
 
     def run(self):
