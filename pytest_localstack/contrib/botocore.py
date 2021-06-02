@@ -14,9 +14,7 @@ import botocore.credentials
 import botocore.regions
 import botocore.session
 
-import pytest
-
-from pytest_localstack import _make_session, constants, exceptions, hookspecs, utils
+from pytest_localstack import constants, exceptions, hookspecs, utils
 from pytest_localstack.session import RunningSession
 
 
@@ -33,13 +31,6 @@ def contribute_to_session(session):
     """Add :class:`BotocoreTestResourceFactory` to :class:`.LocalstackSession`."""
     logger.debug("patching session %r", session)
     session.botocore = BotocoreTestResourceFactory(session)
-
-
-@hookspecs.pytest_localstack_hookimpl
-def contribute_to_module(pytest_localstack):
-    """Add :func:`patch_fixture` to :mod:`pytest_localstack`."""
-    logger.debug("patching module %r", pytest_localstack)
-    pytest_localstack.patch_fixture = patch_fixture
 
 
 class BotocoreTestResourceFactory:
@@ -325,100 +316,6 @@ class BotocoreTestResourceFactory:
             logger.debug("exit patch")
             if boto3 is not None:
                 boto3.DEFAULT_SESSION = preexisting_boto3_session
-
-
-def patch_fixture(
-    scope="function",
-    services=None,
-    autouse=False,
-    docker_client=None,
-    region_name=None,
-    kinesis_error_probability=0.0,
-    dynamodb_error_probability=0.0,
-    container_log_level=logging.DEBUG,
-    localstack_version="latest",
-    auto_remove=True,
-    pull_image=True,
-    container_name=None,
-    **kwargs,
-):
-    """Create a pytest fixture that temporarially redirects all botocore
-    sessions and clients to a Localstack container.
-
-    This is not a fixture! It is a factory to create them.
-
-    The fixtures that are created by this function will run a Localstack
-    container and patch botocore to direct traffic there for the duration
-    of the tests.
-
-    Since boto3 uses botocore to send requests, boto3 will also be redirected.
-
-    Args:
-        scope (str, optional): The pytest scope which this fixture will use.
-            Defaults to :const:`"function"`.
-        services (list, dict, optional): One of
-
-            - A :class:`list` of AWS service names to start in the
-              Localstack container.
-            - A :class:`dict` of service names to the port they should run on.
-
-            Defaults to all services. Setting this
-            can reduce container startup time and therefore test time.
-        autouse (bool, optional): If :obj:`True`, automatically use this
-            fixture in applicable tests. Default: :obj:`False`
-        docker_client (:class:`~docker.client.DockerClient`, optional):
-            Docker client to run the Localstack container with.
-            Defaults to :func:`docker.client.from_env`.
-        region_name (str, optional): Region name to assume.
-            Each Localstack container acts like a single AWS region.
-            Defaults to :const:`"us-east-1"`.
-        kinesis_error_probability (float, optional): Decimal value between
-            0.0 (default) and 1.0 to randomly inject
-            ProvisionedThroughputExceededException errors
-            into Kinesis API responses.
-        dynamodb_error_probability (float, optional): Decimal value
-            between 0.0 (default) and 1.0 to randomly inject
-            ProvisionedThroughputExceededException errors into
-            DynamoDB API responses.
-        container_log_level (int, optional): The logging level to use
-            for Localstack container logs. Defaults to :data:`logging.DEBUG`.
-        localstack_version (str, optional): The version of the Localstack
-            image to use. Defaults to :const:`"latest"`.
-        auto_remove (bool, optional): If :obj:`True`, delete the Localstack
-            container when it stops. Default: :obj:`True`
-        pull_image (bool, optional): If :obj:`True`, pull the Localstack
-            image before running it. Default: :obj:`True`
-        container_name (str, optional): The name for the Localstack
-            container. Defaults to a randomly generated id.
-        **kwargs: Additional kwargs will be passed to the
-            :class:`.LocalstackSession`.
-
-    Returns:
-        A :func:`pytest fixture <_pytest.fixtures.fixture>`.
-
-    """
-
-    @pytest.fixture(scope=scope, autouse=autouse)
-    def _fixture(pytestconfig):
-        if not pytestconfig.pluginmanager.hasplugin("localstack"):
-            pytest.skip("skipping because localstack plugin isn't loaded")
-        with _make_session(
-            docker_client=docker_client,
-            services=services,
-            region_name=region_name,
-            kinesis_error_probability=kinesis_error_probability,
-            dynamodb_error_probability=dynamodb_error_probability,
-            container_log_level=container_log_level,
-            localstack_version=localstack_version,
-            auto_remove=auto_remove,
-            pull_image=pull_image,
-            container_name=container_name,
-            **kwargs,
-        ) as session:
-            with session.botocore.patch_botocore():
-                yield session
-
-    return _fixture
 
 
 # Grab a reference here to avoid breaking things during patching.
