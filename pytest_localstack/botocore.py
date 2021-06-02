@@ -5,6 +5,7 @@ import inspect
 import logging
 import socket
 import weakref
+from typing import TYPE_CHECKING
 from unittest import mock
 
 import botocore
@@ -14,8 +15,11 @@ import botocore.credentials
 import botocore.regions
 import botocore.session
 
-from pytest_localstack import constants, exceptions, hookspecs, utils
-from pytest_localstack.session import RunningSession
+from pytest_localstack import constants, exceptions, utils
+
+
+if TYPE_CHECKING:
+    from pytest_localstack.session import RunningSession
 
 
 try:
@@ -24,13 +28,6 @@ except ImportError:
     boto3 = None
 
 logger = logging.getLogger(__name__)
-
-
-@hookspecs.pytest_localstack_hookimpl
-def contribute_to_session(session):
-    """Add :class:`BotocoreTestResourceFactory` to :class:`.LocalstackSession`."""
-    logger.debug("patching session %r", session)
-    session.botocore = BotocoreTestResourceFactory(session)
 
 
 class BotocoreTestResourceFactory:

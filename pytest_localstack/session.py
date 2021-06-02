@@ -13,6 +13,7 @@ from pytest_localstack import (
     service_checks,
     utils,
 )
+from pytest_localstack.botocore import BotocoreTestResourceFactory
 
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,8 @@ class RunningSession:
             self.service_ports = constants.LEGACY_SERVICE_PORTS
         else:
             self.service_ports = constants.SERVICE_PORTS
+
+        self.botocore = BotocoreTestResourceFactory(self)
 
         plugin.manager.hook.contribute_to_session(session=self)
         # If no region was provided, use what botocore defaulted to.

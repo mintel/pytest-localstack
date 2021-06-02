@@ -252,7 +252,6 @@ def _make_session(docker_client: Optional[docker.DockerClient], *args, **kwargs)
 
 
 # Register contrib modules
-plugin.register_plugin_module("pytest_localstack.contrib.botocore")
 plugin.register_plugin_module("pytest_localstack.contrib.boto3", False)
 
 # Register 3rd-party modules

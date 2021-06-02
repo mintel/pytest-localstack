@@ -4,21 +4,8 @@ import botocore.session
 import pytest
 from tests import utils as test_utils
 
-import pytest_localstack
-from pytest_localstack import constants, exceptions, plugin
-from pytest_localstack.contrib import botocore as localstack_botocore
-
-
-def test_patch_fixture_contributed_to_module():
-    assert pytest_localstack.patch_fixture is localstack_botocore.patch_fixture
-
-
-def test_session_contribution():
-    dummy_session = type("DummySession", (object,), {})()
-    plugin.manager.hook.contribute_to_session(session=dummy_session)
-    assert isinstance(
-        dummy_session.botocore, localstack_botocore.BotocoreTestResourceFactory
-    )
+from pytest_localstack import botocore as localstack_botocore
+from pytest_localstack import constants, exceptions
 
 
 def test_create_credential_resolver():
