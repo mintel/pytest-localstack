@@ -1,6 +1,7 @@
 import contextlib
 import logging
 import sys
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 import docker
 
@@ -9,48 +10,53 @@ import pytest
 from pytest_localstack import plugin, session, utils
 
 
-_start_timeout = None
-_stop_timeout = None
+if TYPE_CHECKING:
+    import _pytest.config
+    import _pytest.config.argparsing
 
 
-def pytest_configure(config):
+_start_timeout: Optional[float] = None
+_stop_timeout: Optional[float] = None
+
+
+def pytest_configure(config: "_pytest.config.Config"):
     global _start_timeout, _stop_timeout
     _start_timeout = config.getoption("--localstack-start-timeout")
     _stop_timeout = config.getoption("--localstack-stop-timeout")
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser: "_pytest.config.argparsing.Parser"):
     """Hook to add pytest_localstack command line options to pytest."""
     group = parser.getgroup("localstack")
     group.addoption(
         "--localstack-start-timeout",
         action="store",
-        type=int,
+        type=float,
         default=60,
         help="max seconds for starting a localstack container",
     )
     group.addoption(
         "--localstack-stop-timeout",
         action="store",
-        type=int,
+        type=float,
         default=5,
         help="max seconds for stopping a localstack container",
     )
 
 
 def session_fixture(
-    scope="function",
-    services=None,
-    autouse=False,
-    docker_client=None,
-    region_name=None,
-    kinesis_error_probability=0.0,
-    dynamodb_error_probability=0.0,
-    container_log_level=logging.DEBUG,
-    localstack_version="latest",
-    auto_remove=True,
-    pull_image=True,
-    container_name=None,
+    scope: str = "function",
+    services: Optional[Union[List[str], Dict[str, int]]] = None,
+    autouse: bool = False,
+    docker_client: Optional[docker.DockerClient] = None,
+    region_name: Optional[str] = None,
+    kinesis_error_probability: float = 0.0,
+    dynamodb_error_probability: float = 0.0,
+    container_log_level: int = logging.DEBUG,
+    localstack_version: str = "latest",
+    auto_remove: bool = True,
+    pull_image: bool = True,
+    container_name: Optional[str] = None,
     **kwargs
 ):
     """Create a pytest fixture that provides a LocalstackSession.
@@ -66,7 +72,7 @@ def session_fixture(
     Args:
         scope (str, optional): The pytest scope which this fixture will use.
             Defaults to :const:`"function"`.
-        services (list, dict, optional): One of:
+        services (list, optional): One of:
 
             - A :class:`list` of AWS service names to start in the
               Localstack container.
@@ -108,8 +114,8 @@ def session_fixture(
 
     """
 
-    @pytest.fixture(scope=scope, autouse=autouse)
-    def _fixture(pytestconfig):
+    @pytest.fixture(scope=scope, autouse=autouse)  # type: ignore
+    def _fixture(pytestconfig: "_pytest.config.Config"):
         if not pytestconfig.pluginmanager.hasplugin("localstack"):
             pytest.skip("skipping because localstack plugin isn't loaded")
         with _make_session(
@@ -131,7 +137,7 @@ def session_fixture(
 
 
 @contextlib.contextmanager
-def _make_session(docker_client, *args, **kwargs):
+def _make_session(docker_client: Optional[docker.DockerClient], *args, **kwargs):
     utils.check_proxy_env_vars()
 
     if docker_client is None:
