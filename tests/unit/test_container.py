@@ -2,13 +2,12 @@ import logging
 from unittest import mock
 
 from pytest_localstack import container as ptls_container
-from pytest_localstack import session
 from tests import utils as test_utils
 
 
 def test_DockerLogTailer(caplog):
     """Test pytest_localstack.container.DockerLogTailer."""
-    container = test_utils.make_mock_container(session.LocalstackSession.image_name)
+    container = test_utils.make_mock_container("localstack/localstack")
     logger_name = "test_logger.%s." % container.short_id
     logger = logging.getLogger(logger_name)
     log_level = logging.DEBUG

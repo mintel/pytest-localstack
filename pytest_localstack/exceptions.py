@@ -42,8 +42,16 @@ class UnsupportedPartitionError(Error):
 
     def __init__(self, partition_name):
         super().__init__(
-            "LocalstackEndpointResolver only supports the 'aws' partition, "
-            "not '%s'" % (partition_name,)
+            f"LocalstackEndpointResolver only supports the 'aws' partition, not '{partition_name}'"
+        )
+
+
+class UnsupportedLocalstackVersionError(Error):
+    """Raised when"""
+
+    def __init__(self, image):
+        super().__init__(
+            f"Localstack Docker image '{image}' isn't supported (must be >= v0.11.6)"
         )
 
 
@@ -57,6 +65,5 @@ class RegionError(Error):
 
     def __init__(self, region_name, should_be_region):
         super().__init__(
-            "This LocalstackSession is configured for region %s, not %s"
-            % (should_be_region, region_name)
+            f"This LocalstackSession is configured for region {should_be_region}, not {region_name}"
         )
