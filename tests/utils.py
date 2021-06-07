@@ -4,7 +4,7 @@ from unittest import mock
 
 import docker
 
-from pytest_localstack import session
+from pytest_localstack import utils
 
 
 AWS_REGIONS = [
@@ -39,7 +39,9 @@ def make_mock_container(
     container = mock.Mock(spec=docker.models.containers.Container)
     container.labels = []
     container.status = "running"
-    container.name = kwargs.get("name") or session.generate_container_name()
+    container.name = (
+        kwargs.get("name") or "pytest-localstack-" + utils.generate_random_string()
+    )
     container.id = (
         "sha256:" + hashlib.sha256(container.name.encode("utf-8")).hexdigest()
     )

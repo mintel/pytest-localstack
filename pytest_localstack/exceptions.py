@@ -10,7 +10,7 @@ class ContainerNotStartedError(Error):
 
     def __init__(self, session, *args, **kwargs):
         msg = f"{session!r} isn't started yet"
-        super(ContainerNotStartedError, self).__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class ServiceError(Error):
@@ -22,7 +22,7 @@ class ServiceError(Error):
                 msg = f"{service_name} isn't responding"
             else:
                 msg = "Service error"
-        super(ServiceError, self).__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class ContainerAlreadyStartedError(Error):
@@ -30,7 +30,7 @@ class ContainerAlreadyStartedError(Error):
 
     def __init__(self, session, *args, **kwargs):
         msg = f"{session!r} is already started"
-        super(ContainerAlreadyStartedError, self).__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class TimeoutError(Error):
@@ -41,9 +41,17 @@ class UnsupportedPartitionError(Error):
     """Raised when asking for an AWS partition that isn't 'aws'."""
 
     def __init__(self, partition_name):
-        super(UnsupportedPartitionError, self).__init__(
-            "LocalstackEndpointResolver only supports the 'aws' partition, "
-            "not '%s'" % (partition_name,)
+        super().__init__(
+            f"LocalstackEndpointResolver only supports the 'aws' partition, not '{partition_name}'"
+        )
+
+
+class UnsupportedLocalstackVersionError(Error):
+    """Raised when"""
+
+    def __init__(self, image):
+        super().__init__(
+            f"Localstack Docker image '{image}' isn't supported (must be >= v0.11.6)"
         )
 
 
@@ -56,7 +64,6 @@ class RegionError(Error):
     """
 
     def __init__(self, region_name, should_be_region):
-        super(RegionError, self).__init__(
-            "This LocalstackSession is configured for region %s, not %s"
-            % (should_be_region, region_name)
+        super().__init__(
+            f"This LocalstackSession is configured for region {should_be_region}, not {region_name}"
         )

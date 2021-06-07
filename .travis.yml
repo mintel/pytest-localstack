@@ -38,7 +38,6 @@ jobs:
     install: make install
     script:
     - make lint
-    - make docs
     after_success: []
     deploy: []
   - stage: deploy

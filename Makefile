@@ -61,32 +61,3 @@ fmt: $(INSTALL_STAMP)  ## apply code style formatting
 .PHONY: test
 test: $(INSTALL_STAMP)  ## run tests
 	$(POETRY) run pytest
-
-.PHONY: docs
-docs: $(INSTALL_STAMP)  ## build documentation
-	$(POETRY) run $(MAKE) -C docs html
-
-
-.PHONY: docs-live
-docs-live: $(INSTALL_STAMP)  ## build and view docs in real-time
-	$(POETRY) run sphinx-autobuild -b html \
-		-p 0 \
-		--open-browser \
-		--watch ./ \
-		--ignore ".git/*" \
-		--ignore ".venv/*" \
-		--ignore "*.swp" \
-		--ignore "*.pdf" \
-		--ignore "*.log" \
-		--ignore "*.out" \
-		--ignore "*.toc" \
-		--ignore "*.aux" \
-		--ignore "*.idx" \
-		--ignore "*.ind" \
-		--ignore "*.ilg" \
-		--ignore "*.tex" \
-		--ignore "Makefile" \
-		--ignore "setup.py" \
-		--ignore "setup.cfg" \
-		--ignore "Pipfile*" \
-		docs docs/_build/html
