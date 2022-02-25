@@ -7,6 +7,7 @@ Unreleased
 - Drop support for Python < 3.6.
 - Switch to using the new single port for localstack >= 0.11.0.
 - Fix bug in STS client endpoint patching.
+- Update patching to be compatible with newer botocore versions.
 
 0.4.1 (2019-08-22)
 ------------------
