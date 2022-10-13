@@ -1,8 +1,8 @@
 Change Log
 ==========
 
-Unreleased
-----------
+0.5.0 (2022-10-13)
+------------------
 
 - Drop support for Python < 3.6.
 - Switch to using the new single port for localstack >= 0.11.0.
