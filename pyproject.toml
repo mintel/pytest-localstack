@@ -39,7 +39,7 @@ pytest = "^6.0.0"  # need caplog (+ warnings for tests)
 [tool.poetry.dev-dependencies]
 boto3 = "*"
 hypothesis = "*"
-black = {version = "^21.5b2", allow-prereleases = true}
+black = "*"
 isort = "^5.8.0"
 mypy = "^0.812"
 flake8 = "^3.9.2"

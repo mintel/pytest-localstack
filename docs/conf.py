@@ -18,6 +18,7 @@
 
 import os
 import sys
+
 try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
@@ -56,9 +57,9 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 # General information about the project.
-project = u"pytest-localstack"
-copyright = u"2018, Mintel"
-author = u"Mintel Group Ltd."
+project = "pytest-localstack"
+copyright = "2018, Mintel"
+author = "Mintel Group Ltd."
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -155,8 +156,8 @@ latex_documents = [
     (
         master_doc,
         "pytest-localstack.tex",
-        u"pytest-localstack Documentation",
-        u"Jaye Doepke",
+        "pytest-localstack Documentation",
+        "Jaye Doepke",
         "manual",
     )
 ]
@@ -167,7 +168,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, "pytest-localstack", u"pytest-localstack Documentation", [author], 1)
+    (master_doc, "pytest-localstack", "pytest-localstack Documentation", [author], 1)
 ]
 
 
@@ -180,7 +181,7 @@ texinfo_documents = [
     (
         master_doc,
         "pytest-localstack",
-        u"pytest-localstack Documentation",
+        "pytest-localstack Documentation",
         author,
         "pytest-localstack",
         "One line description of project.",
