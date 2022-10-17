@@ -5,6 +5,7 @@ Change Log
 ------------------
 
 - Get the default Localstack hostname from the `DOCKER_HOST` env var, if set.
+- Protect starting/stopping the Localstack container with a lock.
 
 0.5.0 (2022-10-13)
 ------------------

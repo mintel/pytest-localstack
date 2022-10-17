@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import string
+import threading
 import time
 from copy import copy
 
@@ -251,6 +252,7 @@ class LocalstackSession(RunningSession):
         **kwargs,
     ):
         self._container = None
+        self._container_lock = threading.RLock()
         self._factory_cache = {}
 
         self.docker_client = docker_client
@@ -287,77 +289,80 @@ class LocalstackSession(RunningSession):
             docker.errors.APIError: If the Docker daemon returns an error.
 
         """
-        if self._container is not None:
-            raise exceptions.ContainerAlreadyStartedError(self)
-
-        logger.debug("Starting Localstack container %s", self.container_name)
-        logger.debug("%r running starting hooks", self)
-        plugin.manager.hook.session_starting(session=self)
-
-        image_name = self.image_name + ":" + self.localstack_version
-        if self.pull_image:
-            logger.debug("Pulling docker image %r", image_name)
-            self.docker_client.images.pull(image_name)
-
-        start_time = time.time()
-
-        services = ",".join("%s:%s" % pair for pair in self.services.items())
-        kinesis_error_probability = "%f" % self.kinesis_error_probability
-        dynamodb_error_probability = "%f" % self.dynamodb_error_probability
-        use_ssl = str(self.use_ssl).lower()
-        self._container = self.docker_client.containers.run(
-            image_name,
-            name=self.container_name,
-            detach=True,
-            auto_remove=self.auto_remove,
-            environment={
-                "DEFAULT_REGION": self.region_name,
-                "SERVICES": services,
-                "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
-                "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
-                "USE_SSL": use_ssl,
-            },
-            ports={port: None for port in self.services.values()},
-        )
-        logger.debug(
-            "Started Localstack container %s (id: %s)",
-            self.container_name,
-            self._container.short_id,
-        )
-
-        # Tail container logs
-        container_logger = logger.getChild("containers.%s" % self._container.short_id)
-        self._stdout_tailer = container.DockerLogTailer(
-            self._container,
-            container_logger.getChild("stdout"),
-            self.container_log_level,
-            stdout=True,
-            stderr=False,
-        )
-        self._stdout_tailer.start()
-        self._stderr_tailer = container.DockerLogTailer(
-            self._container,
-            container_logger.getChild("stderr"),
-            self.container_log_level,
-            stdout=False,
-            stderr=True,
-        )
-        self._stderr_tailer.start()
-
-        try:
-            timeout_remaining = timeout - (time.time() - start_time)
-            if timeout_remaining <= 0:
-                raise exceptions.TimeoutError("Container took too long to start.")
-
-            self._check_services(timeout_remaining)
-
-            logger.debug("%r running started hooks", self)
-            plugin.manager.hook.session_started(session=self)
-            logger.debug("%r finished started hooks", self)
-        except exceptions.TimeoutError:
+        with self._container_lock:
             if self._container is not None:
-                self.stop(0.1)
-            raise
+                raise exceptions.ContainerAlreadyStartedError(self)
+
+            logger.debug("Starting Localstack container %s", self.container_name)
+            logger.debug("%r running starting hooks", self)
+            plugin.manager.hook.session_starting(session=self)
+
+            image_name = self.image_name + ":" + self.localstack_version
+            if self.pull_image:
+                logger.debug("Pulling docker image %r", image_name)
+                self.docker_client.images.pull(image_name)
+
+            start_time = time.time()
+
+            services = ",".join("%s:%s" % pair for pair in self.services.items())
+            kinesis_error_probability = "%f" % self.kinesis_error_probability
+            dynamodb_error_probability = "%f" % self.dynamodb_error_probability
+            use_ssl = str(self.use_ssl).lower()
+            self._container = self.docker_client.containers.run(
+                image_name,
+                name=self.container_name,
+                detach=True,
+                auto_remove=self.auto_remove,
+                environment={
+                    "DEFAULT_REGION": self.region_name,
+                    "SERVICES": services,
+                    "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
+                    "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
+                    "USE_SSL": use_ssl,
+                },
+                ports={port: None for port in self.services.values()},
+            )
+            logger.debug(
+                "Started Localstack container %s (id: %s)",
+                self.container_name,
+                self._container.short_id,
+            )
+
+            # Tail container logs
+            container_logger = logger.getChild(
+                "containers.%s" % self._container.short_id
+            )
+            self._stdout_tailer = container.DockerLogTailer(
+                self._container,
+                container_logger.getChild("stdout"),
+                self.container_log_level,
+                stdout=True,
+                stderr=False,
+            )
+            self._stdout_tailer.start()
+            self._stderr_tailer = container.DockerLogTailer(
+                self._container,
+                container_logger.getChild("stderr"),
+                self.container_log_level,
+                stdout=False,
+                stderr=True,
+            )
+            self._stderr_tailer.start()
+
+            try:
+                timeout_remaining = timeout - (time.time() - start_time)
+                if timeout_remaining <= 0:
+                    raise exceptions.TimeoutError("Container took too long to start.")
+
+                self._check_services(timeout_remaining)
+
+                logger.debug("%r running started hooks", self)
+                plugin.manager.hook.session_started(session=self)
+                logger.debug("%r finished started hooks", self)
+            except exceptions.TimeoutError:
+                if self._container is not None:
+                    self.stop(0.1)
+                raise
 
     def stop(self, timeout=10):
         """Stop the Localstack container.
@@ -370,19 +375,20 @@ class LocalstackSession(RunningSession):
             docker.errors.APIError: If the Docker daemon returns an error.
 
         """
-        if self._container is not None:
-            logger.debug("Stopping %r", self)
-            logger.debug("Running stopping hooks for %r", self)
-            plugin.manager.hook.session_stopping(session=self)
-            logger.debug("Finished stopping hooks for %r", self)
-            self._container.stop(timeout=10)
-            self._container = None
-            self._stdout_tailer = None
-            self._stderr_tailer = None
-            logger.debug("Stopped %r", self)
-            logger.debug("Running stopped hooks for %r", self)
-            plugin.manager.hook.session_stopped(session=self)
-            logger.debug("Finished stopped hooks for %r", self)
+        with self._container_lock:
+            if self._container is not None:
+                logger.debug("Stopping %r", self)
+                logger.debug("Running stopping hooks for %r", self)
+                plugin.manager.hook.session_stopping(session=self)
+                logger.debug("Finished stopping hooks for %r", self)
+                self._container.stop(timeout=10)
+                self._container = None
+                self._stdout_tailer = None
+                self._stderr_tailer = None
+                logger.debug("Stopped %r", self)
+                logger.debug("Running stopped hooks for %r", self)
+                plugin.manager.hook.session_stopped(session=self)
+                logger.debug("Finished stopped hooks for %r", self)
 
     def __del__(self):
         """Stop container on garbage collection."""
@@ -390,12 +396,13 @@ class LocalstackSession(RunningSession):
 
     def map_port(self, port):
         """Return host port based on Localstack container port."""
-        if self._container is None:
-            raise exceptions.ContainerNotStartedError(self)
-        result = self.docker_client.api.port(self._container.id, int(port))
-        if not result:
-            return None
-        return int(result[0]["HostPort"])
+        with self._container_lock:
+            if self._container is None:
+                raise exceptions.ContainerNotStartedError(self)
+            result = self.docker_client.api.port(self._container.id, int(port))
+            if not result:
+                return None
+            return int(result[0]["HostPort"])
 
 
 def generate_container_name():
