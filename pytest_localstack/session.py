@@ -1,6 +1,7 @@
 """Run and interact with a Localstack container."""
 import logging
 import os
+import re
 import string
 import time
 from copy import copy
@@ -134,7 +135,7 @@ class RunningSession:
                             f"Localstack service not started: {service_name}"
                         ) from e
             if services:
-                delay = (2 ** num_retries) * initial_retry_delay
+                delay = (2**num_retries) * initial_retry_delay
                 if delay > max_delay:
                     delay = max_delay
                     time.sleep(delay)
@@ -260,7 +261,7 @@ class LocalstackSession(RunningSession):
         self.pull_image = bool(pull_image)
 
         super(LocalstackSession, self).__init__(
-            hostname=hostname if hostname else constants.LOCALHOST,
+            hostname=hostname if hostname else default_hostname(),
             services=services,
             region_name=region_name,
             use_ssl=use_ssl,
@@ -405,3 +406,15 @@ def generate_container_name():
         new_chars = [chr(c) for c in os.urandom(6 - len(chars))]
         chars += [c for c in new_chars if c in valid_chars]
     return "pytest-localstack-" + "".join(chars)
+
+
+def default_hostname():
+    """Return the default hostname for Localstack, based on the DOCKER_HOST env var."""
+    hostname = constants.LOCALHOST
+    docker_host = os.environ.get("DOCKER_HOST", "").strip()
+    match = re.match(r"^([^:]+)://(?:([^:]+?)(?::(\d+))?)?$", docker_host)
+    if match is not None:
+        protocol = match.group(1)
+        if "unix" not in protocol and "npipe" not in protocol and match.group(2):
+            hostname = match.group(2)
+    return hostname

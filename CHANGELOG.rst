@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.6.0 (2022-10-17)
+------------------
+
+- Get the default Localstack hostname from the `DOCKER_HOST` env var, if set.
+
 0.5.0 (2022-10-13)
 ------------------
 
