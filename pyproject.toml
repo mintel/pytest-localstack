@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-localstack"
-version = "1.0.0"
+version = "0.6.1"
 description = "Pytest plugin for AWS integration tests"
 authors = ["Mintel Group Ltd."]
 license = "MIT"
@@ -31,7 +31,8 @@ localstack = "pytest_localstack"
 
 [tool.poetry.dependencies]
 python = "^3.7.0"
-botocore = "^1.4.31,!=1.4.45"
+botocore = "!=1.4.45"
+urllib3 = "<2" # https://github.com/orgs/python-poetry/discussions/7937#discussioncomment-5921842
 docker = "^6.0.0"
 pluggy = "^0.12.0"
 pytest = "^6.0.0"  # need caplog (+ warnings for tests)
