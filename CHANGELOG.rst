@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.6.1 (2023-06-06)
+------------------
+
+- Update to docker >= v6 to address deprecation warnings.
+
 0.6.0 (2022-10-17)
 ------------------
 
