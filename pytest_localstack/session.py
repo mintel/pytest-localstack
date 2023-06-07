@@ -32,7 +32,6 @@ class RunningSession:
         localstack_version="latest",
         **kwargs,
     ):
-
         self.kwargs = kwargs
         self.use_ssl = use_ssl
         self.region_name = region_name
