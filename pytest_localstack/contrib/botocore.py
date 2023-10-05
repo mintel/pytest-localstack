@@ -523,7 +523,14 @@ class LocalstackEndpointResolver(botocore.regions.EndpointResolver):
                     result.append(endpoint_name)
         return result
 
-    def construct_endpoint(self, service_name, region_name=None):
+    def construct_endpoint(
+        self,
+        service_name,
+        region_name=None,
+        partition_name=None,
+        use_dualstack_endpoint=False,
+        use_fips_endpoint=False,
+    ):
         """Resolve an endpoint for a service and region combination."""
         if region_name is None:
             region_name = self.localstack_session.region_name
@@ -534,7 +541,13 @@ class LocalstackEndpointResolver(botocore.regions.EndpointResolver):
         for partition in self._endpoint_data["partitions"]:
             if partition["partition"] != "aws":
                 continue
-            result = self._endpoint_for_partition(partition, service_name, region_name)
+            result = self._endpoint_for_partition(
+                partition,
+                service_name,
+                region_name,
+                use_dualstack_endpoint,
+                use_fips_endpoint,
+            )
             if result:
                 result["hostname"] = self.localstack_session.service_hostname(
                     service_name
