@@ -33,6 +33,7 @@ LEGACY_SERVICE_PORTS = {
     "firehose": 4573,
     "iam": 4593,
     "kinesis": 4568,
+    "kms": 4599,
     "lambda": 4574,
     "logs": 4586,
     "redshift": 4577,
