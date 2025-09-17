@@ -1,4 +1,5 @@
 """Test all services accessible for pytest_localstack.patch_fixture."""
+
 import boto3
 import botocore
 

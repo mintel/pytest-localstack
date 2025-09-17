@@ -1,4 +1,5 @@
 """Unit tests for pytest_localstack.utils."""
+
 import os
 from unittest import mock
 

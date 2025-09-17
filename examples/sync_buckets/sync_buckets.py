@@ -1,4 +1,5 @@
 """Copy objects from one S3 bucket to another."""
+
 import optparse
 
 import boto3

@@ -1,4 +1,5 @@
 """Test examples from the README."""
+
 import pytest_localstack
 
 

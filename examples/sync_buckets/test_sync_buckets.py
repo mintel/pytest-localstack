@@ -1,4 +1,5 @@
 """Test sync_buckets.py"""
+
 import boto3
 from sync_buckets import sync_buckets
 

@@ -1,4 +1,5 @@
 """Run and interact with a Localstack container."""
+
 import logging
 import os
 import re
@@ -6,6 +7,9 @@ import string
 import threading
 import time
 from copy import copy
+from keyword import kwlist
+
+from docker.types import Mount
 
 from pytest_localstack import (
     constants,
@@ -248,6 +252,10 @@ class LocalstackSession(RunningSession):
         container_name=None,
         use_ssl=False,
         hostname=None,
+        privileged=False,
+        mount_docker_socket=False,
+        docker_socket="/var/run/docker.sock",
+        additional_env=None,
         **kwargs,
     ):
         self._container = None
@@ -260,6 +268,10 @@ class LocalstackSession(RunningSession):
         self.dynamodb_error_probability = dynamodb_error_probability
         self.auto_remove = bool(auto_remove)
         self.pull_image = bool(pull_image)
+        self.docker_socket = docker_socket
+        self.mount_docker_socket = bool(mount_docker_socket)
+        self.additional_env = (additional_env or {}).copy()
+        self.privileged = bool(privileged)
 
         super(LocalstackSession, self).__init__(
             hostname=hostname if hostname else default_hostname(),
@@ -307,19 +319,39 @@ class LocalstackSession(RunningSession):
             kinesis_error_probability = "%f" % self.kinesis_error_probability
             dynamodb_error_probability = "%f" % self.dynamodb_error_probability
             use_ssl = str(self.use_ssl).lower()
+
+            mounts = []
+            if self.mount_docker_socket and self.docker_socket:
+                # required for lambda v2 but optional because some
+                # environments don't allow mounting the docker socket
+                # or not requiring it (e.g. when not using lambda)
+                mount = Mount(
+                    target="/var/run/docker.sock",
+                    source=self.docker_socket,
+                    type="bind",
+                )
+                mounts.append(mount)
+
+            if self.region_name:
+                # Default region is deprecated, but some tests
+                # may still rely on it or in older container versions
+                self.additional_env["DEFAULT_REGION"] = self.region_name
+
             self._container = self.docker_client.containers.run(
                 image_name,
                 name=self.container_name,
                 detach=True,
                 auto_remove=self.auto_remove,
                 environment={
-                    "DEFAULT_REGION": self.region_name,
                     "SERVICES": services,
                     "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
                     "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
                     "USE_SSL": use_ssl,
+                    **self.additional_env,
                 },
+                privileged=self.privileged,
                 ports={port: None for port in self.services.values()},
+                mounts=mounts,
             )
             logger.debug(
                 "Started Localstack container %s (id: %s)",

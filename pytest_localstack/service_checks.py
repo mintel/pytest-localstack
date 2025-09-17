@@ -4,6 +4,7 @@ Each check takes a :class:`.LocalstackSession` and
 raises :class:`~pytest_localstack.exceptions.ServiceError`
 if the service is not available.
 """
+
 import contextlib
 import functools
 import socket

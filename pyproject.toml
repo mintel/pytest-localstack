@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-localstack"
-version = "0.6.1"
+version = "0.6.1.post8"
 description = "Pytest plugin for AWS integration tests"
 authors = ["Mintel Group Ltd."]
 license = "MIT"
@@ -30,26 +30,25 @@ include = ["CHANGELOG.rst", "LICENSE"]
 localstack = "pytest_localstack"
 
 [tool.poetry.dependencies]
-python = "^3.7.0"
+python = "^3.9.0"
 botocore = "!=1.4.45"
-urllib3 = "<2" # https://github.com/orgs/python-poetry/discussions/7937#discussioncomment-5921842
-docker = "^6.0.0"
-pluggy = "^0.12.0"
-pytest = "^6.0.0"  # need caplog (+ warnings for tests)
+docker = ">=6.0.0"
+pluggy = "^1.0.0"
+pytest = ">=6.0.0"  # need caplog (+ warnings for tests)
 
 [tool.poetry.dev-dependencies]
-boto3 = "*"
-hypothesis = "*"
-black = "*"
-isort = "^5.8.0"
-mypy = "^0.812"
-flake8 = "^3.9.2"
-bandit = "^1.7.0"
-pyproject-flake8 = "^0.0.1-alpha.2"
-coverage = {extras = ["toml"], version = "^5.5"}
-codecov = "^2.1.11"
-pytest-cov = "^2.12.1"
-pytest-xdist = "^2.2.1"
+boto3 = "^1.40.0"
+hypothesis = "^6.138.0"
+black = ">=25.0"
+isort = ">=6.0"
+mypy = ">=1.18"
+flake8 = ">=6.0"
+bandit = ">=1.7"
+pyproject-flake8 = ">=6.0"
+coverage = {extras = ["toml"], version = ">=7.10"}
+codecov = ">=2.1"
+pytest-cov = ">=6.0"
+pytest-xdist = ">=3.8"
 Sphinx = "^4.0.2"
 
 [build-system]

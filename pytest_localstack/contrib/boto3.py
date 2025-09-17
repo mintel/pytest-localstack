@@ -1,4 +1,5 @@
 """pytest-localstack extensions for boto3."""
+
 import logging
 
 import boto3.session
