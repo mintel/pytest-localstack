@@ -227,6 +227,10 @@ class LocalstackSession(RunningSession):
             container. Defaults to a randomly generated id.
         use_ssl (bool, optional): If True use SSL to connect to Localstack.
             Default is False.
+        container_env (dict, optional): A dictionary of environment variables
+            which will be set in the Localstack container. see
+            https://docs.localstack.cloud/references/configuration/ for useful
+            settings.
         **kwargs: Additional kwargs will be stored in a `kwargs` attribute
             in case test resource factories want to access them.
 
@@ -248,6 +252,7 @@ class LocalstackSession(RunningSession):
         container_name=None,
         use_ssl=False,
         hostname=None,
+        container_env=None,
         **kwargs,
     ):
         self._container = None
@@ -273,6 +278,7 @@ class LocalstackSession(RunningSession):
         self.container_log_level = container_log_level
         self.localstack_version = localstack_version
         self.container_name = container_name or generate_container_name()
+        self.container_env = container_env or {}
 
     def start(self, timeout=60):
         """Start the Localstack container.
@@ -318,6 +324,7 @@ class LocalstackSession(RunningSession):
                     "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
                     "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
                     "USE_SSL": use_ssl,
+                    **self.container_env,
                 },
                 ports={port: None for port in self.services.values()},
             )
