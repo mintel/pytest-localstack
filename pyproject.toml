@@ -37,7 +37,7 @@ docker = ">=7.0.0"
 pluggy = ">=1.0.0"
 pytest = ">=7"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 boto3 = "*"
 hypothesis = "*"
 black = "*"
