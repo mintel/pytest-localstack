@@ -41,16 +41,16 @@ pytest = ">=7"
 boto3 = "*"
 hypothesis = "*"
 black = "*"
-isort = "^5.8.0"
+isort = ">=5.8.0"
 mypy = ">=1.0"
-flake8 = "^3.9.2"
-bandit = "^1.7.0"
-pyproject-flake8 = "^0.0.1-alpha.2"
-coverage = {extras = ["toml"], version = "^5.5"}
-codecov = "^2.1.11"
-pytest-cov = "^2.12.1"
-pytest-xdist = "^2.2.1"
-Sphinx = "^4.0.2"
+flake8 = ">=6.0"
+bandit = ">=1.7.5"
+pyyaml = ">=6.0.1"
+coverage = {extras = ["toml"], version = ">=7.0"}
+codecov = ">=2.1.11"
+pytest-cov = ">=4.0"
+pytest-xdist = ">=3.0"
+Sphinx = ">=4.0.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
