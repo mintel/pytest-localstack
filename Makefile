@@ -49,7 +49,7 @@ clean: ## remove all build, test, coverage and Python artifacts
 lint: $(INSTALL_STAMP)  ## check code style
 	$(POETRY) run isort --check-only ./tests/ $(NAME)
 	$(POETRY) run black --check ./tests/ $(NAME) --diff
-	$(POETRY) run pflake8 ./tests/ $(NAME)
+	$(POETRY) run flake8 ./tests/ $(NAME)
 	$(POETRY) run mypy ./tests/ $(NAME) --ignore-missing-imports
 	$(POETRY) run bandit -r $(NAME) -s B608
 
