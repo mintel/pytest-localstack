@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-0.7.0 (2026-07-01)
+0.7.0 (2026-08-13)
 ------------------
 
 - Drop support for Python < 3.9.
@@ -10,6 +10,14 @@ Change Log
 - Replace deprecated ``inspect.getcallargs`` with ``inspect.Signature.bind``.
 - Switch build backend from setuptools to poetry-core.
 - Add ``container_env`` parameter to ``LocalstackSession``.
+- Default the LocalStack image to ``4.13`` instead of ``latest``. This is the
+  last free community release published before LocalStack consolidated to a
+  single image requiring an auth token (v2026.03.0, March 2026).
+- Fix the ``RunningSession`` start retry loop so it always sleeps and increments
+  the retry counter; previously these only ran when the max delay was exceeded,
+  causing a busy loop.
+- Increase the botocore service-check connect/read timeouts from 1s to 5s to
+  reduce flaky readiness checks on slower hosts.
 
 0.6.1 (2023-06-06)
 ------------------

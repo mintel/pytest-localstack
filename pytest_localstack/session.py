@@ -29,7 +29,7 @@ class RunningSession:
         services=None,
         region_name=None,
         use_ssl=False,
-        localstack_version="latest",
+        localstack_version=constants.DEFAULT_LOCALSTACK_VERSION,
         **kwargs,
     ):
         self.kwargs = kwargs
@@ -138,8 +138,8 @@ class RunningSession:
                 delay = (2**num_retries) * initial_retry_delay
                 if delay > max_delay:
                     delay = max_delay
-                    time.sleep(delay)
-                    num_retries += 1
+                time.sleep(delay)
+                num_retries += 1
 
     def stop(self, timeout=10):
         """Stops Localstack."""
@@ -220,7 +220,7 @@ class LocalstackSession(RunningSession):
         container_log_level (int, optional): The logging level to use
             for Localstack container logs. Defaults to :attr:`logging.DEBUG`.
         localstack_version (str, optional): The version of the Localstack
-            image to use. Defaults to `latest`.
+            image to use. Defaults to :const:`.constants.DEFAULT_LOCALSTACK_VERSION`.
         auto_remove (bool, optional): If True, delete the Localstack
             container when it stops.
         container_name (str, optional): The name for the Localstack
@@ -246,7 +246,7 @@ class LocalstackSession(RunningSession):
         kinesis_error_probability=0.0,
         dynamodb_error_probability=0.0,
         container_log_level=logging.DEBUG,
-        localstack_version="latest",
+        localstack_version=constants.DEFAULT_LOCALSTACK_VERSION,
         auto_remove=True,
         pull_image=True,
         container_name=None,
