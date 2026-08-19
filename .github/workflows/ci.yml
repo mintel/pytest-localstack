@@ -27,8 +27,14 @@ jobs:
         with:
           virtualenvs-in-project: true
 
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py3.12-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install dependencies
-        run: poetry install --no-interaction
+        run: make install
 
       - name: Lint
         run: make lint
@@ -55,20 +61,24 @@ jobs:
         with:
           virtualenvs-in-project: true
 
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install dependencies
-        run: poetry install --no-interaction
+        run: make install
 
       - name: Unit tests
-        run: poetry run pytest tests/unit -ra --cov=pytest_localstack -n auto
+        run: make test-unit
 
       - name: Integration tests
-        run: poetry run pytest tests/integration -ra --cov=pytest_localstack --cov-append -n auto
+        run: make test-integration
 
       - name: Coverage reports
         if: always()
-        run: |
-          poetry run coverage xml
-          poetry run coverage html
+        run: make coverage-report
 
       - name: Upload coverage report
         if: always()
@@ -96,20 +106,34 @@ jobs:
         with:
           virtualenvs-in-project: true
 
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py3.12-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install dependencies
-        run: poetry install --no-interaction
+        run: make install
 
       # Log in to Docker Hub only when credentials are configured, to avoid
       # anonymous pull rate limits when pulling the LocalStack image.
+      # The `secrets` context cannot be used in `if:`, so it is surfaced via
+      # `env` first and the env var is what the condition checks.
       - name: Log in to Docker Hub
-        if: ${{ secrets.DOCKERHUB_USERNAME != '' }}
+        if: env.DOCKERHUB_USERNAME != ''
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Functional tests
-        run: poetry run pytest tests/functional -ra --cov=pytest_localstack --cov-report=xml --cov-report=html
+        run: make test-functional
+
+      - name: Coverage reports
+        if: always()
+        run: make coverage-report
 
       - name: Upload coverage report
         if: always()
