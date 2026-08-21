@@ -2,7 +2,6 @@
 
 import pytest_localstack
 
-
 localstack = pytest_localstack.session_fixture(scope="module", autouse=True)
 
 

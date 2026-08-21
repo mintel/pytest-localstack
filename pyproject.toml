@@ -67,7 +67,6 @@ addopts = "--doctest-glob='*.rst' --doctest-glob='*.md' --doctest-modules"
 [tool.isort]
 skip_glob = "*/.venv/*"
 profile = "black"
-lines_after_imports = 2
 
 # Structure
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTING", "FIRSTPARTY", "LOCALFOLDER"]

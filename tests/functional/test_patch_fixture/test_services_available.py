@@ -5,7 +5,6 @@ import botocore
 
 import pytest_localstack
 
-
 localstack = pytest_localstack.patch_fixture(scope="module", autouse=True)  # type: ignore
 
 

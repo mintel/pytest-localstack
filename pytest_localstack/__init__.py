@@ -8,7 +8,6 @@ import pytest
 
 from pytest_localstack import constants, plugin, session, utils
 
-
 _start_timeout = None
 _stop_timeout = None
 

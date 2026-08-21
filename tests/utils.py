@@ -7,7 +7,6 @@ import docker
 
 from pytest_localstack import session
 
-
 AWS_REGIONS = [
     "us-east-1",
     "us-east-2",

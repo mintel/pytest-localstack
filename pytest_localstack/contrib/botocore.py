@@ -20,7 +20,6 @@ import pytest
 from pytest_localstack import _make_session, constants, exceptions, hookspecs, utils
 from pytest_localstack.session import RunningSession
 
-
 try:
     import boto3
 except ImportError:

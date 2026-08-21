@@ -9,7 +9,6 @@ Localstack container is started and stopped.
 
 import pluggy
 
-
 pytest_localstack_hookspec = pluggy.HookspecMarker("pytest-localstack")
 pytest_localstack_hookimpl = pluggy.HookimplMarker("pytest-localstack")
 

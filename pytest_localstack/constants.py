@@ -4,7 +4,6 @@ import botocore
 
 from pytest_localstack import utils
 
-
 # IP for localhost
 LOCALHOST = "127.0.0.1"
 

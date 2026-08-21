@@ -17,7 +17,6 @@ from pytest_localstack import (
     utils,
 )
 
-
 logger = logging.getLogger(__name__)
 
 

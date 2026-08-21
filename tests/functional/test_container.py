@@ -4,7 +4,6 @@ import logging
 
 from pytest_localstack import container
 
-
 logger = logging.getLogger(__name__)
 
 
