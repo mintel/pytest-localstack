@@ -61,9 +61,9 @@ DEFAULT_CONTAINER_START_TIMEOUT = 60
 DEFAULT_CONTAINER_STOP_TIMEOUT = 10
 
 # The default Localstack image version to use.
-# Pinned to the last free/community release (v4.13) published before
+# Pinned to the last free/community release (v4.14) published before
 # LocalStack consolidated to a single image requiring an auth token
 # (starting with v2026.03.0, March 2026).
-DEFAULT_LOCALSTACK_VERSION = "4.13"
+DEFAULT_LOCALSTACK_VERSION = "4.14"
 
 BOTOCORE_VERSION = utils.get_version_tuple(botocore.__version__)
