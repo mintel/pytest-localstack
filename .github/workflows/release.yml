@@ -13,7 +13,7 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - "v[0-9]+.[0-9]+.[0-9]+*"
 
 permissions:
   contents: read
@@ -51,15 +51,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
 
-    # Trusted Publishing (OIDC) requires an environment and id-token permission.
-    # One-time setup on PyPI: project -> Settings -> Publishing -> add a
-    # "GitHub Actions" trusted publisher with:
-    #   owner:        mintel
-    #   repository:   pytest-localstack
-    #   workflow:     release.yml
-    #   environment:  pypi
-    # And in GitHub: Settings -> Environments -> create an environment named
-    # "pypi". No API token secret is needed with this approach.
     environment:
       name: pypi
       url: https://pypi.org/p/pytest-localstack
@@ -95,10 +86,3 @@ jobs:
         with:
           packages-dir: dist/
 
-      # --- Alternative: API token instead of Trusted Publishing ---------------
-      # If you would rather use a token, delete the "environment"/"permissions"
-      # blocks and the step above, then add a PYPI_API_TOKEN repository secret
-      # (PyPI -> Account settings -> API tokens) and use:
-      #
-      # - name: Publish to PyPI (API token)
-      #   run: poetry publish --no-interaction --username __token__ --password "${{ secrets.PYPI_API_TOKEN }}"
