@@ -10,7 +10,7 @@ Change Log
 - Replace deprecated ``inspect.getcallargs`` with ``inspect.Signature.bind``.
 - Switch build backend from setuptools to poetry-core.
 - Add ``container_env`` parameter to ``LocalstackSession``.
-- Default the LocalStack image to ``4.13`` instead of ``latest``. This is the
+- Default the LocalStack image to ``4.14`` instead of ``latest``. This is the
   last free community release published before LocalStack consolidated to a
   single image requiring an auth token (v2026.03.0, March 2026).
 - Fix the ``RunningSession`` start retry loop so it always sleeps and increments
