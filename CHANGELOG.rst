@@ -4,7 +4,7 @@ Change Log
 0.7.0 (2026-08-13)
 ------------------
 
-- Drop support for Python < 3.10.
+- Drop support for Python < 3.9.
 - Add support for Python 3.12 and pytest >= 7.
 - Require docker >= 7.0.0 and pluggy >= 1.0.0; remove urllib3 < 2 pin.
 - Replace deprecated ``inspect.getcallargs`` with ``inspect.Signature.bind``.

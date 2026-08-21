@@ -15,6 +15,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: POSIX",
     "Operating System :: Unix",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -30,16 +31,16 @@ include = ["CHANGELOG.rst", "LICENSE"]
 localstack = "pytest_localstack"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 botocore = "!=1.4.45"
 docker = ">=7.0.0"
 pluggy = ">=1.0.0"
 pytest = ">=7"
 
 [tool.poetry.group.dev.dependencies]
-boto3 = "^1.43.74"
-hypothesis = "^6.165.10"
-black = "^26.5.1"
+boto3 = ">=1.42.97"
+hypothesis = ">=6.141.1"
+black = ">=25.11.0"
 isort = ">=5.8.0"
 mypy = ">=1.0"
 flake8 = ">=6.0"
