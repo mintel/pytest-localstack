@@ -1,4 +1,5 @@
 """Test resource factory for the botocore library."""
+
 import contextlib
 import functools
 import inspect

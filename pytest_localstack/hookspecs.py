@@ -6,6 +6,7 @@ functionality to pytest-localstack and to trigger callbacks when the
 Localstack container is started and stopped.
 
 """
+
 import pluggy
 
 

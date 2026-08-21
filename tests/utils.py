@@ -1,4 +1,5 @@
 """Test utils."""
+
 import hashlib
 from unittest import mock
 

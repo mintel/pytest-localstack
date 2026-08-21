@@ -1,4 +1,5 @@
 """Functional tests for pytest_localstack.session."""
+
 import pytest
 
 from pytest_localstack import constants, exceptions, service_checks, session

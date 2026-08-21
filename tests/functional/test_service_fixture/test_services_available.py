@@ -1,4 +1,5 @@
 """Test all services accessible for pytest_localstack.session_fixture."""
+
 import pytest_localstack
 
 

@@ -3,6 +3,7 @@
 .. seealso:: :mod:`~pytest_localstack.hookspecs`
 
 """
+
 import importlib
 
 import pluggy
