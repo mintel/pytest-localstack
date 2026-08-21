@@ -1,6 +1,6 @@
 """Test examples from the README."""
-import pytest_localstack
 
+import pytest_localstack
 
 s3_service_1 = pytest_localstack.session_fixture(services=["s3"])
 s3_service_2 = pytest_localstack.session_fixture(services=["s3"])

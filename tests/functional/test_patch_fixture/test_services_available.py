@@ -1,9 +1,9 @@
 """Test all services accessible for pytest_localstack.patch_fixture."""
+
 import boto3
 import botocore
 
 import pytest_localstack
-
 
 localstack = pytest_localstack.patch_fixture(scope="module", autouse=True)  # type: ignore
 

@@ -32,10 +32,10 @@ via a Localstack_ Docker container.
 
 **Requires:**
 
-- pytest >= 3.3.0
+- pytest >= 7
 - Docker
 
-Tested against Python >= 3.6.
+Tested against Python >= 3.9.
 
 .. _pytest: http://docs.pytest.org/
 .. _AWS: https://aws.amazon.com/

@@ -1,4 +1,5 @@
 """Run and interact with a Localstack container."""
+
 import logging
 import os
 import re
@@ -16,7 +17,6 @@ from pytest_localstack import (
     utils,
 )
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +29,7 @@ class RunningSession:
         services=None,
         region_name=None,
         use_ssl=False,
-        localstack_version="latest",
+        localstack_version=constants.DEFAULT_LOCALSTACK_VERSION,
         **kwargs,
     ):
         self.kwargs = kwargs
@@ -138,8 +138,8 @@ class RunningSession:
                 delay = (2**num_retries) * initial_retry_delay
                 if delay > max_delay:
                     delay = max_delay
-                    time.sleep(delay)
-                    num_retries += 1
+                time.sleep(delay)
+                num_retries += 1
 
     def stop(self, timeout=10):
         """Stops Localstack."""
@@ -220,13 +220,17 @@ class LocalstackSession(RunningSession):
         container_log_level (int, optional): The logging level to use
             for Localstack container logs. Defaults to :attr:`logging.DEBUG`.
         localstack_version (str, optional): The version of the Localstack
-            image to use. Defaults to `latest`.
+            image to use. Defaults to :const:`.constants.DEFAULT_LOCALSTACK_VERSION`.
         auto_remove (bool, optional): If True, delete the Localstack
             container when it stops.
         container_name (str, optional): The name for the Localstack
             container. Defaults to a randomly generated id.
         use_ssl (bool, optional): If True use SSL to connect to Localstack.
             Default is False.
+        container_env (dict, optional): A dictionary of environment variables
+            which will be set in the Localstack container. see
+            https://docs.localstack.cloud/references/configuration/ for useful
+            settings.
         **kwargs: Additional kwargs will be stored in a `kwargs` attribute
             in case test resource factories want to access them.
 
@@ -242,12 +246,13 @@ class LocalstackSession(RunningSession):
         kinesis_error_probability=0.0,
         dynamodb_error_probability=0.0,
         container_log_level=logging.DEBUG,
-        localstack_version="latest",
+        localstack_version=constants.DEFAULT_LOCALSTACK_VERSION,
         auto_remove=True,
         pull_image=True,
         container_name=None,
         use_ssl=False,
         hostname=None,
+        container_env=None,
         **kwargs,
     ):
         self._container = None
@@ -273,6 +278,7 @@ class LocalstackSession(RunningSession):
         self.container_log_level = container_log_level
         self.localstack_version = localstack_version
         self.container_name = container_name or generate_container_name()
+        self.container_env = container_env or {}
 
     def start(self, timeout=60):
         """Start the Localstack container.
@@ -318,6 +324,7 @@ class LocalstackSession(RunningSession):
                     "KINESIS_ERROR_PROBABILITY": kinesis_error_probability,
                     "DYNAMODB_ERROR_PROBABILITY": dynamodb_error_probability,
                     "USE_SSL": use_ssl,
+                    **self.container_env,
                 },
                 ports={port: None for port in self.services.values()},
             )

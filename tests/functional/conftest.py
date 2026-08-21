@@ -1,4 +1,5 @@
 """Configure pytest for the functional tests module."""
+
 import docker
 
 import pytest

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-localstack"
-version = "0.6.1"
+version = "0.7.0"
 description = "Pytest plugin for AWS integration tests"
 authors = ["Mintel Group Ltd."]
 license = "MIT"
@@ -15,9 +15,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: POSIX",
     "Operating System :: Unix",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python",
     "Topic :: Software Development :: Libraries",
@@ -30,31 +31,32 @@ include = ["CHANGELOG.rst", "LICENSE"]
 localstack = "pytest_localstack"
 
 [tool.poetry.dependencies]
-python = "^3.7.0"
+python = "^3.9"
 botocore = "!=1.4.45"
-urllib3 = "<2" # https://github.com/orgs/python-poetry/discussions/7937#discussioncomment-5921842
-docker = "^6.0.0"
-pluggy = "^0.12.0"
-pytest = "^6.0.0"  # need caplog (+ warnings for tests)
+docker = ">=7.0.0"
+pluggy = ">=1.0.0"
+pytest = ">=7"
 
-[tool.poetry.dev-dependencies]
-boto3 = "*"
-hypothesis = "*"
-black = "*"
-isort = "^5.8.0"
-mypy = "^0.812"
-flake8 = "^3.9.2"
-bandit = "^1.7.0"
-pyproject-flake8 = "^0.0.1-alpha.2"
-coverage = {extras = ["toml"], version = "^5.5"}
-codecov = "^2.1.11"
-pytest-cov = "^2.12.1"
-pytest-xdist = "^2.2.1"
-Sphinx = "^4.0.2"
+[tool.poetry.group.dev.dependencies]
+boto3 = ">=1.42.97"
+hypothesis = ">=6.141.1"
+black = ">=25.11.0"
+isort = ">=5.8.0"
+mypy = ">=1.0"
+flake8 = ">=6.0"
+bandit = ">=1.7.5"
+pyyaml = ">=6.0.1"
+coverage = {extras = ["toml"], version = ">=7.0"}
+codecov = ">=2.1.11"
+pytest-cov = ">=4.0"
+pytest-timeout = ">=2.1"
+pytest-xdist = ">=3.0"
+Sphinx = ">=4.0.2"
+flake8-pyproject = "^1.2.4"
 
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 norecursedirs = ".* build dist *.egg tmp*"
@@ -65,7 +67,6 @@ addopts = "--doctest-glob='*.rst' --doctest-glob='*.md' --doctest-modules"
 [tool.isort]
 skip_glob = "*/.venv/*"
 profile = "black"
-lines_after_imports = 2
 
 # Structure
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTING", "FIRSTPARTY", "LOCALFOLDER"]

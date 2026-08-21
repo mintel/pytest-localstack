@@ -6,8 +6,8 @@ functionality to pytest-localstack and to trigger callbacks when the
 Localstack container is started and stopped.
 
 """
-import pluggy
 
+import pluggy
 
 pytest_localstack_hookspec = pluggy.HookspecMarker("pytest-localstack")
 pytest_localstack_hookimpl = pluggy.HookimplMarker("pytest-localstack")

@@ -6,8 +6,7 @@ import docker
 
 import pytest
 
-from pytest_localstack import plugin, session, utils
-
+from pytest_localstack import constants, plugin, session, utils
 
 _start_timeout = None
 _stop_timeout = None
@@ -47,7 +46,7 @@ def session_fixture(
     kinesis_error_probability=0.0,
     dynamodb_error_probability=0.0,
     container_log_level=logging.DEBUG,
-    localstack_version="latest",
+    localstack_version=constants.DEFAULT_LOCALSTACK_VERSION,
     auto_remove=True,
     pull_image=True,
     container_name=None,
@@ -93,7 +92,7 @@ def session_fixture(
         container_log_level (int, optional): The logging level to use
             for Localstack container logs. Defaults to :data:`logging.DEBUG`.
         localstack_version (str, optional): The version of the Localstack
-            image to use. Defaults to :const:`"latest"`.
+            image to use. Defaults to :const:`.constants.DEFAULT_LOCALSTACK_VERSION`.
         auto_remove (bool, optional): If :obj:`True`, delete the Localstack
             container when it stops. Default: :obj:`True`
         pull_image (bool, optional): If :obj:`True`, pull the Localstack

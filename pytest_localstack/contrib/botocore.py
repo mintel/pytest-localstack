@@ -1,4 +1,5 @@
 """Test resource factory for the botocore library."""
+
 import contextlib
 import functools
 import inspect
@@ -18,7 +19,6 @@ import pytest
 
 from pytest_localstack import _make_session, constants, exceptions, hookspecs, utils
 from pytest_localstack.session import RunningSession
-
 
 try:
     import boto3
@@ -336,7 +336,7 @@ def patch_fixture(
     kinesis_error_probability=0.0,
     dynamodb_error_probability=0.0,
     container_log_level=logging.DEBUG,
-    localstack_version="latest",
+    localstack_version=constants.DEFAULT_LOCALSTACK_VERSION,
     auto_remove=True,
     pull_image=True,
     container_name=None,
@@ -383,7 +383,7 @@ def patch_fixture(
         container_log_level (int, optional): The logging level to use
             for Localstack container logs. Defaults to :data:`logging.DEBUG`.
         localstack_version (str, optional): The version of the Localstack
-            image to use. Defaults to :const:`"latest"`.
+            image to use. Defaults to :const:`.constants.DEFAULT_LOCALSTACK_VERSION`.
         auto_remove (bool, optional): If :obj:`True`, delete the Localstack
             container when it stops. Default: :obj:`True`
         pull_image (bool, optional): If :obj:`True`, pull the Localstack
@@ -456,7 +456,10 @@ class Session(botocore.session.Session):
         """Create a botocore client."""
         # Localstack doesn't use the virtual host addressing style.
         config = botocore.config.Config(s3={"addressing_style": "path"})
-        callargs = inspect.getcallargs(_original_create_client, self, *args, **kwargs)
+        sig = inspect.signature(inspect.unwrap(_original_create_client))
+        bound = sig.bind(self, *args, **kwargs)
+        bound.apply_defaults()
+        callargs = bound.arguments
         if callargs.get("config"):
             config = callargs["config"].merge(config)
         callargs["config"] = config

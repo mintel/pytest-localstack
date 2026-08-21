@@ -3,12 +3,12 @@
 .. seealso:: :mod:`~pytest_localstack.hookspecs`
 
 """
+
 import importlib
 
 import pluggy
 
 import pytest_localstack.hookspecs
-
 
 manager = pluggy.PluginManager("pytest-localstack")
 manager.add_hookspecs(pytest_localstack.hookspecs)

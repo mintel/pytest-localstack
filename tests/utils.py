@@ -1,11 +1,11 @@
 """Test utils."""
+
 import hashlib
 from unittest import mock
 
 import docker
 
 from pytest_localstack import session
-
 
 AWS_REGIONS = [
     "us-east-1",

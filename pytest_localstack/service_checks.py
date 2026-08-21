@@ -4,6 +4,7 @@ Each check takes a :class:`.LocalstackSession` and
 raises :class:`~pytest_localstack.exceptions.ServiceError`
 if the service is not available.
 """
+
 import contextlib
 import functools
 import socket
@@ -56,8 +57,8 @@ def botocore_check(service_name, client_func_name):
             if not is_port_open(url):
                 raise exceptions.ServiceError(service_name=service_name)
             config_kwargs = {
-                "connect_timeout": 1,
-                "read_timeout": 1,
+                "connect_timeout": 5,
+                "read_timeout": 5,
                 "s3": {"addressing_style": "path"},
             }
             if constants.BOTOCORE_VERSION >= (1, 6, 0):

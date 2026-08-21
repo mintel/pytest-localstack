@@ -1,10 +1,10 @@
 """Test examples from the README."""
+
 import boto3
 
 import pytest
 
 import pytest_localstack
-
 
 patch_s3 = pytest_localstack.patch_fixture(services=["s3"])  # type: ignore
 

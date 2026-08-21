@@ -49,7 +49,7 @@ clean: ## remove all build, test, coverage and Python artifacts
 lint: $(INSTALL_STAMP)  ## check code style
 	$(POETRY) run isort --check-only ./tests/ $(NAME)
 	$(POETRY) run black --check ./tests/ $(NAME) --diff
-	$(POETRY) run pflake8 ./tests/ $(NAME)
+	$(POETRY) run flake8 ./tests/ $(NAME)
 	$(POETRY) run mypy ./tests/ $(NAME) --ignore-missing-imports
 	$(POETRY) run bandit -r $(NAME) -s B608
 
@@ -59,8 +59,25 @@ fmt: $(INSTALL_STAMP)  ## apply code style formatting
 	$(POETRY) run black ./tests/ $(NAME)
 
 .PHONY: test
-test: $(INSTALL_STAMP)  ## run tests
+test: $(INSTALL_STAMP)  ## run all tests
 	$(POETRY) run pytest
+
+.PHONY: test-unit
+test-unit: $(INSTALL_STAMP)  ## run unit tests with coverage
+	$(POETRY) run pytest tests/unit -ra --cov=$(NAME) -n auto
+
+.PHONY: test-integration
+test-integration: $(INSTALL_STAMP)  ## run integration tests with coverage (appended)
+	$(POETRY) run pytest tests/integration -ra --cov=$(NAME) --cov-append -n auto
+
+.PHONY: test-functional
+test-functional: $(INSTALL_STAMP)  ## run functional tests with coverage (requires Docker)
+	$(POETRY) run pytest tests/functional -ra --cov=$(NAME)
+
+.PHONY: coverage-report
+coverage-report: $(INSTALL_STAMP)  ## generate coverage.xml and htmlcov/ from collected coverage
+	$(POETRY) run coverage xml
+	$(POETRY) run coverage html
 
 .PHONY: docs
 docs: $(INSTALL_STAMP)  ## build documentation

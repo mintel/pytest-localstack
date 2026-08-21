@@ -1,0 +1,159 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint & docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          # Pin to the last release that supports Python 3.9
+          version: "2.2.1"
+          virtualenvs-in-project: true
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py3.12-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Lint
+        run: make lint
+
+      - name: Build docs
+        run: make docs
+
+  test:
+    name: Unit & integration (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          # Pin to the last release that supports Python 3.9
+          version: "2.2.1"
+          virtualenvs-in-project: true
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Unit tests
+        run: make test-unit
+
+      - name: Integration tests
+        run: make test-integration
+
+      - name: Coverage reports
+        if: always()
+        run: make coverage-report
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-py${{ matrix.python-version }}
+          path: |
+            coverage.xml
+            htmlcov/
+          if-no-files-found: ignore
+
+  functional:
+    name: Functional (LocalStack, py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        # Run functional (Docker/LocalStack) tests only on the ends of the
+        # supported range; unit/integration cover the full matrix.
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          # Pin to the last release that supports Python 3.9
+          version: "2.2.1"
+          virtualenvs-in-project: true
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: make install
+
+      # Log in to Docker Hub only when credentials are configured, to avoid
+      # anonymous pull rate limits when pulling the LocalStack image.
+      # The `secrets` context cannot be used in `if:`, so it is surfaced via
+      # `env` first and the env var is what the condition checks.
+      - name: Log in to Docker Hub
+        if: env.DOCKERHUB_USERNAME != ''
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Functional tests
+        run: make test-functional
+
+      - name: Coverage reports
+        if: always()
+        run: make coverage-report
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-functional-py${{ matrix.python-version }}
+          path: |
+            coverage.xml
+            htmlcov/
+          if-no-files-found: ignore

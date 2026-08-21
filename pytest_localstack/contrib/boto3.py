@@ -1,10 +1,10 @@
 """pytest-localstack extensions for boto3."""
+
 import logging
 
 import boto3.session
 
 from pytest_localstack import constants, hookspecs
-
 
 logger = logging.getLogger(__name__)
 

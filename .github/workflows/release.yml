@@ -1,0 +1,88 @@
+name: Release
+
+# Publish a new version to PyPI when a version tag is pushed.
+#
+#   git tag v0.7.0
+#   git push origin v0.7.0
+#
+# The tag must match the version in pyproject.toml (the "check-version" step
+# enforces this). PyPI's proxy on JFrog picks the release up automatically, so
+# downstream repos can then depend on the published version instead of a local
+# path.
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint & unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Lint
+        run: make lint
+
+      # Functional/integration tests need a Docker daemon to run LocalStack and
+      # are intentionally left out of the release gate to keep it fast and
+      # deterministic. Run them in a separate CI workflow if desired.
+      - name: Unit tests
+        run: poetry run pytest tests/unit -ra --cov=pytest_localstack
+
+  publish:
+    name: Build & publish to PyPI
+    needs: test
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pytest-localstack
+    permissions:
+      id-token: write # required for Trusted Publishing (OIDC)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Check tag matches package version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(poetry version -s)"
+          echo "Tag version:     $TAG_VERSION"
+          echo "Package version: $PKG_VERSION"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match pyproject version $PKG_VERSION"
+            exit 1
+          fi
+
+      - name: Build sdist and wheel
+        run: poetry build
+
+      - name: Publish to PyPI (Trusted Publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+

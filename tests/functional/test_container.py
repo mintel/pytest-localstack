@@ -1,8 +1,8 @@
 """Functional tests for pytest_localstack.container."""
+
 import logging
 
 from pytest_localstack import container
-
 
 logger = logging.getLogger(__name__)
 

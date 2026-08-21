@@ -1,4 +1,5 @@
 """Functional tests for pytest_localstack.session."""
+
 import pytest
 
 from pytest_localstack import constants, exceptions, service_checks, session
@@ -6,7 +7,9 @@ from pytest_localstack import constants, exceptions, service_checks, session
 
 @pytest.mark.parametrize("test_service", sorted(constants.SERVICE_PORTS))
 def test_RunningSession_individual_services(test_service, docker_client):
-    localstack_imagename = "localstack/localstack:latest"
+    localstack_imagename = (
+        "localstack/localstack:" + constants.DEFAULT_LOCALSTACK_VERSION
+    )
 
     docker_client.images.pull(localstack_imagename)
     localstack_container = None
