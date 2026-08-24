@@ -55,7 +55,7 @@ lint: $(INSTALL_STAMP)  ## check code style
 
 .PHONY: fmt
 fmt: $(INSTALL_STAMP)  ## apply code style formatting
-	$(POETRY) run isort --profile=black --lines-after-imports=2 ./tests/ $(NAME)
+	$(POETRY) run isort --profile=black ./tests/ $(NAME)
 	$(POETRY) run black ./tests/ $(NAME)
 
 .PHONY: test
