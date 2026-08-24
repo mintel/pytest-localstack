@@ -31,9 +31,9 @@ localstack = "pytest_localstack"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-botocore = "!=1.4.45"
-docker = ">=7.0.0"
-pluggy = ">=1.0.0"
+botocore = ">=1.23.0"
+docker = ">=7.1.0"
+pluggy = ">=1.6.0"
 pytest = ">=7"
 
 [tool.poetry.group.dev.dependencies]
